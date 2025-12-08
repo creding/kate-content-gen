@@ -1,0 +1,5 @@
+{
+  "name": "Jewelry GenAI Studio",
+  "description": "A professional tool for jewelry e-commerce automation. Upload product photos to generate staging images, model try-ons with specific lengths, white-background hero shots, and marketing copy using Gemini Nano Banana models.",
+  "requestFramePermissions": []
+}
