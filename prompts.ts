@@ -1,49 +1,21 @@
-import { JewelryType, NecklaceLength, ProductDetails } from './types';
-
-export const getNecklaceLengthDescription = (length: NecklaceLength): string => {
-  switch (length) {
-    case NecklaceLength.COLLAR: return "The necklace should fit tightly around the neck (12-14 inches).";
-    case NecklaceLength.CHOKER: return "The necklace should sit at the base of the neck (14-16 inches).";
-    case NecklaceLength.PRINCESS: return "The necklace should sit on the collarbone (17-19 inches).";
-    case NecklaceLength.MATINEE: return "The necklace should sit between the collarbone and the bust (20-24 inches).";
-    case NecklaceLength.OPERA: return "The necklace should hang low, below the bust (28-36 inches).";
-    case NecklaceLength.ROPE: return "The necklace should hang very low, near the waist (over 36 inches).";
-    default: return "";
-  }
-};
-
-export const STAGING_PROMPT = (type: JewelryType, props: string[] = []): string => {
-  const propsInstruction = props.length > 0 
-    ? `Add props such as ${props.join(', ')} that accent the ${type.toLowerCase()}.` 
-    : '';
-
-  return `
-Generate a high-resolution product image featuring the provided jewelry piece. The lighting should be soft, even, and professional, designed to highlight the intricate details, texture, and brilliance of the materials. Place the jewelry elegantly on a luxurious, minimalist surface such as polished marble, a smooth wooden block, or draped on a soft, complementary fabric.
+export const DEFAULT_TEMPLATES = {
+  STAGING: `Generate a high-resolution product image featuring the provided jewelry piece. The lighting should be soft, even, and professional, designed to highlight the intricate details, texture, and brilliance of the materials. Place the jewelry elegantly on a luxurious, minimalist surface such as polished marble, a smooth wooden block, or draped on a soft, complementary fabric.
 
 Include a small, tasteful jewelry tag positioned near the piece, and apply the provided logo clearly onto this tag. The tag itself should be subtly designed (e.g., a small rectangular card, a delicate metal charm) and its presence should enhance, not detract from, the jewelry. If a specific logo image is provided among the inputs, use it as the source texture for this tag.
 
-The background should be clean and simple with a shallow depth of field, ensuring the jewelry remains the sole focal point. Aim for a luxurious, sophisticated, and clean aesthetic that emphasizes craftsmanship and quality, with a timeless and refined mood. Keep the ${type.toLowerCase()} exactly the same. 
+The background should be clean and simple with a shallow depth of field, ensuring the jewelry remains the sole focal point. Aim for a luxurious, sophisticated, and clean aesthetic that emphasizes craftsmanship and quality, with a timeless and refined mood. Keep the {{type}} exactly the same.
 
-${type === JewelryType.EARRINGS ? 'Lay the earrings flat and have the camera lens be from above to give an aerial viewpoint. The camera lens is above, creating an arial viewpoint of the layout.' : 'Do not add any lengths to the piece.'}
+{{typeSpecificInstruction}}
 
-${propsInstruction}
-`;
-};
+{{propsInstruction}}`,
 
-export const MODEL_PROMPT = (details: ProductDetails): string => {
-  const base = details.type === JewelryType.NECKLACE
-    ? `Imagine the necklace draped elegantly on a model’s neck, partially visible, perhaps with soft, natural lighting. The focus would still be on the jewelry, but the human element adds context and aspiration. Keep the necklace exactly the same. ${details.necklaceLength ? getNecklaceLengthDescription(details.necklaceLength) : ''}`
-    : details.type === JewelryType.EARRINGS
-    ? `Imagine the earrings hanging elegantly from a model's earlobes, partially visible, perhaps with soft, natural lighting. The focus would still be on the jewelry, but the human element adds context and aspiration. Keep the earrings exactly the same. Keep the details of the gemstones on the earrings exactly the same. Do not change any detail on the earrings.`
-    : `Imagine the ring on an elegant model's hand, fully visible, perhaps with soft, natural lighting. The focus would still be on the jewelry, but the human element adds context and aspiration. Keep the ring exactly the same.`;
+  MODEL_NECKLACE: `Imagine the necklace draped elegantly on a model’s neck, partially visible, perhaps with soft, natural lighting. The focus would still be on the jewelry, but the human element adds context and aspiration. Keep the necklace exactly the same. {{lengthDescription}} Replace the woman in the image with a model that has smooth skin.`,
 
-  return `${base} Replace the woman in the image with a model that has smooth skin.`;
-};
+  MODEL_EARRINGS: `Imagine the earrings hanging elegantly from a model's earlobes, partially visible, perhaps with soft, natural lighting. The focus would still be on the jewelry, but the human element adds context and aspiration. Keep the earrings exactly the same. Keep the details of the gemstones on the earrings exactly the same. Do not change any detail on the earrings. Replace the woman in the image with a model that has smooth skin.`,
 
-export const WHITE_BG_PROMPT = (type: JewelryType): string => {
-  if (type === JewelryType.EARRINGS) {
-    return `
-E-commerce hero: the EXACT earrings uploaded, centered in a sea of pure white. The background MUST be #FFFFFF
+  MODEL_RING: `Imagine the ring on an elegant model's hand, fully visible, perhaps with soft, natural lighting. The focus would still be on the jewelry, but the human element adds context and aspiration. Keep the ring exactly the same. Replace the woman in the image with a model that has smooth skin.`,
+
+  WHITE_BG_EARRINGS: `E-commerce hero: the EXACT earrings uploaded, centered in a sea of pure white. The background MUST be #FFFFFF
 
 BACKGROUND
 - #FFFFFF from corner to corner
@@ -73,13 +45,9 @@ OUTPUT
 HARD NEGATIVE (copy this line):
 no shadow, no drop shadow, no floor, no reflection, no kinks, no extra chains, no props, no text, no gradient, no borders, no AI artifacts.
 
-Generate one frame.
-    `;
-  }
-  
-  // Default to Necklace/General prompt structure provided
-  return `
-E-commerce hero: the EXACT necklace uploaded, centered in a sea of pure white. The background MUST be #FFFFFF
+Generate one frame.`,
+
+  WHITE_BG_GENERAL: `E-commerce hero: the EXACT necklace uploaded, centered in a sea of pure white. The background MUST be #FFFFFF
 
 BACKGROUND
 - #FFFFFF from corner to corner
@@ -109,14 +77,9 @@ OUTPUT
 HARD NEGATIVE (copy this line):
 no shadow, no drop shadow, no floor, no reflection, no kinks, no extra chains, no props, no text, no gradient, no borders, no AI artifacts.
 
-Generate one frame.
-  `;
-};
+Generate one frame.`,
 
-export const DESCRIPTION_PROMPT = (details: ProductDetails): string => {
-  if (details.type === JewelryType.EARRINGS) {
-    return `
-You are a professional e-commerce copywriter. Use the uploaded product image to write a clear, factual product description for earrings using the suggested structure and neutral tone below. Replace the bracketed details with the new product information. Do not add flowery, luxurious, or evocative language. Keep sentences direct and informative. You can be somewhat creative with the description. Make sure that it makes sense, revise the format, if needed, so that the product details accurately present the image uploaded. Do not add special text formatting for the dimensions, I should be able to copy/paste without a problem. You can add to the description any information that may assist the customer in understanding the earrings, use the provided image..
+  DESCRIPTION_EARRINGS: `You are a professional e-commerce copywriter. Use the uploaded product image to write a clear, factual product description for earrings using the suggested structure and neutral tone below. Replace the bracketed details with the new product information. Do not add flowery, luxurious, or evocative language. Keep sentences direct and informative. You can be somewhat creative with the description. Make sure that it makes sense, revise the format, if needed, so that the product details accurately present the image uploaded. Do not add special text formatting for the dimensions, I should be able to copy/paste without a problem. You can add to the description any information that may assist the customer in understanding the earrings, use the provided image..
 
 Basic Format - use the provided image to add to this:
 Discover the [Earring Name], a pair designed for daily wear. It features a [shape] of Genuine [Stone Type], selected for its [visual characteristic]. The earrings hang from [hook/hoop/post] made of [earring material].
@@ -129,18 +92,14 @@ Discover the [Earring Name], a pair designed for daily wear. It features a [shap
 
 Now generate using these details:
 
-* Earring Name: ${details.name}
-* Stone Type: ${details.stone}
-* Shape: ${details.shape}
-* Visual Characteristic: ${details.visualCharacteristic}
-* Hook/Hoop/Post: ${details.hookType || 'Standard'}
-* Earring Material: ${details.material}
-    `;
-  }
+* Earring Name: {{name}}
+* Stone Type: {{stone}}
+* Shape: {{shape}}
+* Visual Characteristic: {{visualCharacteristic}}
+* Hook/Hoop/Post: {{hookType}}
+* Earring Material: {{material}}`,
 
-  // Necklace / General
-  return `
-You are a professional e-commerce copywriter. Write a clear, factual product description for a necklace using the suggested structure and neutral tone below. Replace the bracketed details with the new product information. Do not add flowery, luxurious, or evocative language. Keep sentences direct and informative. You can be somewhat creative with the description.
+  DESCRIPTION_NECKLACE: `You are a professional e-commerce copywriter. Write a clear, factual product description for a necklace using the suggested structure and neutral tone below. Replace the bracketed details with the new product information. Do not add flowery, luxurious, or evocative language. Keep sentences direct and informative. You can be somewhat creative with the description.
 
 **Format:**
 
@@ -156,22 +115,19 @@ The pendant hangs from a [length]-inch [chain style] made of [chain material]. T
 
 **Now generate using these details:**
 
-- Necklace Name: ${details.name}
-- Stone Type: ${details.stone}
-- Shape: ${details.shape}
-- Visual Characteristic: ${details.visualCharacteristic}
-- Length: ${details.necklaceLengthValue || 'Adjustable'}
+- Necklace Name: {{name}}
+- Stone Type: {{stone}}
+- Shape: {{shape}}
+- Visual Characteristic: {{visualCharacteristic}}
+- Length: {{necklaceLengthValue}}
 - Chain Style: Cable chain
-- Chain Material: ${details.material}
-- Clasp Type: ${details.claspType || 'Lobster'}
-- Accent Detail: ${details.accentDetail || 'Signature Tag'}
+- Chain Material: {{material}}
+- Clasp Type: {{claspType}}
+- Accent Detail: {{accentDetail}}
 
-Use plain, factual language only. No metaphors, prestige, or poetic phrasing.
-  `;
-};
+Use plain, factual language only. No metaphors, prestige, or poetic phrasing.`,
 
-export const SOCIAL_PROMPT = `
-Create a professional, concise social media post (no emojis) using the provided image.
+  SOCIAL: `Create a professional, concise social media post (no emojis) using the provided image.
 
 The post should be structured with a body detailing the product's main features. Include a separate list of 4-5 relevant hashtags.
 
@@ -188,5 +144,7 @@ The post should be written in a similar voice but not exactly like this, be crea
 
 </Example_Post>
 
-The post should be personal, craft a social media post that compliments the image. Present it in a format I can easily copy to paste in my social media app
-`;
+The post should be personal, craft a social media post that compliments the image. Present it in a format I can easily copy to paste in my social media app`,
+};
+
+export type PromptTemplateKey = keyof typeof DEFAULT_TEMPLATES;
