@@ -1,13 +1,31 @@
 export const DEFAULT_TEMPLATES = {
-  STAGING: `Generate a high-resolution product image featuring the provided jewelry piece. The lighting should be soft, even, and professional, designed to highlight the intricate details, texture, and brilliance of the materials. Place the jewelry elegantly on a luxurious, minimalist surface such as polished marble, a smooth wooden block, or draped on a soft, complementary fabric.
+  STAGING: `Generate a high-resolution product image featuring the provided jewelry piece.
 
-Include a small, tasteful jewelry tag positioned near the piece, and apply the provided logo clearly onto this tag. The tag itself should be subtly designed (e.g., a small rectangular card, a delicate metal charm) and its presence should enhance, not detract from, the jewelry. If a specific logo image is provided among the inputs, use it as the source texture for this tag.
+CRITICAL JEWELRY PRESERVATION:
+- The uploaded jewelry is the PRIMARY REFERENCE. Do NOT modify it in any way.
+- Preserve the EXACT chain length, link count, and proportions from the input image.
+- Do NOT extend, shorten, add links, or change pendant position.
+- Keep the EXACT curvature, drape, and layout as shown in the reference.
+- Gemstones, metal color, and all details MUST match the input exactly.
+- Do NOT add extra chains, charms, extensions, or elements not in the original.
 
-The background should be clean and simple with a shallow depth of field, ensuring the jewelry remains the sole focal point. Aim for a luxurious, sophisticated, and clean aesthetic that emphasizes craftsmanship and quality, with a timeless and refined mood. Keep the {{type}} exactly the same.
+{{lightingInstruction}}
+
+SURFACE & PLACEMENT:
+Place the jewelry {{layoutInstruction}} on {{surfaceInstruction}}.
+
+TAG PLACEMENT:
+Include a small, tasteful jewelry tag positioned near the piece, and apply the provided logo clearly onto this tag. The tag should be subtly designed (e.g., a small rectangular card, a delicate metal charm) and its presence should enhance, not detract from, the jewelry. If a specific logo image is provided among the inputs, use it as the source texture for this tag.
+
+BACKGROUND & COMPOSITION:
+The background should be clean and simple with a shallow depth of field, ensuring the jewelry remains the sole focal point. Aim for a luxurious, sophisticated, and clean aesthetic that emphasizes craftsmanship and quality.
 
 {{typeSpecificInstruction}}
 
-{{propsInstruction}}`,
+{{propsInstruction}}
+
+NEGATIVE (avoid these):
+No kinks, no extra chains, no length modifications, no added charms, no AI artifacts, no proportional changes.`,
 
   MODEL_NECKLACE: `Imagine the necklace draped elegantly on a model’s neck, partially visible, perhaps with soft, natural lighting. The focus would still be on the jewelry, but the human element adds context and aspiration. Keep the necklace exactly the same. {{lengthDescription}} Replace the woman in the image with a model that has smooth skin.`,
 

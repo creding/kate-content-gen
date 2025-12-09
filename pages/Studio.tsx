@@ -176,10 +176,46 @@ const Studio: React.FC = () => {
         ? "Lay the earrings flat and have the camera lens be from above to give an aerial viewpoint."
         : "Do not add any lengths to the piece.";
 
+    // Surface instruction
+    const surfaceInstruction = details.stagingSurface
+      ? `a luxurious ${details.stagingSurface.toLowerCase()} surface`
+      : "a luxurious, minimalist surface such as polished marble or smooth wood";
+
+    // Lighting instruction
+    const lightingMap: Record<string, string> = {
+      "Soft & Even":
+        "The lighting should be soft, even, and professional, designed to highlight the intricate details, texture, and brilliance of the materials.",
+      "Warm Golden":
+        "The lighting should be warm and golden, creating a cozy, inviting atmosphere that brings out the warmth of the metals and stones.",
+      "Cool & Bright":
+        "The lighting should be cool and bright, creating a clean, modern look that emphasizes clarity and sparkle.",
+      "Dramatic & Moody":
+        "The lighting should be dramatic with deep shadows and selective highlights, creating an artistic, editorial atmosphere.",
+    };
+    const lightingInstruction = details.lightingMood
+      ? lightingMap[details.lightingMood] || lightingMap["Soft & Even"]
+      : lightingMap["Soft & Even"];
+
+    // Layout instruction
+    const layoutMap: Record<string, string> = {
+      "Flat Lay (Aerial View)":
+        "laid flat with the camera positioned directly above for a clean aerial view",
+      "Draped on Surface":
+        "elegantly draped, with natural curves resting on the surface",
+      "Hanging / Suspended":
+        "suspended or hanging, showing its natural drape and length",
+    };
+    const layoutInstruction = details.stagingLayout
+      ? layoutMap[details.stagingLayout] || layoutMap["Flat Lay (Aerial View)"]
+      : "elegantly placed";
+
     return {
       ...details,
       propsInstruction,
       typeSpecificInstruction,
+      surfaceInstruction,
+      lightingInstruction,
+      layoutInstruction,
       type: details.type.toLowerCase(),
     };
   };

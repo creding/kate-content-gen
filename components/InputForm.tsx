@@ -4,6 +4,9 @@ import {
   JewelryType,
   NecklaceLength,
   ProductDetails,
+  StagingSurface,
+  LightingMood,
+  StagingLayout,
 } from "../types";
 import { Input, Label, Select, Textarea, Card, cn } from "./ui";
 
@@ -237,10 +240,10 @@ const InputForm: React.FC<InputFormProps> = ({
           </div>
         )}
 
-      {/* Staging fields - props selection */}
+      {/* Staging fields - surface, lighting, props */}
       {showStagingFields && (
-        <Card className="p-4 bg-zinc-900 text-white border-zinc-900 shadow-lg">
-          <h4 className="text-xs font-semibold text-white mb-3 flex items-center gap-2">
+        <Card className="p-4 bg-zinc-900 text-white border-zinc-900 shadow-lg space-y-4">
+          <h4 className="text-xs font-semibold text-white flex items-center gap-2">
             <span className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
               <svg
                 className="w-2.5 h-2.5 text-emerald-400"
@@ -256,50 +259,135 @@ const InputForm: React.FC<InputFormProps> = ({
                 />
               </svg>
             </span>
-            Scene Props
+            Scene Settings
           </h4>
-          <div className="grid grid-cols-2 gap-1">
-            {AVAILABLE_PROPS.map((prop) => {
-              const isSelected = (details.stagingProps || []).includes(prop);
-              return (
-                <div
-                  key={prop}
-                  onClick={() => toggleProp(prop)}
-                  className={cn(
-                    "flex items-center gap-2 cursor-pointer p-1.5 rounded-md transition-all text-[11px]",
-                    isSelected
-                      ? "bg-white/10 text-white"
-                      : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
-                  )}
-                >
+
+          {/* Layout Selector */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Layout Style
+            </label>
+            <div className="grid grid-cols-1 gap-1.5">
+              {Object.values(StagingLayout).map((layout) => {
+                const isSelected = details.stagingLayout === layout;
+                return (
                   <div
+                    key={layout}
+                    onClick={() => handleChange("stagingLayout", layout)}
                     className={cn(
-                      "w-3 h-3 rounded border flex items-center justify-center shrink-0",
+                      "cursor-pointer p-2 rounded-lg text-[11px] font-medium transition-all border",
                       isSelected
-                        ? "bg-emerald-500 border-emerald-500"
-                        : "border-zinc-500"
+                        ? "bg-white text-zinc-900 border-white"
+                        : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
                     )}
                   >
-                    {isSelected && (
-                      <svg
-                        className="w-2 h-2 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="3"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
+                    {layout}
                   </div>
-                  <span className="font-medium">{prop}</span>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Surface Selector */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Surface
+            </label>
+            <div className="grid grid-cols-2 gap-1.5">
+              {Object.values(StagingSurface).map((surface) => {
+                const isSelected = details.stagingSurface === surface;
+                return (
+                  <div
+                    key={surface}
+                    onClick={() => handleChange("stagingSurface", surface)}
+                    className={cn(
+                      "cursor-pointer p-2 rounded-lg text-[11px] font-medium transition-all border",
+                      isSelected
+                        ? "bg-white text-zinc-900 border-white"
+                        : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                    )}
+                  >
+                    {surface}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Lighting Selector */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Lighting
+            </label>
+            <div className="grid grid-cols-2 gap-1.5">
+              {Object.values(LightingMood).map((mood) => {
+                const isSelected = details.lightingMood === mood;
+                return (
+                  <div
+                    key={mood}
+                    onClick={() => handleChange("lightingMood", mood)}
+                    className={cn(
+                      "cursor-pointer p-2 rounded-lg text-[11px] font-medium transition-all border",
+                      isSelected
+                        ? "bg-white text-zinc-900 border-white"
+                        : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                    )}
+                  >
+                    {mood}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Props */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Scene Props
+            </label>
+            <div className="grid grid-cols-2 gap-1">
+              {AVAILABLE_PROPS.map((prop) => {
+                const isSelected = (details.stagingProps || []).includes(prop);
+                return (
+                  <div
+                    key={prop}
+                    onClick={() => toggleProp(prop)}
+                    className={cn(
+                      "flex items-center gap-2 cursor-pointer p-1.5 rounded-md transition-all text-[11px]",
+                      isSelected
+                        ? "bg-white/10 text-white"
+                        : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "w-3 h-3 rounded border flex items-center justify-center shrink-0",
+                        isSelected
+                          ? "bg-emerald-500 border-emerald-500"
+                          : "border-zinc-500"
+                      )}
+                    >
+                      {isSelected && (
+                        <svg
+                          className="w-2 h-2 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="3"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="font-medium">{prop}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </Card>
       )}
