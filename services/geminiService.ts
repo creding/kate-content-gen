@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { AssetType, GeneratedAsset } from "../types";
+import { AssetType, GeneratedAsset, JewelryType } from "../types";
 
 const getSystemInstruction = () => {
   return "You are an expert jewelry product photographer and copywriter. You specialize in high-end, luxurious aesthetics.";
@@ -111,5 +111,61 @@ export const generateAsset = async (
   } catch (error) {
     console.error("Gemini API Error:", error);
     throw error;
+  }
+};
+
+/**
+ * Detect jewelry type from an uploaded image using Gemini
+ */
+export const detectJewelryType = async (file: File): Promise<JewelryType> => {
+  if (!process.env.API_KEY) {
+    throw new Error("API Key is missing.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+  const imageData = await fileToGenerativePart(file);
+
+  const prompt = `Look at this jewelry image and identify what type of jewelry it is.
+  
+Respond with ONLY ONE of these exact words:
+- Necklace
+- Earrings
+- Ring
+- Bracelet
+- Other
+
+Just the single word, nothing else.`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { inlineData: { data: imageData, mimeType: file.type } },
+            { text: prompt },
+          ],
+        },
+      ],
+    });
+
+    const text = response.text?.trim() || "";
+
+    // Map response to JewelryType enum
+    const typeMap: Record<string, JewelryType> = {
+      necklace: JewelryType.NECKLACE,
+      earrings: JewelryType.EARRINGS,
+      ring: JewelryType.RING,
+      bracelet: JewelryType.BRACELET,
+      other: JewelryType.OTHER,
+    };
+
+    const detected = typeMap[text.toLowerCase()] || JewelryType.OTHER;
+    return detected;
+  } catch (error) {
+    console.error("Error detecting jewelry type:", error);
+    return JewelryType.NECKLACE; // Default fallback
   }
 };

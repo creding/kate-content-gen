@@ -2,6 +2,8 @@ export enum JewelryType {
   NECKLACE = "Necklace",
   EARRINGS = "Earrings",
   RING = "Ring",
+  BRACELET = "Bracelet",
+  OTHER = "Other",
 }
 
 export enum NecklaceLength {

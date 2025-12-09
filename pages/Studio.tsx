@@ -9,7 +9,7 @@ import InputForm from "../components/InputForm";
 import AssetCard from "../components/AssetCard";
 import Lightbox from "../components/Lightbox";
 import AssetSelector from "../components/AssetSelector";
-import { generateAsset } from "../services/geminiService";
+import { generateAsset, detectJewelryType } from "../services/geminiService";
 import { Card, Button, cn } from "../components/ui";
 import { usePrompts } from "../contexts/PromptContext";
 import { useToast } from "../contexts/ToastContext";
@@ -81,6 +81,7 @@ const Studio: React.FC = () => {
   const [selectedAssets, setSelectedAssets] = useState<AssetType[]>([
     AssetType.WHITE_BG,
   ]);
+  const [isDetecting, setIsDetecting] = useState(false);
 
   // Initialize details with brand defaults
   const [details, setDetails] = useState<ProductDetails>({
@@ -123,9 +124,22 @@ const Studio: React.FC = () => {
     });
   }, [brandSettings.logoDataUrl, brandSettings.logoFileName]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles(Array.from(e.target.files));
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files);
+      setFiles(newFiles);
+
+      // Auto-detect jewelry type from first image
+      setIsDetecting(true);
+      try {
+        const detectedType = await detectJewelryType(newFiles[0]);
+        setDetails((prev) => ({ ...prev, type: detectedType }));
+        addToast(`Detected: ${detectedType}`, "success");
+      } catch (err) {
+        console.error("Auto-detect failed:", err);
+      } finally {
+        setIsDetecting(false);
+      }
     }
   };
 
@@ -545,6 +559,57 @@ const Studio: React.FC = () => {
           </div>
 
           <div className="space-y-4">
+            {/* Jewelry Type Selector */}
+            <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-100">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                  Jewelry Type
+                </label>
+                {isDetecting && (
+                  <span className="text-[10px] text-zinc-400 flex items-center gap-1">
+                    <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
+                    </svg>
+                    Detecting...
+                  </span>
+                )}
+              </div>
+              <div className="grid grid-cols-5 gap-1.5">
+                {Object.values(JewelryType).map((t) => {
+                  const isSelected = details.type === t;
+                  return (
+                    <div
+                      key={t}
+                      onClick={() =>
+                        setDetails((prev) => ({ ...prev, type: t }))
+                      }
+                      className={cn(
+                        "cursor-pointer p-2 rounded-lg text-[11px] font-medium transition-all border text-center",
+                        isSelected
+                          ? "bg-zinc-900 text-white border-zinc-900"
+                          : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300"
+                      )}
+                    >
+                      {t}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             <div>
               <h3 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">
                 Visual Assets
