@@ -12,18 +12,18 @@ export const Button = React.forwardRef<
 >(({ className, variant = "primary", ...props }, ref) => {
   const variants = {
     primary:
-      "bg-zinc-900 text-white hover:bg-zinc-800 shadow-lg shadow-zinc-900/20 active:scale-[0.98]",
+      "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 active:scale-[0.98]",
     secondary:
-      "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 active:scale-[0.98]",
+      "bg-secondary text-secondary-foreground hover:bg-secondary/80 active:scale-[0.98]",
     outline:
-      "border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-900 active:scale-[0.98]",
-    ghost: "hover:bg-zinc-100 text-zinc-700 active:scale-[0.98]",
+      "border border-border bg-card hover:bg-muted text-foreground active:scale-[0.98]",
+    ghost: "hover:bg-muted text-muted-foreground active:scale-[0.98]",
   };
   return (
     <button
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 px-5 py-2",
+        "inline-flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 px-5 py-2",
         variants[variant],
         className
       )}
@@ -41,7 +41,7 @@ export const Input = React.forwardRef<
     <input
       ref={ref}
       className={cn(
-        "flex h-11 w-full rounded-lg border-b-2 border-zinc-100 bg-zinc-50/50 px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-400 focus-visible:outline-none focus-visible:border-zinc-900 focus-visible:bg-white transition-all disabled:cursor-not-allowed disabled:opacity-50 hover:bg-zinc-50",
+        "flex h-11 w-full rounded-lg border-b-2 border-border bg-input px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-ring focus-visible:bg-card transition-all disabled:cursor-not-allowed disabled:opacity-50 hover:bg-muted",
         className
       )}
       {...props}
@@ -58,7 +58,7 @@ export const Textarea = React.forwardRef<
     <textarea
       ref={ref}
       className={cn(
-        "flex min-h-[100px] w-full rounded-lg border-b-2 border-zinc-100 bg-zinc-50/50 px-3 py-2 text-sm ring-offset-white placeholder:text-zinc-400 focus-visible:outline-none focus-visible:border-zinc-900 focus-visible:bg-white transition-all disabled:cursor-not-allowed disabled:opacity-50 resize-y hover:bg-zinc-50",
+        "flex min-h-[100px] w-full rounded-lg border-b-2 border-border bg-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-ring focus-visible:bg-card transition-all disabled:cursor-not-allowed disabled:opacity-50 resize-y hover:bg-muted",
         className
       )}
       {...props}
@@ -76,12 +76,12 @@ export const Select = React.forwardRef<
       <select
         ref={ref}
         className={cn(
-          "flex h-11 w-full appearance-none rounded-lg border-b-2 border-zinc-100 bg-zinc-50/50 px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:border-zinc-900 focus-visible:bg-white transition-all disabled:cursor-not-allowed disabled:opacity-50 pr-10 cursor-pointer hover:bg-zinc-50",
+          "flex h-11 w-full appearance-none rounded-lg border-b-2 border-border bg-input px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:border-ring focus-visible:bg-card transition-all disabled:cursor-not-allowed disabled:opacity-50 pr-10 cursor-pointer hover:bg-muted",
           className
         )}
         {...props}
       />
-      <div className="absolute right-3 top-3.5 pointer-events-none text-zinc-500">
+      <div className="absolute right-3 top-3.5 pointer-events-none text-muted-foreground">
         <svg
           className="h-4 w-4"
           fill="none"
@@ -108,7 +108,7 @@ export const Label = React.forwardRef<
   <label
     ref={ref}
     className={cn(
-      "text-[11px] font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-zinc-400 uppercase tracking-widest mb-2 block",
+      "text-[11px] font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground uppercase tracking-widest mb-2 block",
       className
     )}
     {...props}
@@ -123,7 +123,7 @@ export const Card = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "rounded-2xl border border-zinc-100 bg-white text-zinc-950 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.05)]",
+      "rounded-2xl border border-border bg-card text-card-foreground shadow-sm",
       className
     )}
     {...props}
@@ -155,7 +155,7 @@ export const TabsList = ({
 }) => (
   <div
     className={cn(
-      "inline-flex h-12 items-center justify-center rounded-xl bg-zinc-100/50 p-1 text-zinc-500 w-full",
+      "inline-flex h-12 items-center justify-center rounded-xl bg-muted p-1 text-muted-foreground w-full",
       className
     )}
   >
@@ -179,10 +179,10 @@ export const TabsTrigger = ({
   <button
     onClick={() => onClick(value)}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 flex-1",
+      "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 flex-1",
       activeValue === value
-        ? "bg-white text-zinc-900 shadow-sm font-semibold"
-        : "hover:bg-zinc-200/50 hover:text-zinc-900",
+        ? "bg-card text-foreground shadow-sm font-semibold"
+        : "hover:bg-accent hover:text-accent-foreground",
       className
     )}
   >
@@ -205,7 +205,7 @@ export const TabsContent = ({
   return (
     <div
       className={cn(
-        "mt-4 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 animate-in fade-in duration-300 slide-in-from-bottom-2",
+        "mt-4 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 animate-in fade-in duration-300 slide-in-from-bottom-2",
         className
       )}
     >

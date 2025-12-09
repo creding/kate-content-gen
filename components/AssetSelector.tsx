@@ -89,15 +89,15 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
         className={cn(
           "flex items-center gap-3 p-2.5 border cursor-pointer transition-all",
           isSelected
-            ? "border-zinc-900 bg-zinc-900 text-white"
-            : "border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-zinc-600",
+            ? "border-primary bg-primary text-primary-foreground"
+            : "border-border hover:border-ring hover:bg-muted text-muted-foreground",
           showSettings ? "rounded-t-lg" : "rounded-lg"
         )}
       >
         <Icon
           className={cn(
             "w-4 h-4 shrink-0",
-            isSelected ? "text-zinc-300" : "text-zinc-400"
+            isSelected ? "text-primary-foreground/70" : "text-muted-foreground"
           )}
         />
         <div className="flex-1 min-w-0">
@@ -111,8 +111,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
             className={cn(
               "p-1.5 rounded-md transition-colors",
               settingsExpanded
-                ? "bg-white/20 text-white"
-                : "hover:bg-white/10 text-zinc-400"
+                ? "bg-primary-foreground/20 text-primary-foreground"
+                : "hover:bg-primary-foreground/10 text-primary-foreground/70"
             )}
           >
             <Settings className="w-3.5 h-3.5" />
@@ -123,22 +123,24 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
         <div
           className={cn(
             "w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0",
-            isSelected ? "border-white bg-white" : "border-zinc-300"
+            isSelected
+              ? "border-primary-foreground bg-primary-foreground"
+              : "border-border"
           )}
         >
-          {isSelected && <div className="w-2 h-2 bg-zinc-900 rounded-full" />}
+          {isSelected && <div className="w-2 h-2 bg-primary rounded-full" />}
         </div>
       </div>
 
       {/* Expandable Settings Panel */}
       {showSettings && (
-        <div className="bg-zinc-800 border border-t-0 border-zinc-700 rounded-b-lg p-4 space-y-4">
+        <div className="bg-primary/90 border border-t-0 border-primary/70 rounded-b-lg p-4 space-y-4">
           {/* WHITE BACKGROUND SETTINGS */}
           {assetType === AssetType.WHITE_BG && (
             <>
               {/* Camera Angle */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Camera Angle
                 </label>
                 <div className="grid grid-cols-3 gap-1.5">
@@ -151,8 +153,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
                           sel
-                            ? "bg-white text-zinc-900 border-white"
-                            : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                            ? "bg-card text-foreground border-card"
+                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
                         )}
                       >
                         {angle}
@@ -164,7 +166,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
 
               {/* Framing */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Framing
                 </label>
                 <div className="grid grid-cols-3 gap-1.5">
@@ -177,8 +179,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
                           sel
-                            ? "bg-white text-zinc-900 border-white"
-                            : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                            ? "bg-card text-foreground border-card"
+                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
                         )}
                       >
                         {framing}
@@ -190,7 +192,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
 
               {/* Shadow */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Shadow
                 </label>
                 <div className="grid grid-cols-3 gap-1.5">
@@ -203,8 +205,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
                           sel
-                            ? "bg-white text-zinc-900 border-white"
-                            : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                            ? "bg-card text-foreground border-card"
+                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
                         )}
                       >
                         {shadow}
@@ -221,7 +223,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
             <>
               {/* Layout Style */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Layout Style
                 </label>
                 <div className="grid grid-cols-1 gap-1.5">
@@ -234,8 +236,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "cursor-pointer p-2 rounded-lg text-[11px] font-medium transition-all border",
                           sel
-                            ? "bg-white text-zinc-900 border-white"
-                            : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                            ? "bg-card text-foreground border-card"
+                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
                         )}
                       >
                         {layout}
@@ -247,7 +249,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
 
               {/* Surface */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Surface
                 </label>
                 <div className="grid grid-cols-2 gap-1.5">
@@ -260,8 +262,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "cursor-pointer p-2 rounded-lg text-[11px] font-medium transition-all border",
                           sel
-                            ? "bg-white text-zinc-900 border-white"
-                            : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                            ? "bg-card text-foreground border-card"
+                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
                         )}
                       >
                         {surface}
@@ -273,7 +275,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
 
               {/* Lighting */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Lighting
                 </label>
                 <div className="grid grid-cols-2 gap-1.5">
@@ -286,8 +288,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "cursor-pointer p-2 rounded-lg text-[11px] font-medium transition-all border",
                           sel
-                            ? "bg-white text-zinc-900 border-white"
-                            : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                            ? "bg-card text-foreground border-card"
+                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
                         )}
                       >
                         {mood}
@@ -299,7 +301,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
 
               {/* Scene Props */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Scene Props
                 </label>
                 <div className="grid grid-cols-2 gap-1">
@@ -312,21 +314,21 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "flex items-center gap-2 cursor-pointer p-1.5 rounded-md transition-all text-[11px]",
                           sel
-                            ? "bg-white/10 text-white"
-                            : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
+                            ? "bg-primary-foreground/10 text-primary-foreground"
+                            : "text-primary-foreground/60 hover:text-primary-foreground/80 hover:bg-primary-foreground/5"
                         )}
                       >
                         <div
                           className={cn(
                             "w-3 h-3 rounded border flex items-center justify-center shrink-0",
                             sel
-                              ? "bg-emerald-500 border-emerald-500"
-                              : "border-zinc-500"
+                              ? "bg-accent border-accent"
+                              : "border-primary-foreground/40"
                           )}
                         >
                           {sel && (
                             <svg
-                              className="w-2 h-2 text-white"
+                              className="w-2 h-2 text-accent-foreground"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -355,7 +357,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
               {/* Necklace Length - only for necklaces */}
               {details.type === JewelryType.NECKLACE && (
                 <div>
-                  <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                  <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                     Necklace Length
                   </label>
                   <Select
@@ -367,7 +369,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                       )
                     }
                     disabled={isLoading}
-                    className="!bg-zinc-700 !border-zinc-600 text-white text-sm hover:!bg-zinc-600 focus:!bg-zinc-600"
+                    className="!bg-primary/80 !border-primary-foreground/30 text-primary-foreground text-sm hover:!bg-primary/70 focus:!bg-primary/70"
                   >
                     <option value="">-- Auto --</option>
                     {Object.values(NecklaceLength).map((l) => (
@@ -381,7 +383,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
 
               {/* Skin Tone */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Skin Tone
                 </label>
                 <div className="grid grid-cols-4 gap-1.5">
@@ -394,8 +396,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
                           sel
-                            ? "bg-white text-zinc-900 border-white"
-                            : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                            ? "bg-card text-foreground border-card"
+                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
                         )}
                       >
                         {tone}
@@ -407,7 +409,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
 
               {/* Clothing */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Clothing
                 </label>
                 <div className="grid grid-cols-5 gap-1.5">
@@ -420,8 +422,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
                           sel
-                            ? "bg-white text-zinc-900 border-white"
-                            : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                            ? "bg-card text-foreground border-card"
+                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
                         )}
                       >
                         {color}
@@ -433,7 +435,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
 
               {/* Shot Type */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Shot Type
                 </label>
                 <div className="grid grid-cols-3 gap-1.5">
@@ -446,8 +448,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
                           sel
-                            ? "bg-white text-zinc-900 border-white"
-                            : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                            ? "bg-card text-foreground border-card"
+                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
                         )}
                       >
                         {shot}
@@ -459,7 +461,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
 
               {/* Background */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Background
                 </label>
                 <div className="grid grid-cols-3 gap-1.5">
@@ -472,8 +474,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
                           sel
-                            ? "bg-white text-zinc-900 border-white"
-                            : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                            ? "bg-card text-foreground border-card"
+                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
                         )}
                       >
                         {bg}
@@ -485,7 +487,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
 
               {/* Lighting */}
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Lighting
                 </label>
                 <div className="grid grid-cols-3 gap-1.5">
@@ -498,8 +500,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                         className={cn(
                           "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
                           sel
-                            ? "bg-white text-zinc-900 border-white"
-                            : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                            ? "bg-card text-foreground border-card"
+                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
                         )}
                       >
                         {light}

@@ -62,17 +62,17 @@ const Lightbox: React.FC<LightboxProps> = ({
       <div className="fixed top-6 right-6 z-20 flex items-center gap-3">
         <button
           onClick={handleDownload}
-          className="w-10 h-10 rounded-full bg-white hover:bg-white/90 flex items-center justify-center transition-colors shadow-lg"
+          className="w-10 h-10 rounded-full bg-card hover:bg-card/90 flex items-center justify-center transition-colors shadow-lg"
           title="Download"
         >
-          <Download className="w-4 h-4 text-zinc-900" />
+          <Download className="w-4 h-4 text-foreground" />
         </button>
         <button
           onClick={onClose}
-          className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+          className="w-10 h-10 rounded-full bg-primary-foreground/20 hover:bg-primary-foreground/30 flex items-center justify-center transition-colors"
           title="Close (Esc)"
         >
-          <X className="w-5 h-5 text-white" />
+          <X className="w-5 h-5 text-primary-foreground" />
         </button>
       </div>
 
@@ -81,11 +81,11 @@ const Lightbox: React.FC<LightboxProps> = ({
         {/* Image label */}
         <div className="absolute -top-10 left-0 right-0 flex items-center justify-center">
           <div className="flex items-center gap-2">
-            <span className="text-white/80 text-sm font-medium">
+            <span className="text-primary-foreground/80 text-sm font-medium">
               {currentImage.label}
             </span>
             {hasMultiple && (
-              <span className="text-white/50 text-sm">
+              <span className="text-primary-foreground/50 text-sm">
                 ({currentIndex + 1} / {images.length})
               </span>
             )}
@@ -107,18 +107,18 @@ const Lightbox: React.FC<LightboxProps> = ({
                 e.stopPropagation();
                 onPrev();
               }}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-14 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-14 w-10 h-10 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-colors"
             >
-              <ChevronLeft className="w-6 h-6 text-white" />
+              <ChevronLeft className="w-6 h-6 text-primary-foreground" />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onNext();
               }}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-14 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-14 w-10 h-10 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-colors"
             >
-              <ChevronRight className="w-6 h-6 text-white" />
+              <ChevronRight className="w-6 h-6 text-primary-foreground" />
             </button>
           </>
         )}
@@ -131,7 +131,9 @@ const Lightbox: React.FC<LightboxProps> = ({
                 key={idx}
                 className={cn(
                   "w-2 h-2 rounded-full transition-colors",
-                  idx === currentIndex ? "bg-white" : "bg-white/30"
+                  idx === currentIndex
+                    ? "bg-primary-foreground"
+                    : "bg-primary-foreground/30"
                 )}
               />
             ))}

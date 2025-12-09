@@ -43,16 +43,16 @@ const AssetCard: React.FC<AssetCardProps> = ({
   return (
     <Card
       className={cn(
-        "group overflow-hidden flex flex-col h-full border-zinc-200 shadow-sm transition-all duration-300",
+        "group overflow-hidden flex flex-col h-full border-border shadow-sm transition-all duration-300",
         isRegenerating
           ? "opacity-60"
-          : "hover:shadow-xl hover:shadow-zinc-900/5 hover:-translate-y-1"
+          : "hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
       )}
     >
-      <div className="bg-zinc-50/50 px-4 py-3 border-b border-zinc-100 flex justify-between items-center backdrop-blur-sm shrink-0">
+      <div className="bg-muted/50 px-4 py-3 border-b border-border flex justify-between items-center backdrop-blur-sm shrink-0">
         <div className="flex items-center gap-2">
           {asset.isImage ? (
-            <div className="p-1.5 bg-zinc-100 rounded-md text-zinc-500">
+            <div className="p-1.5 bg-secondary rounded-md text-muted-foreground">
               <svg
                 className="w-3.5 h-3.5"
                 fill="none"
@@ -68,7 +68,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
               </svg>
             </div>
           ) : (
-            <div className="p-1.5 bg-zinc-100 rounded-md text-zinc-500">
+            <div className="p-1.5 bg-secondary rounded-md text-muted-foreground">
               <svg
                 className="w-3.5 h-3.5"
                 fill="none"
@@ -84,7 +84,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
               </svg>
             </div>
           )}
-          <h3 className="font-semibold text-xs text-zinc-700 tracking-wide uppercase">
+          <h3 className="font-semibold text-xs text-foreground tracking-wide uppercase">
             {asset.type}
           </h3>
         </div>
@@ -132,12 +132,12 @@ const AssetCard: React.FC<AssetCardProps> = ({
         </div>
       </div>
 
-      <div className="p-0 flex-grow flex items-center justify-center bg-white relative">
+      <div className="p-0 flex-grow flex items-center justify-center bg-card relative">
         {isRegenerating && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-card/80 backdrop-blur-sm">
             <div className="flex flex-col items-center gap-2">
-              <Loader2 className="w-8 h-8 text-zinc-400 animate-spin" />
-              <span className="text-xs text-zinc-500 font-medium">
+              <Loader2 className="w-8 h-8 text-muted-foreground animate-spin" />
+              <span className="text-xs text-muted-foreground font-medium">
                 Regenerating...
               </span>
             </div>
@@ -146,7 +146,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
 
         {asset.isImage ? (
           <div
-            className="relative w-full h-full min-h-[280px] flex items-center justify-center bg-zinc-50/30 p-4 cursor-pointer"
+            className="relative w-full h-full min-h-[280px] flex items-center justify-center bg-muted/30 p-4 cursor-pointer"
             onClick={() => onViewLarger && onViewLarger(asset.type)}
           >
             <div
@@ -165,7 +165,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
             />
           </div>
         ) : (
-          <div className="w-full min-h-[200px] max-h-[500px] bg-white p-6 text-sm text-zinc-600 whitespace-pre-wrap font-mono leading-relaxed overflow-y-auto break-words scrollbar-thin scrollbar-thumb-zinc-200 scrollbar-track-transparent">
+          <div className="w-full min-h-[200px] max-h-[500px] bg-card p-6 text-sm text-muted-foreground whitespace-pre-wrap font-mono leading-relaxed overflow-y-auto break-words scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
             {asset.content}
           </div>
         )}

@@ -199,13 +199,13 @@ const Copywriting: React.FC = () => {
   const hasContent = description || socialPost;
 
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-zinc-900">
+          <h1 className="text-2xl font-bold text-foreground">
             Copywriting Studio
           </h1>
-          <p className="text-zinc-500 mt-1">
+          <p className="text-muted-foreground mt-1">
             Generate product descriptions and social media posts
           </p>
         </div>
@@ -215,7 +215,7 @@ const Copywriting: React.FC = () => {
           <div className="space-y-6">
             {/* Image Upload */}
             <Card className="p-6">
-              <h2 className="text-sm font-semibold text-zinc-900 mb-4 flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Upload className="w-4 h-4" />
                 Product Image
               </h2>
@@ -223,7 +223,7 @@ const Copywriting: React.FC = () => {
               {!file ? (
                 <div
                   onClick={() => document.getElementById("copyFile")?.click()}
-                  className="relative cursor-pointer rounded-xl border-2 border-dashed border-zinc-200 bg-zinc-50 p-8 text-center hover:border-zinc-300 hover:bg-zinc-100 transition-all"
+                  className="relative cursor-pointer rounded-xl border-2 border-dashed border-border bg-background p-8 text-center hover:border-zinc-300 hover:bg-secondary transition-all"
                 >
                   <input
                     id="copyFile"
@@ -233,10 +233,10 @@ const Copywriting: React.FC = () => {
                     onChange={handleFileChange}
                   />
                   <div className="flex flex-col items-center">
-                    <div className="mb-2 h-12 w-12 rounded-full bg-zinc-200 flex items-center justify-center">
-                      <Upload className="h-5 w-5 text-zinc-500" />
+                    <div className="mb-2 h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                      <Upload className="h-5 w-5 text-muted-foreground" />
                     </div>
-                    <span className="text-sm font-medium text-zinc-600">
+                    <span className="text-sm font-medium text-muted-foreground">
                       Click to upload product image
                     </span>
                   </div>
@@ -246,7 +246,7 @@ const Copywriting: React.FC = () => {
                   <img
                     src={URL.createObjectURL(file)}
                     alt="Product"
-                    className="w-full h-48 object-contain rounded-lg bg-zinc-100"
+                    className="w-full h-48 object-contain rounded-lg bg-secondary"
                   />
                   <button
                     onClick={removeFile}
@@ -265,7 +265,7 @@ const Copywriting: React.FC = () => {
 
             {/* Product Details */}
             <Card className="p-6">
-              <h2 className="text-sm font-semibold text-zinc-900 mb-4">
+              <h2 className="text-sm font-semibold text-foreground mb-4">
                 Product Details
               </h2>
 
@@ -385,7 +385,7 @@ const Copywriting: React.FC = () => {
 
             {/* Generation Options */}
             <Card className="p-6">
-              <h2 className="text-sm font-semibold text-zinc-900 mb-4">
+              <h2 className="text-sm font-semibold text-foreground mb-4">
                 Generate
               </h2>
 
@@ -405,8 +405,8 @@ const Copywriting: React.FC = () => {
                     className={cn(
                       "flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg border text-sm font-medium transition-all",
                       generationType === value
-                        ? "bg-zinc-900 text-white border-zinc-900"
-                        : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300"
+                        ? "bg-primary text-white border-zinc-900"
+                        : "bg-card text-muted-foreground border-border hover:border-zinc-300"
                     )}
                   >
                     <Icon className="w-4 h-4" />
@@ -454,7 +454,7 @@ const Copywriting: React.FC = () => {
           <div className="space-y-6">
             {!hasContent ? (
               <Card className="p-12 text-center">
-                <div className="flex flex-col items-center text-zinc-400">
+                <div className="flex flex-col items-center text-muted-foreground">
                   <FileText className="w-12 h-12 mb-4 opacity-50" />
                   <p className="text-sm">
                     Upload an image and fill in product details
@@ -470,7 +470,7 @@ const Copywriting: React.FC = () => {
                 {description && (
                   <Card className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-sm font-semibold text-zinc-900 flex items-center gap-2">
+                      <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
                         <FileText className="w-4 h-4" />
                         Product Description
                       </h2>
@@ -478,7 +478,7 @@ const Copywriting: React.FC = () => {
                         <button
                           onClick={() => handleRegenerate("description")}
                           disabled={isLoading}
-                          className="p-2 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700 transition-colors"
+                          className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
                           title="Regenerate"
                         >
                           <RefreshCw
@@ -492,11 +492,11 @@ const Copywriting: React.FC = () => {
                           onClick={() =>
                             copyToClipboard(description, "description")
                           }
-                          className="p-2 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700 transition-colors"
+                          className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
                           title="Copy"
                         >
                           {copiedField === "description" ? (
-                            <Check className="w-4 h-4 text-emerald-500" />
+                            <Check className="w-4 h-4 text-accent" />
                           ) : (
                             <Copy className="w-4 h-4" />
                           )}
@@ -516,7 +516,7 @@ const Copywriting: React.FC = () => {
                 {socialPost && (
                   <Card className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-sm font-semibold text-zinc-900 flex items-center gap-2">
+                      <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
                         <Share2 className="w-4 h-4" />
                         Social Media Post
                       </h2>
@@ -524,7 +524,7 @@ const Copywriting: React.FC = () => {
                         <button
                           onClick={() => handleRegenerate("social")}
                           disabled={isLoading}
-                          className="p-2 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700 transition-colors"
+                          className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
                           title="Regenerate"
                         >
                           <RefreshCw
@@ -536,11 +536,11 @@ const Copywriting: React.FC = () => {
                         </button>
                         <button
                           onClick={() => copyToClipboard(socialPost, "social")}
-                          className="p-2 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700 transition-colors"
+                          className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
                           title="Copy"
                         >
                           {copiedField === "social" ? (
-                            <Check className="w-4 h-4 text-emerald-500" />
+                            <Check className="w-4 h-4 text-accent" />
                           ) : (
                             <Copy className="w-4 h-4" />
                           )}

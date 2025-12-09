@@ -459,9 +459,7 @@ const Studio: React.FC = () => {
             <div
               className={cn(
                 "flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-colors",
-                step1Complete
-                  ? "bg-emerald-500 text-white"
-                  : "bg-zinc-900 text-white"
+                step1Complete ? "bg-accent text-white" : "bg-primary text-white"
               )}
             >
               {step1Complete ? (
@@ -471,16 +469,16 @@ const Studio: React.FC = () => {
               )}
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-zinc-900">
+              <h2 className="text-sm font-semibold text-foreground">
                 Upload Photos
               </h2>
-              <p className="text-[10px] text-zinc-400">
+              <p className="text-[10px] text-muted-foreground">
                 Start with your raw product images
               </p>
             </div>
           </div>
 
-          <div className="group relative border-2 border-dashed border-zinc-200 rounded-xl p-5 text-center hover:bg-zinc-50/80 transition-all hover:border-zinc-300 cursor-pointer">
+          <div className="group relative border-2 border-dashed border-border rounded-xl p-5 text-center hover:bg-background/80 transition-all hover:border-zinc-300 cursor-pointer">
             <input
               type="file"
               multiple
@@ -490,15 +488,15 @@ const Studio: React.FC = () => {
               disabled={isLoading}
             />
             <div className="flex flex-col items-center pointer-events-none">
-              <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 group-hover:bg-zinc-200 transition-colors">
+              <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-muted-foreground group-hover:bg-muted transition-colors">
                 <Upload className="h-5 w-5" />
               </div>
-              <span className="block text-sm font-medium text-zinc-700">
+              <span className="block text-sm font-medium text-foreground">
                 {files.length > 0
                   ? `${files.length} image${files.length > 1 ? "s" : ""} ready`
                   : "Click or drag to upload"}
               </span>
-              <span className="mt-0.5 block text-xs text-zinc-400">
+              <span className="mt-0.5 block text-xs text-muted-foreground">
                 PNG, JPG
               </span>
             </div>
@@ -509,7 +507,7 @@ const Studio: React.FC = () => {
               {files.map((file, idx) => (
                 <div
                   key={idx}
-                  className="relative aspect-square bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 group/thumb"
+                  className="relative aspect-square bg-secondary rounded-lg overflow-hidden border border-border group/thumb"
                 >
                   <img
                     src={URL.createObjectURL(file)}
@@ -540,10 +538,10 @@ const Studio: React.FC = () => {
               className={cn(
                 "flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-colors",
                 step2Complete
-                  ? "bg-emerald-500 text-white"
+                  ? "bg-accent text-white"
                   : step1Complete
-                  ? "bg-zinc-900 text-white"
-                  : "bg-zinc-200 text-zinc-500"
+                  ? "bg-primary text-white"
+                  : "bg-muted text-muted-foreground"
               )}
             >
               {step2Complete ? (
@@ -552,7 +550,7 @@ const Studio: React.FC = () => {
                 <Palette className="w-3.5 h-3.5" />
               )}
             </div>
-            <h2 className="text-sm font-semibold text-zinc-900">
+            <h2 className="text-sm font-semibold text-foreground">
               Choose Assets
             </h2>
           </div>
@@ -562,7 +560,7 @@ const Studio: React.FC = () => {
             <div className="flex items-center justify-between py-2">
               <div className="flex items-center gap-2">
                 {isDetecting ? (
-                  <span className="flex items-center gap-2 text-sm text-zinc-400">
+                  <span className="flex items-center gap-2 text-sm text-muted-foreground">
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                       <circle
                         className="opacity-25"
@@ -583,7 +581,7 @@ const Studio: React.FC = () => {
                   </span>
                 ) : (
                   <>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 text-sm font-medium rounded-full border border-emerald-200">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-accent/20 text-accent-foreground text-sm font-medium rounded-full border border-accent">
                       <svg
                         className="w-3.5 h-3.5"
                         fill="none"
@@ -599,7 +597,9 @@ const Studio: React.FC = () => {
                       </svg>
                       {details.type}
                     </span>
-                    <span className="text-xs text-zinc-400">detected</span>
+                    <span className="text-xs text-muted-foreground">
+                      detected
+                    </span>
                   </>
                 )}
               </div>
@@ -614,7 +614,7 @@ const Studio: React.FC = () => {
                       type: e.target.value as JewelryType,
                     }))
                   }
-                  className="appearance-none text-xs text-zinc-500 hover:text-zinc-700 cursor-pointer bg-transparent pr-5 focus:outline-none"
+                  className="appearance-none text-xs text-muted-foreground hover:text-foreground cursor-pointer bg-transparent pr-5 focus:outline-none"
                 >
                   {Object.values(JewelryType).map((t) => (
                     <option key={t} value={t}>
@@ -623,7 +623,7 @@ const Studio: React.FC = () => {
                   ))}
                 </select>
                 <svg
-                  className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -639,7 +639,7 @@ const Studio: React.FC = () => {
             </div>
 
             <div>
-              <h3 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">
+              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">
                 Visual Assets
               </h3>
               <div className="space-y-2">
@@ -675,13 +675,13 @@ const Studio: React.FC = () => {
           </div>
 
           {/* Generate Button */}
-          <div className="mt-6 pt-5 border-t border-zinc-100">
+          <div className="mt-6 pt-5 border-t border-border">
             <Button
               onClick={handleGenerate}
               disabled={
                 isLoading || files.length === 0 || selectedAssets.length === 0
               }
-              className="w-full h-11 text-sm shadow-lg shadow-zinc-900/10"
+              className="w-full h-11 text-sm shadow-lg shadow-primary/10"
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">
@@ -720,60 +720,28 @@ const Studio: React.FC = () => {
 
       {/* RIGHT CONTENT - RESULTS */}
       <div className="xl:col-span-8 lg:sticky lg:top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto rounded-xl">
-        <div className="sticky top-0 z-30 bg-zinc-50/95 backdrop-blur-sm py-3 px-1 mb-4 border-b border-zinc-200/50">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2">
-            <h2 className="text-2xl font-serif text-zinc-900 tracking-tight">
-              Generated Collection
-            </h2>
-            <div className="flex bg-zinc-100 rounded-lg p-1">
-              <button
-                onClick={() => setActiveTab("visuals")}
-                className={cn(
-                  "px-4 py-2 text-sm font-medium rounded-md transition-all",
-                  activeTab === "visuals"
-                    ? "bg-white text-zinc-900 shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-700"
-                )}
-              >
-                Visuals
-              </button>
-              <button
-                onClick={() => setActiveTab("copy")}
-                className={cn(
-                  "px-4 py-2 text-sm font-medium rounded-md transition-all",
-                  activeTab === "copy"
-                    ? "bg-white text-zinc-900 shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-700"
-                )}
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-        </div>
-
         <div className="flex-grow">
           {isLoading && (
-            <div className="h-[450px] flex flex-col items-center justify-center bg-white/50 rounded-2xl border border-zinc-200 border-dashed">
-              <div className="w-14 h-14 border-4 border-zinc-100 border-t-zinc-900 rounded-full animate-spin" />
-              <p className="mt-5 text-base font-medium text-zinc-900">
+            <div className="h-[450px] flex flex-col items-center justify-center bg-card/50 rounded-2xl border border-border border-dashed">
+              <div className="w-14 h-14 border-4 border-border border-t-zinc-900 rounded-full animate-spin" />
+              <p className="mt-5 text-base font-medium text-foreground">
                 Generating...
               </p>
-              <p className="text-sm text-zinc-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 This may take a moment
               </p>
             </div>
           )}
 
           {!isLoading && generatedAssets.length === 0 && (
-            <div className="h-[450px] flex flex-col items-center justify-center bg-white rounded-2xl border border-zinc-200 border-dashed">
-              <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mb-5 border border-zinc-100">
+            <div className="h-[450px] flex flex-col items-center justify-center bg-card rounded-2xl border border-border border-dashed">
+              <div className="w-16 h-16 bg-background rounded-full flex items-center justify-center mb-5 border border-border">
                 <Sparkles className="w-7 h-7 text-zinc-300" />
               </div>
-              <h3 className="text-lg font-serif font-medium text-zinc-900">
+              <h3 className="text-lg font-serif font-medium text-foreground">
                 Ready to Create
               </h3>
-              <p className="text-zinc-500 max-w-xs text-center mt-2 text-sm">
+              <p className="text-muted-foreground max-w-xs text-center mt-2 text-sm">
                 Upload photos, select what to generate, and add details.
               </p>
             </div>
@@ -796,7 +764,7 @@ const Studio: React.FC = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="h-48 flex items-center justify-center text-zinc-400 bg-white rounded-xl border border-zinc-100 italic">
+                  <div className="h-48 flex items-center justify-center text-muted-foreground bg-card rounded-xl border border-border italic">
                     No visual assets selected
                   </div>
                 )}
@@ -817,7 +785,7 @@ const Studio: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <div className="h-48 flex items-center justify-center text-zinc-400 bg-white rounded-xl border border-zinc-100 italic">
+                <div className="h-48 flex items-center justify-center text-muted-foreground bg-card rounded-xl border border-border italic">
                   No text assets selected
                 </div>
               )}

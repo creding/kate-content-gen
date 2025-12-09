@@ -34,9 +34,9 @@ const FieldLabel: React.FC<{
   <div className="flex items-baseline justify-between mb-1">
     <Label className="flex items-center gap-1 text-xs">
       {children}
-      {required && <span className="text-red-400">*</span>}
+      {required && <span className="text-destructive">*</span>}
     </Label>
-    {hint && <span className="text-[10px] text-zinc-400">{hint}</span>}
+    {hint && <span className="text-[10px] text-muted-foreground">{hint}</span>}
   </div>
 );
 
@@ -136,8 +136,8 @@ const InputForm: React.FC<InputFormProps> = ({
 
           {/* Necklace-specific fields */}
           {details.type === JewelryType.NECKLACE && (
-            <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-100 space-y-3">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+            <div className="p-3 bg-muted rounded-lg border border-border space-y-3">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                 Necklace Details
               </p>
               <div className="grid grid-cols-2 gap-3">
@@ -169,8 +169,8 @@ const InputForm: React.FC<InputFormProps> = ({
 
           {/* Earring-specific fields */}
           {details.type === JewelryType.EARRINGS && (
-            <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-100">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">
+            <div className="p-3 bg-muted rounded-lg border border-border">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">
                 Earring Details
               </p>
               <div>
@@ -201,7 +201,7 @@ const InputForm: React.FC<InputFormProps> = ({
 
       {/* Minimal form message */}
       {showMinimalForm && (
-        <div className="text-center py-4 text-sm text-zinc-400">
+        <div className="text-center py-4 text-sm text-muted-foreground">
           <p>No additional details needed for selected assets.</p>
           <p className="text-xs mt-1">You can generate now!</p>
         </div>
