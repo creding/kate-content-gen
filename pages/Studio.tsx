@@ -435,7 +435,6 @@ const Studio: React.FC = () => {
   };
 
   const visualTypes = [AssetType.WHITE_BG, AssetType.STAGING, AssetType.MODEL];
-  const copyTypes = [AssetType.DESCRIPTION, AssetType.SOCIAL_POST];
 
   // Smart field visibility
   const needsCopywritingFields = selectedAssets.some((a) =>
@@ -559,15 +558,12 @@ const Studio: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            {/* Jewelry Type Selector */}
-            <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-100">
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                  Jewelry Type
-                </label>
-                {isDetecting && (
-                  <span className="text-[10px] text-zinc-400 flex items-center gap-1">
-                    <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
+            {/* Jewelry Type - Subtle Inline Display */}
+            <div className="flex items-center justify-between py-2">
+              <div className="flex items-center gap-2">
+                {isDetecting ? (
+                  <span className="flex items-center gap-2 text-sm text-zinc-400">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                       <circle
                         className="opacity-25"
                         cx="12"
@@ -583,30 +579,62 @@ const Studio: React.FC = () => {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                       />
                     </svg>
-                    Detecting...
+                    Detecting jewelry type...
                   </span>
+                ) : (
+                  <>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 text-sm font-medium rounded-full border border-emerald-200">
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      {details.type}
+                    </span>
+                    <span className="text-xs text-zinc-400">detected</span>
+                  </>
                 )}
               </div>
-              <div className="grid grid-cols-5 gap-1.5">
-                {Object.values(JewelryType).map((t) => {
-                  const isSelected = details.type === t;
-                  return (
-                    <div
-                      key={t}
-                      onClick={() =>
-                        setDetails((prev) => ({ ...prev, type: t }))
-                      }
-                      className={cn(
-                        "cursor-pointer p-2 rounded-lg text-[11px] font-medium transition-all border text-center",
-                        isSelected
-                          ? "bg-zinc-900 text-white border-zinc-900"
-                          : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300"
-                      )}
-                    >
+
+              {/* Dropdown to change */}
+              <div className="relative">
+                <select
+                  value={details.type}
+                  onChange={(e) =>
+                    setDetails((prev) => ({
+                      ...prev,
+                      type: e.target.value as JewelryType,
+                    }))
+                  }
+                  className="appearance-none text-xs text-zinc-500 hover:text-zinc-700 cursor-pointer bg-transparent pr-5 focus:outline-none"
+                >
+                  {Object.values(JewelryType).map((t) => (
+                    <option key={t} value={t}>
                       {t}
-                    </div>
-                  );
-                })}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </div>
             </div>
 
@@ -634,55 +662,6 @@ const Studio: React.FC = () => {
               </div>
             </div>
 
-            <div>
-              <h3 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">
-                Copywriting
-              </h3>
-              <div className="space-y-1.5">
-                {copyTypes.map((type) => {
-                  const info = ASSET_TYPE_INFO[type];
-                  const Icon = info.icon;
-                  const isSelected = selectedAssets.includes(type);
-                  return (
-                    <div
-                      key={type}
-                      onClick={() => !isLoading && toggleAssetSelection(type)}
-                      className={cn(
-                        "flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all",
-                        isSelected
-                          ? "border-zinc-900 bg-zinc-900 text-white"
-                          : "border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-zinc-600"
-                      )}
-                    >
-                      <Icon
-                        className={cn(
-                          "w-4 h-4 shrink-0",
-                          isSelected ? "text-zinc-300" : "text-zinc-400"
-                        )}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium">
-                          {info.label}
-                        </span>
-                      </div>
-                      <div
-                        className={cn(
-                          "w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0",
-                          isSelected
-                            ? "border-white bg-white"
-                            : "border-zinc-300"
-                        )}
-                      >
-                        {isSelected && (
-                          <div className="w-2 h-2 bg-zinc-900 rounded-full" />
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
             {/* Staging Hint */}
             {needsStagingFields && !brandSettings.logoDataUrl && (
               <div className="p-3 bg-amber-50 rounded-lg border border-amber-100 text-xs text-amber-700">
@@ -694,53 +673,8 @@ const Studio: React.FC = () => {
               </div>
             )}
           </div>
-        </Card>
 
-        {/* STEP 3: DETAILS (SMART DISPLAY) */}
-        <Card
-          className={cn(
-            "p-6 transition-opacity",
-            (!step1Complete || !step2Complete) &&
-              "opacity-60 pointer-events-none"
-          )}
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div
-              className={cn(
-                "flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-colors",
-                step3Complete
-                  ? "bg-emerald-500 text-white"
-                  : step1Complete && step2Complete
-                  ? "bg-zinc-900 text-white"
-                  : "bg-zinc-200 text-zinc-500"
-              )}
-            >
-              {step3Complete ? (
-                <CheckCircle2 className="w-4 h-4" />
-              ) : (
-                <ClipboardList className="w-3.5 h-3.5" />
-              )}
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-zinc-900">
-                Add Details
-              </h2>
-              <p className="text-[10px] text-zinc-400">
-                {needsCopywritingFields
-                  ? "Required for copy generation"
-                  : "Optional - improves accuracy"}
-              </p>
-            </div>
-          </div>
-
-          <InputForm
-            details={details}
-            setDetails={setDetails}
-            isLoading={isLoading}
-            selectedAssets={selectedAssets}
-            showCopywritingFields={needsCopywritingFields}
-          />
-
+          {/* Generate Button */}
           <div className="mt-6 pt-5 border-t border-zinc-100">
             <Button
               onClick={handleGenerate}
