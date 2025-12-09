@@ -10,21 +10,24 @@ import Studio from "./pages/Studio";
 import Settings from "./pages/Settings";
 import { PromptProvider } from "./contexts/PromptContext";
 import { ToastProvider } from "./contexts/ToastContext";
+import { BrandProvider } from "./contexts/BrandContext";
 
 const App: React.FC = () => {
   return (
     <ToastProvider>
-      <PromptProvider>
-        <Router>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Studio />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Layout>
-        </Router>
-      </PromptProvider>
+      <BrandProvider>
+        <PromptProvider>
+          <Router>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Studio />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Layout>
+          </Router>
+        </PromptProvider>
+      </BrandProvider>
     </ToastProvider>
   );
 };

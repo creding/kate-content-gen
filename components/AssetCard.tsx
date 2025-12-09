@@ -2,14 +2,21 @@ import React from "react";
 import { GeneratedAsset, AssetType } from "../types";
 import { Card, Button, cn } from "./ui";
 import { useToast } from "../contexts/ToastContext";
-import { RefreshCw, Download, Copy } from "lucide-react";
+import { RefreshCw, Download, Copy, Loader2, Maximize2 } from "lucide-react";
 
 interface AssetCardProps {
   asset: GeneratedAsset;
   onRegenerate?: (assetType: AssetType) => void;
+  onViewLarger?: (assetType: AssetType) => void;
+  isRegenerating?: boolean;
 }
 
-const AssetCard: React.FC<AssetCardProps> = ({ asset, onRegenerate }) => {
+const AssetCard: React.FC<AssetCardProps> = ({
+  asset,
+  onRegenerate,
+  onViewLarger,
+  isRegenerating = false,
+}) => {
   const { addToast } = useToast();
 
   const copyText = async () => {
@@ -34,7 +41,14 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset, onRegenerate }) => {
   };
 
   return (
-    <Card className="group overflow-hidden flex flex-col h-full border-zinc-200 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-zinc-900/5 hover:-translate-y-1">
+    <Card
+      className={cn(
+        "group overflow-hidden flex flex-col h-full border-zinc-200 shadow-sm transition-all duration-300",
+        isRegenerating
+          ? "opacity-60"
+          : "hover:shadow-xl hover:shadow-zinc-900/5 hover:-translate-y-1"
+      )}
+    >
       <div className="bg-zinc-50/50 px-4 py-3 border-b border-zinc-100 flex justify-between items-center backdrop-blur-sm shrink-0">
         <div className="flex items-center gap-2">
           {asset.isImage ? (
@@ -80,36 +94,61 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset, onRegenerate }) => {
             <Button
               variant="outline"
               onClick={() => onRegenerate(asset.type)}
+              disabled={isRegenerating}
               className="h-7 text-[10px] px-2 shadow-sm"
               title="Regenerate"
             >
-              <RefreshCw className="w-3 h-3" />
+              {isRegenerating ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <RefreshCw className="w-3 h-3" />
+              )}
+            </Button>
+          )}
+          {asset.isImage && onViewLarger && (
+            <Button
+              variant="outline"
+              onClick={() => onViewLarger(asset.type)}
+              disabled={isRegenerating}
+              className="h-7 text-[10px] px-2 shadow-sm"
+              title="View larger"
+            >
+              <Maximize2 className="w-3 h-3" />
             </Button>
           )}
           <Button
             variant="outline"
             onClick={asset.isImage ? downloadImage : copyText}
-            className="h-7 text-[10px] px-2.5 shadow-sm"
+            disabled={isRegenerating}
+            className="h-7 text-[10px] px-2 shadow-sm"
+            title={asset.isImage ? "Download" : "Copy"}
           >
             {asset.isImage ? (
-              <>
-                <Download className="w-3 h-3 mr-1" />
-                Download
-              </>
+              <Download className="w-3 h-3" />
             ) : (
-              <>
-                <Copy className="w-3 h-3 mr-1" />
-                Copy
-              </>
+              <Copy className="w-3 h-3" />
             )}
           </Button>
         </div>
       </div>
 
       <div className="p-0 flex-grow flex items-center justify-center bg-white relative">
+        {isRegenerating && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="w-8 h-8 text-zinc-400 animate-spin" />
+              <span className="text-xs text-zinc-500 font-medium">
+                Regenerating...
+              </span>
+            </div>
+          </div>
+        )}
+
         {asset.isImage ? (
-          <div className="relative w-full h-full min-h-[300px] flex items-center justify-center bg-zinc-50/30 p-4">
-            {/* Checkerboard pattern for transparency */}
+          <div
+            className="relative w-full h-full min-h-[280px] flex items-center justify-center bg-zinc-50/30 p-4 cursor-pointer"
+            onClick={() => onViewLarger && onViewLarger(asset.type)}
+          >
             <div
               className="absolute inset-0 z-0 opacity-[0.03]"
               style={{
@@ -122,7 +161,7 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset, onRegenerate }) => {
             <img
               src={asset.content}
               alt={asset.type}
-              className="max-w-full max-h-[400px] object-contain shadow-sm rounded-sm relative z-10 transition-transform duration-500 group-hover:scale-[1.02]"
+              className="max-w-full max-h-[350px] object-contain shadow-sm rounded-sm relative z-10 transition-transform duration-500 group-hover:scale-[1.02]"
             />
           </div>
         ) : (
