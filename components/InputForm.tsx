@@ -10,6 +10,11 @@ import {
   WhiteBgAngle,
   WhiteBgFraming,
   WhiteBgShadow,
+  ModelSkinTone,
+  ModelShotType,
+  ModelBackground,
+  ModelLighting,
+  ModelClothing,
 } from "../types";
 import { Input, Label, Select, Textarea, Card, cn } from "./ui";
 
@@ -224,29 +229,6 @@ const InputForm: React.FC<InputFormProps> = ({
           </div>
         </>
       )}
-
-      {/* Model fields - length dropdown for necklaces */}
-      {showModelFields &&
-        details.type === JewelryType.NECKLACE &&
-        !showCopywritingFields && (
-          <div>
-            <FieldLabel hint="For model drape">Necklace Length</FieldLabel>
-            <Select
-              value={details.necklaceLength || ""}
-              onChange={(e) =>
-                handleChange("necklaceLength", e.target.value as NecklaceLength)
-              }
-              disabled={isLoading}
-            >
-              <option value="">-- Auto --</option>
-              {Object.values(NecklaceLength).map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </Select>
-          </div>
-        )}
 
       {/* Staging fields - surface, lighting, props */}
       {showStagingFields && (
@@ -500,6 +482,187 @@ const InputForm: React.FC<InputFormProps> = ({
                     )}
                   >
                     {shadow}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Model Settings */}
+      {showModelFields && (
+        <Card className="p-4 bg-zinc-900 text-white border-zinc-900 shadow-lg space-y-4">
+          <h4 className="text-xs font-semibold text-white flex items-center gap-2">
+            <span className="w-4 h-4 rounded-full bg-purple-500/20 flex items-center justify-center">
+              <svg
+                className="w-2.5 h-2.5 text-purple-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </span>
+            Model Settings
+          </h4>
+
+          {/* Necklace Length - only for necklaces */}
+          {details.type === JewelryType.NECKLACE && (
+            <div>
+              <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+                Necklace Length
+              </label>
+              <Select
+                value={details.necklaceLength || ""}
+                onChange={(e) =>
+                  handleChange(
+                    "necklaceLength",
+                    e.target.value as NecklaceLength
+                  )
+                }
+                disabled={isLoading}
+                className="!bg-zinc-800 !border-zinc-700 text-white text-sm hover:!bg-zinc-700 focus:!bg-zinc-700 focus:!border-zinc-600"
+              >
+                <option value="">-- Auto --</option>
+                {Object.values(NecklaceLength).map((l) => (
+                  <option key={l} value={l}>
+                    {l}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          )}
+
+          {/* Skin Tone */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Skin Tone
+            </label>
+            <div className="grid grid-cols-4 gap-1.5">
+              {Object.values(ModelSkinTone).map((tone) => {
+                const isSelected = details.modelSkinTone === tone;
+                return (
+                  <div
+                    key={tone}
+                    onClick={() => handleChange("modelSkinTone", tone)}
+                    className={cn(
+                      "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
+                      isSelected
+                        ? "bg-white text-zinc-900 border-white"
+                        : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                    )}
+                  >
+                    {tone}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Clothing Color */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Clothing
+            </label>
+            <div className="grid grid-cols-5 gap-1.5">
+              {Object.values(ModelClothing).map((color) => {
+                const isSelected = details.modelClothing === color;
+                return (
+                  <div
+                    key={color}
+                    onClick={() => handleChange("modelClothing", color)}
+                    className={cn(
+                      "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
+                      isSelected
+                        ? "bg-white text-zinc-900 border-white"
+                        : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                    )}
+                  >
+                    {color}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Shot Type */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Shot Type
+            </label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {Object.values(ModelShotType).map((shot) => {
+                const isSelected = details.modelShotType === shot;
+                return (
+                  <div
+                    key={shot}
+                    onClick={() => handleChange("modelShotType", shot)}
+                    className={cn(
+                      "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
+                      isSelected
+                        ? "bg-white text-zinc-900 border-white"
+                        : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                    )}
+                  >
+                    {shot}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Background */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Background
+            </label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {Object.values(ModelBackground).map((bg) => {
+                const isSelected = details.modelBackground === bg;
+                return (
+                  <div
+                    key={bg}
+                    onClick={() => handleChange("modelBackground", bg)}
+                    className={cn(
+                      "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
+                      isSelected
+                        ? "bg-white text-zinc-900 border-white"
+                        : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                    )}
+                  >
+                    {bg}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Lighting */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Lighting
+            </label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {Object.values(ModelLighting).map((light) => {
+                const isSelected = details.modelLighting === light;
+                return (
+                  <div
+                    key={light}
+                    onClick={() => handleChange("modelLighting", light)}
+                    className={cn(
+                      "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
+                      isSelected
+                        ? "bg-white text-zinc-900 border-white"
+                        : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                    )}
+                  >
+                    {light}
                   </div>
                 );
               })}

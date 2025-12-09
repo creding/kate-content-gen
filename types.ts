@@ -52,6 +52,39 @@ export enum WhiteBgShadow {
   REFLECTION = "Reflection",
 }
 
+export enum ModelSkinTone {
+  LIGHT = "Light",
+  MEDIUM = "Medium",
+  OLIVE = "Olive",
+  DEEP = "Deep",
+}
+
+export enum ModelShotType {
+  CLOSE_UP = "Close-Up",
+  PORTRAIT = "Portrait",
+  LIFESTYLE = "Lifestyle",
+}
+
+export enum ModelBackground {
+  STUDIO = "Studio Neutral",
+  GRADIENT = "Soft Gradient",
+  LIFESTYLE = "Blurred Lifestyle",
+}
+
+export enum ModelLighting {
+  SOFT_NATURAL = "Soft Natural",
+  GOLDEN_HOUR = "Golden Hour",
+  STUDIO = "Studio Professional",
+}
+
+export enum ModelClothing {
+  BLACK = "Black",
+  WHITE = "White",
+  CREAM = "Cream/Nude",
+  GRAY = "Gray",
+  NAVY = "Navy",
+}
+
 export interface ProductDetails {
   name: string;
   type: JewelryType;
@@ -71,6 +104,11 @@ export interface ProductDetails {
   whiteBgAngle?: WhiteBgAngle;
   whiteBgFraming?: WhiteBgFraming;
   whiteBgShadow?: WhiteBgShadow;
+  modelSkinTone?: ModelSkinTone;
+  modelShotType?: ModelShotType;
+  modelBackground?: ModelBackground;
+  modelLighting?: ModelLighting;
+  modelClothing?: ModelClothing;
 }
 
 export enum AssetType {

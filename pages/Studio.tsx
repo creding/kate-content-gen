@@ -244,6 +244,57 @@ const Studio: React.FC = () => {
       ? whiteBgShadowMap[details.whiteBgShadow] || whiteBgShadowMap["No Shadow"]
       : "- No shadow, pure white background";
 
+    // Model instructions
+    const modelSkinToneMap: Record<string, string> = {
+      Light: "- Model with light/fair skin tone",
+      Medium: "- Model with medium/tan skin tone",
+      Olive: "- Model with olive skin tone",
+      Deep: "- Model with deep/dark skin tone",
+    };
+    const modelSkinToneInstruction = details.modelSkinTone
+      ? modelSkinToneMap[details.modelSkinTone] || modelSkinToneMap["Medium"]
+      : "- Model with natural, healthy skin";
+
+    const modelClothingMap: Record<string, string> = {
+      Black: "- Wearing a simple black top/shirt",
+      White: "- Wearing a clean white top/shirt",
+      "Cream/Nude": "- Wearing a cream or nude colored top",
+      Gray: "- Wearing a gray top/shirt",
+      Navy: "- Wearing a navy blue top/shirt",
+    };
+    const modelClothingInstruction = details.modelClothing
+      ? modelClothingMap[details.modelClothing] || modelClothingMap["Black"]
+      : "- Wearing simple, neutral clothing";
+
+    const modelShotTypeMap: Record<string, string> = {
+      "Close-Up": "- Close-up shot focusing tightly on the jewelry area",
+      Portrait: "- Portrait shot showing head and shoulders",
+      Lifestyle: "- Wider lifestyle shot with environmental context",
+    };
+    const modelShotTypeInstruction = details.modelShotType
+      ? modelShotTypeMap[details.modelShotType] || modelShotTypeMap["Close-Up"]
+      : "- Elegant framing focused on the jewelry";
+
+    const modelBackgroundMap: Record<string, string> = {
+      "Studio Neutral": "- Clean, neutral studio background",
+      "Soft Gradient": "- Soft gradient background transitioning subtly",
+      "Blurred Lifestyle": "- Blurred lifestyle/environmental background",
+    };
+    const modelBackgroundInstruction = details.modelBackground
+      ? modelBackgroundMap[details.modelBackground] ||
+        modelBackgroundMap["Studio Neutral"]
+      : "- Clean, non-distracting background";
+
+    const modelLightingMap: Record<string, string> = {
+      "Soft Natural": "- Soft, natural lighting",
+      "Golden Hour": "- Warm, golden hour lighting for an aspirational feel",
+      "Studio Professional": "- Professional studio lighting setup",
+    };
+    const modelLightingInstruction = details.modelLighting
+      ? modelLightingMap[details.modelLighting] ||
+        modelLightingMap["Soft Natural"]
+      : "- Beautiful, flattering lighting";
+
     return {
       ...details,
       propsInstruction,
@@ -254,6 +305,11 @@ const Studio: React.FC = () => {
       whiteBgAngleInstruction,
       whiteBgFramingInstruction,
       whiteBgShadowInstruction,
+      modelSkinToneInstruction,
+      modelClothingInstruction,
+      modelShotTypeInstruction,
+      modelBackgroundInstruction,
+      modelLightingInstruction,
       type: details.type.toLowerCase(),
     };
   };

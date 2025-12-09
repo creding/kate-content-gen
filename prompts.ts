@@ -27,11 +27,78 @@ The background should be clean and simple with a shallow depth of field, ensurin
 NEGATIVE (avoid these):
 No kinks, no extra chains, no length modifications, no added charms, no AI artifacts, no proportional changes.`,
 
-  MODEL_NECKLACE: `Imagine the necklace draped elegantly on a model’s neck, partially visible, perhaps with soft, natural lighting. The focus would still be on the jewelry, but the human element adds context and aspiration. Keep the necklace exactly the same. {{lengthDescription}} Replace the woman in the image with a model that has smooth skin.`,
+  MODEL_NECKLACE: `Generate a beautiful model shot featuring the provided necklace.
 
-  MODEL_EARRINGS: `Imagine the earrings hanging elegantly from a model's earlobes, partially visible, perhaps with soft, natural lighting. The focus would still be on the jewelry, but the human element adds context and aspiration. Keep the earrings exactly the same. Keep the details of the gemstones on the earrings exactly the same. Do not change any detail on the earrings. Replace the woman in the image with a model that has smooth skin.`,
+CRITICAL JEWELRY PRESERVATION:
+- The necklace is the PRIMARY REFERENCE. Keep it EXACTLY the same.
+- Do NOT modify chain length, pendant, or any details.
+- Do NOT add extender chains or extensions.
 
-  MODEL_RING: `Imagine the ring on an elegant model's hand, fully visible, perhaps with soft, natural lighting. The focus would still be on the jewelry, but the human element adds context and aspiration. Keep the ring exactly the same. Replace the woman in the image with a model that has smooth skin.`,
+MODEL APPEARANCE:
+{{modelSkinToneInstruction}}
+{{modelClothingInstruction}}
+- Smooth, flawless skin with natural makeup
+- Hair styled elegantly, not covering the jewelry
+
+SHOT COMPOSITION:
+{{modelShotTypeInstruction}}
+- Focus on the jewelry while showing human context
+- The necklace should be the focal point
+
+SETTING:
+{{modelBackgroundInstruction}}
+{{modelLightingInstruction}}
+
+{{lengthDescription}}
+
+NEGATIVE: No extender chains, no jewelry modifications, no distracting elements.`,
+
+  MODEL_EARRINGS: `Generate a beautiful model shot featuring the provided earrings.
+
+CRITICAL JEWELRY PRESERVATION:
+- The earrings are the PRIMARY REFERENCE. Keep them EXACTLY the same.
+- Keep all gemstone details, metal color, and design exactly as shown.
+- Do NOT modify any aspect of the earrings.
+
+MODEL APPEARANCE:
+{{modelSkinToneInstruction}}
+{{modelClothingInstruction}}
+- Smooth, flawless skin with natural makeup
+- Hair pulled back or styled to show earrings clearly
+
+SHOT COMPOSITION:
+{{modelShotTypeInstruction}}
+- Focus on the earrings while showing human context
+- Both earrings should be visible and the focal point
+
+SETTING:
+{{modelBackgroundInstruction}}
+{{modelLightingInstruction}}
+
+NEGATIVE: No jewelry modifications, no distracting elements, no hair covering earrings.`,
+
+  MODEL_RING: `Generate a beautiful model shot featuring the provided ring.
+
+CRITICAL JEWELRY PRESERVATION:
+- The ring is the PRIMARY REFERENCE. Keep it EXACTLY the same.
+- Keep all gemstone details, metal color, and design exactly as shown.
+- Do NOT modify any aspect of the ring.
+
+MODEL APPEARANCE:
+{{modelSkinToneInstruction}}
+- Elegant, well-manicured hands
+- Natural nail color or subtle polish
+
+SHOT COMPOSITION:
+{{modelShotTypeInstruction}}
+- Focus on the ring while showing human context
+- The ring should be the focal point
+
+SETTING:
+{{modelBackgroundInstruction}}
+{{modelLightingInstruction}}
+
+NEGATIVE: No jewelry modifications, no distracting elements.`,
 
   WHITE_BG_EARRINGS: `E-commerce hero image: the EXACT earrings uploaded, on pure white (#FFFFFF).
 
