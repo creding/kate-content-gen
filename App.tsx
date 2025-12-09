@@ -9,28 +9,49 @@ import Layout from "./components/Layout";
 import Studio from "./pages/Studio";
 import Settings from "./pages/Settings";
 import Copywriting from "./pages/Copywriting";
+import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { PromptProvider } from "./contexts/PromptContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { BrandProvider } from "./contexts/BrandContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const App: React.FC = () => {
   return (
-    <ToastProvider>
-      <BrandProvider>
-        <PromptProvider>
-          <Router>
-            <Layout>
+    <AuthProvider>
+      <ToastProvider>
+        <BrandProvider>
+          <PromptProvider>
+            <Router>
               <Routes>
-                <Route path="/" element={<Studio />} />
-                <Route path="/copywriting" element={<Copywriting />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/*"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Routes>
+                          <Route path="/" element={<Studio />} />
+                          <Route
+                            path="/copywriting"
+                            element={<Copywriting />}
+                          />
+                          <Route path="/settings" element={<Settings />} />
+                          <Route
+                            path="*"
+                            element={<Navigate to="/" replace />}
+                          />
+                        </Routes>
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
-            </Layout>
-          </Router>
-        </PromptProvider>
-      </BrandProvider>
-    </ToastProvider>
+            </Router>
+          </PromptProvider>
+        </BrandProvider>
+      </ToastProvider>
+    </AuthProvider>
   );
 };
 
