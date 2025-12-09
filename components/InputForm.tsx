@@ -7,6 +7,9 @@ import {
   StagingSurface,
   LightingMood,
   StagingLayout,
+  WhiteBgAngle,
+  WhiteBgFraming,
+  WhiteBgShadow,
 } from "../types";
 import { Input, Label, Select, Textarea, Card, cn } from "./ui";
 
@@ -18,6 +21,7 @@ interface InputFormProps {
   showCopywritingFields?: boolean;
   showStagingFields?: boolean;
   showModelFields?: boolean;
+  showWhiteBgFields?: boolean;
 }
 
 const AVAILABLE_PROPS = [
@@ -55,6 +59,7 @@ const InputForm: React.FC<InputFormProps> = ({
   showCopywritingFields = true,
   showStagingFields = false,
   showModelFields = false,
+  showWhiteBgFields = false,
 }) => {
   const handleChange = (field: keyof ProductDetails, value: any) => {
     setDetails((prev) => ({ ...prev, [field]: value }));
@@ -70,7 +75,10 @@ const InputForm: React.FC<InputFormProps> = ({
 
   // If no special fields are needed and no copywriting, show minimal form
   const showMinimalForm =
-    !showCopywritingFields && !showStagingFields && !showModelFields;
+    !showCopywritingFields &&
+    !showStagingFields &&
+    !showModelFields &&
+    !showWhiteBgFields;
 
   return (
     <div className="space-y-4">
@@ -384,6 +392,114 @@ const InputForm: React.FC<InputFormProps> = ({
                       )}
                     </div>
                     <span className="font-medium">{prop}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* White Background E-Commerce Settings */}
+      {showWhiteBgFields && (
+        <Card className="p-4 bg-zinc-900 text-white border-zinc-900 shadow-lg space-y-4">
+          <h4 className="text-xs font-semibold text-white flex items-center gap-2">
+            <span className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <svg
+                className="w-2.5 h-2.5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </span>
+            E-Commerce Settings
+          </h4>
+
+          {/* Camera Angle */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Camera Angle
+            </label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {Object.values(WhiteBgAngle).map((angle) => {
+                const isSelected = details.whiteBgAngle === angle;
+                return (
+                  <div
+                    key={angle}
+                    onClick={() => handleChange("whiteBgAngle", angle)}
+                    className={cn(
+                      "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
+                      isSelected
+                        ? "bg-white text-zinc-900 border-white"
+                        : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                    )}
+                  >
+                    {angle}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Framing */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Framing
+            </label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {Object.values(WhiteBgFraming).map((framing) => {
+                const isSelected = details.whiteBgFraming === framing;
+                return (
+                  <div
+                    key={framing}
+                    onClick={() => handleChange("whiteBgFraming", framing)}
+                    className={cn(
+                      "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
+                      isSelected
+                        ? "bg-white text-zinc-900 border-white"
+                        : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                    )}
+                  >
+                    {framing}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Shadow */}
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold mb-2 block">
+              Shadow
+            </label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {Object.values(WhiteBgShadow).map((shadow) => {
+                const isSelected = details.whiteBgShadow === shadow;
+                return (
+                  <div
+                    key={shadow}
+                    onClick={() => handleChange("whiteBgShadow", shadow)}
+                    className={cn(
+                      "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
+                      isSelected
+                        ? "bg-white text-zinc-900 border-white"
+                        : "bg-white/5 text-zinc-300 border-transparent hover:bg-white/10"
+                    )}
+                  >
+                    {shadow}
                   </div>
                 );
               })}

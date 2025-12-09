@@ -34,6 +34,24 @@ export enum StagingLayout {
   HANGING = "Hanging / Suspended",
 }
 
+export enum WhiteBgAngle {
+  TOP_DOWN = "Top-Down (Aerial)",
+  ANGLE_45 = "45° Angle",
+  EYE_LEVEL = "Eye Level",
+}
+
+export enum WhiteBgFraming {
+  CLOSE_UP = "Close-Up Detail",
+  FULL_PRODUCT = "Full Product",
+  WITH_PADDING = "With Padding",
+}
+
+export enum WhiteBgShadow {
+  NONE = "No Shadow",
+  SOFT = "Soft Shadow",
+  REFLECTION = "Reflection",
+}
+
 export interface ProductDetails {
   name: string;
   type: JewelryType;
@@ -50,6 +68,9 @@ export interface ProductDetails {
   stagingSurface?: StagingSurface;
   lightingMood?: LightingMood;
   stagingLayout?: StagingLayout;
+  whiteBgAngle?: WhiteBgAngle;
+  whiteBgFraming?: WhiteBgFraming;
+  whiteBgShadow?: WhiteBgShadow;
 }
 
 export enum AssetType {

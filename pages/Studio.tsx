@@ -209,6 +209,41 @@ const Studio: React.FC = () => {
       ? layoutMap[details.stagingLayout] || layoutMap["Flat Lay (Aerial View)"]
       : "elegantly placed";
 
+    // White Background instructions
+    const whiteBgAngleMap: Record<string, string> = {
+      "Top-Down (Aerial)":
+        "- Camera positioned directly above for a flat, aerial view",
+      "45° Angle": "- Camera at a 45-degree angle for depth and dimension",
+      "Eye Level": "- Camera at eye level for a straight-on view",
+    };
+    const whiteBgAngleInstruction = details.whiteBgAngle
+      ? whiteBgAngleMap[details.whiteBgAngle] ||
+        whiteBgAngleMap["Top-Down (Aerial)"]
+      : "- Camera positioned for optimal product visibility";
+
+    const whiteBgFramingMap: Record<string, string> = {
+      "Close-Up Detail":
+        "- Tight framing, emphasizing fine details and craftsmanship",
+      "Full Product": "- Full product visible, centered in frame",
+      "With Padding":
+        "- Generous white space around the product for flexibility",
+    };
+    const whiteBgFramingInstruction = details.whiteBgFraming
+      ? whiteBgFramingMap[details.whiteBgFraming] ||
+        whiteBgFramingMap["Full Product"]
+      : "- Product centered with appropriate framing";
+
+    const whiteBgShadowMap: Record<string, string> = {
+      "No Shadow":
+        "- ZERO shadow, pure white underneath, no drop shadow whatsoever",
+      "Soft Shadow":
+        "- Subtle, soft shadow for depth while keeping background clean",
+      Reflection: "- Gentle mirror-like reflection below the product",
+    };
+    const whiteBgShadowInstruction = details.whiteBgShadow
+      ? whiteBgShadowMap[details.whiteBgShadow] || whiteBgShadowMap["No Shadow"]
+      : "- No shadow, pure white background";
+
     return {
       ...details,
       propsInstruction,
@@ -216,6 +251,9 @@ const Studio: React.FC = () => {
       surfaceInstruction,
       lightingInstruction,
       layoutInstruction,
+      whiteBgAngleInstruction,
+      whiteBgFramingInstruction,
+      whiteBgShadowInstruction,
       type: details.type.toLowerCase(),
     };
   };
@@ -334,6 +372,7 @@ const Studio: React.FC = () => {
   );
   const needsStagingFields = selectedAssets.includes(AssetType.STAGING);
   const needsModelFields = selectedAssets.includes(AssetType.MODEL);
+  const needsWhiteBgFields = selectedAssets.includes(AssetType.WHITE_BG);
 
   // Step completion
   const step1Complete = files.length > 0;
@@ -605,6 +644,7 @@ const Studio: React.FC = () => {
             showCopywritingFields={needsCopywritingFields}
             showStagingFields={needsStagingFields}
             showModelFields={needsModelFields}
+            showWhiteBgFields={needsWhiteBgFields}
           />
 
           <div className="mt-6 pt-5 border-t border-zinc-100">

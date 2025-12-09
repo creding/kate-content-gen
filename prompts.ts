@@ -33,69 +33,71 @@ No kinks, no extra chains, no length modifications, no added charms, no AI artif
 
   MODEL_RING: `Imagine the ring on an elegant model's hand, fully visible, perhaps with soft, natural lighting. The focus would still be on the jewelry, but the human element adds context and aspiration. Keep the ring exactly the same. Replace the woman in the image with a model that has smooth skin.`,
 
-  WHITE_BG_EARRINGS: `E-commerce hero: the EXACT earrings uploaded, centered in a sea of pure white. The background MUST be #FFFFFF
+  WHITE_BG_EARRINGS: `E-commerce hero image: the EXACT earrings uploaded, on pure white (#FFFFFF).
 
-BACKGROUND
-- #FFFFFF from corner to corner
-- Canvas = 10 000 × 10 000 px of nothing but white
-- Necklace occupies only the middle 30 % of the frame
-- 35 % empty white above clasp, 35 % below pendant
+CRITICAL JEWELRY PRESERVATION:
+- The uploaded jewelry is the PRIMARY REFERENCE. Do NOT modify it in any way.
+- Preserve the EXACT proportions, details, and appearance from the input image.
+- Gemstones, metal color, and all details MUST match the input exactly.
+- Do NOT add extra elements, charms, or decorations not in the original.
 
-ZOOM & FRAME
-- 35 mm lens, f/8, 8K output (8192 × 8192 px)
-- Every link visible, every stone sparkling, zero crop
+BACKGROUND:
+- Pure white #FFFFFF from edge to edge
+- No gradients, no textures, no floor lines
 
-JEWELRY—PERFECT
-- 1:1 copy of your upload
-- Chain flows in one liquid S-curve, zero kinks
-- Pendant dead-center and level
-- NO added links, charms, or clasps, extension chains
+CAMERA & FRAMING:
+{{whiteBgAngleInstruction}}
+{{whiteBgFramingInstruction}}
 
-LIGHTING—SHADOW-VAPORIZER
-- 360° diffused 5700 K softboxes at 4 m
-- Fill so strong the necklace casts less than a ghost
-- Facets throw starbursts, metal glows like molten glass
+LIGHTING:
+- 360° diffused 5700K soft lighting
+- Every stone should sparkle, metal should glow
+{{whiteBgShadowInstruction}}
 
-OUTPUT
-- jpg
-- Drag-and-drop ready for Shopify, Amazon, Etsy
+OUTPUT:
+- High resolution, e-commerce ready
+- Suitable for Shopify, Amazon, Etsy
 
-HARD NEGATIVE (copy this line):
-no shadow, no drop shadow, no floor, no reflection, no kinks, no extra chains, no props, no text, no gradient, no borders, no AI artifacts.
+NEGATIVE (avoid these):
+No kinks, no extra chains, no length modifications, no added elements, no AI artifacts, no proportional changes, no background color.`,
 
-Generate one frame.`,
+  WHITE_BG_GENERAL: `E-commerce hero image: the EXACT jewelry uploaded, on pure white (#FFFFFF).
 
-  WHITE_BG_GENERAL: `E-commerce hero: the EXACT necklace uploaded, centered in a sea of pure white. The background MUST be #FFFFFF
+CRITICAL JEWELRY PRESERVATION:
+- The uploaded jewelry is the PRIMARY REFERENCE. Do NOT modify it in any way.
+- Preserve the EXACT chain length, link count, and proportions from the input image.
+- Do NOT extend, shorten, add links, or change pendant position.
+- Keep the EXACT curvature and layout as shown in the reference.
+- Gemstones, metal color, and all details MUST match the input exactly.
+- Do NOT add extra chains, charms, extensions, or elements not in the original.
 
-BACKGROUND
-- #FFFFFF from corner to corner
-- Canvas = 10 000 × 10 000 px of nothing but white
-- Necklace occupies only the middle 30 % of the frame
-- 35 % empty white above clasp, 35 % below pendant
+⚠️ ABSOLUTELY NO EXTENDER CHAIN ⚠️
+- Do NOT add an extender chain or extension chain at the clasp
+- Do NOT add any chain hanging from the clasp
+- Do NOT add any adjustable length chain
+- The clasp area should look EXACTLY like the input - no additional dangling chain
+- If you see a lobster clasp in the input, show ONLY the lobster clasp, nothing else attached to it
 
-ZOOM & FRAME
-- 35 mm lens, f/8, 8K output (8192 × 8192 px)
-- Every link visible, every stone sparkling, zero crop
+BACKGROUND:
+- Pure white #FFFFFF from edge to edge
+- No gradients, no textures, no floor lines
 
-JEWELRY—PERFECT
-- 1:1 copy of your upload
-- Chain flows in one liquid S-curve, zero kinks
-- Pendant dead-center and level
-- NO added links, charms, or clasps, extension chains
+CAMERA & FRAMING:
+{{whiteBgAngleInstruction}}
+{{whiteBgFramingInstruction}}
 
-LIGHTING—SHADOW-VAPORIZER
-- 360° diffused 5700 K softboxes at 4 m
-- Fill so strong the necklace casts less than a ghost
-- Facets throw starbursts, metal glows like molten glass
+LIGHTING:
+- 360° diffused 5700K soft lighting
+- Every link visible, every stone sparkling
+- Metal glows with professional sheen
+{{whiteBgShadowInstruction}}
 
-OUTPUT
-- jpg
-- Drag-and-drop ready for Shopify, Amazon, Etsy
+OUTPUT:
+- High resolution, e-commerce ready
+- Suitable for Shopify, Amazon, Etsy
 
-HARD NEGATIVE (copy this line):
-no shadow, no drop shadow, no floor, no reflection, no kinks, no extra chains, no props, no text, no gradient, no borders, no AI artifacts.
-
-Generate one frame.`,
+NEGATIVE (avoid these):
+NO extender chain, NO extension chain, NO chain hanging from clasp, NO adjustable chain, no kinks, no extra chains, no length modifications, no added elements, no AI artifacts.`,
 
   DESCRIPTION_EARRINGS: `You are a professional e-commerce copywriter. Use the uploaded product image to write a clear, factual product description for earrings using the suggested structure and neutral tone below. Replace the bracketed details with the new product information. Do not add flowery, luxurious, or evocative language. Keep sentences direct and informative. You can be somewhat creative with the description. Make sure that it makes sense, revise the format, if needed, so that the product details accurately present the image uploaded. Do not add special text formatting for the dimensions, I should be able to copy/paste without a problem. You can add to the description any information that may assist the customer in understanding the earrings, use the provided image..
 
