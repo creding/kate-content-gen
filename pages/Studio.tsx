@@ -8,6 +8,7 @@ import {
 import InputForm from "../components/InputForm";
 import AssetCard from "../components/AssetCard";
 import Lightbox from "../components/Lightbox";
+import AssetSelector from "../components/AssetSelector";
 import { generateAsset } from "../services/geminiService";
 import { Card, Button, cn } from "../components/ui";
 import { usePrompts } from "../contexts/PromptContext";
@@ -548,46 +549,21 @@ const Studio: React.FC = () => {
               <h3 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">
                 Visual Assets
               </h3>
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 {visualTypes.map((type) => {
                   const info = ASSET_TYPE_INFO[type];
-                  const Icon = info.icon;
-                  const isSelected = selectedAssets.includes(type);
                   return (
-                    <div
+                    <AssetSelector
                       key={type}
-                      onClick={() => !isLoading && toggleAssetSelection(type)}
-                      className={cn(
-                        "flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all",
-                        isSelected
-                          ? "border-zinc-900 bg-zinc-900 text-white"
-                          : "border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-zinc-600"
-                      )}
-                    >
-                      <Icon
-                        className={cn(
-                          "w-4 h-4 shrink-0",
-                          isSelected ? "text-zinc-300" : "text-zinc-400"
-                        )}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium">
-                          {info.label}
-                        </span>
-                      </div>
-                      <div
-                        className={cn(
-                          "w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0",
-                          isSelected
-                            ? "border-white bg-white"
-                            : "border-zinc-300"
-                        )}
-                      >
-                        {isSelected && (
-                          <div className="w-2 h-2 bg-zinc-900 rounded-full" />
-                        )}
-                      </div>
-                    </div>
+                      assetType={type}
+                      label={info.label}
+                      icon={info.icon}
+                      isSelected={selectedAssets.includes(type)}
+                      onToggle={() => toggleAssetSelection(type)}
+                      details={details}
+                      setDetails={setDetails}
+                      isLoading={isLoading}
+                    />
                   );
                 })}
               </div>
@@ -698,9 +674,6 @@ const Studio: React.FC = () => {
             isLoading={isLoading}
             selectedAssets={selectedAssets}
             showCopywritingFields={needsCopywritingFields}
-            showStagingFields={needsStagingFields}
-            showModelFields={needsModelFields}
-            showWhiteBgFields={needsWhiteBgFields}
           />
 
           <div className="mt-6 pt-5 border-t border-zinc-100">
