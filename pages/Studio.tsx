@@ -4,6 +4,18 @@ import {
   GeneratedAsset,
   JewelryType,
   ProductDetails,
+  NecklaceLength,
+  ModelSkinTone,
+  ModelClothing,
+  ModelShotType,
+  ModelBackground,
+  ModelLighting,
+  StagingLayout,
+  StagingSurface,
+  LightingMood,
+  WhiteBgAngle,
+  WhiteBgFraming,
+  WhiteBgShadow,
 } from "../types";
 import InputForm from "../components/InputForm";
 import AssetCard from "../components/AssetCard";
@@ -65,7 +77,7 @@ const ASSET_TYPE_INFO: Record<
 const Studio: React.FC = () => {
   const { renderPrompt } = usePrompts();
   const { addToast } = useToast();
-  const { settings: brandSettings } = useBrand();
+  const { settings: brandSettings, getEffectiveLogo } = useBrand();
 
   const [files, setFiles] = useState<File[]>([]);
   const [generatedAssets, setGeneratedAssets] = useState<GeneratedAsset[]>([]);
@@ -78,9 +90,7 @@ const Studio: React.FC = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  const [selectedAssets, setSelectedAssets] = useState<AssetType[]>([
-    AssetType.WHITE_BG,
-  ]);
+  const [selectedAssets, setSelectedAssets] = useState<AssetType[]>([]);
   const [isDetecting, setIsDetecting] = useState(false);
 
   // Initialize details with brand defaults
@@ -94,7 +104,22 @@ const Studio: React.FC = () => {
     necklaceLengthValue: "",
     accentDetail: brandSettings.defaultAccentDetail,
     claspType: brandSettings.defaultClaspType,
-    stagingProps: [],
+    // Staging image defaults
+    stagingLayout: StagingLayout.DRAPED,
+    stagingSurface: StagingSurface.MARBLE,
+    lightingMood: LightingMood.SOFT,
+    stagingProps: ["Gift Box", "Silk Ribbon", "Linen Fabric"],
+    // Clean product shot defaults
+    whiteBgAngle: WhiteBgAngle.TOP_DOWN,
+    whiteBgFraming: WhiteBgFraming.CLOSE_UP,
+    whiteBgShadow: WhiteBgShadow.NONE,
+    // Model showcase defaults
+    necklaceLength: NecklaceLength.CHOKER,
+    modelSkinTone: ModelSkinTone.LIGHT,
+    modelClothing: ModelClothing.WHITE,
+    modelShotType: ModelShotType.CLOSE_UP,
+    modelBackground: ModelBackground.STUDIO,
+    modelLighting: ModelLighting.SOFT_NATURAL,
   });
 
   // Update defaults when brand settings change
@@ -106,23 +131,48 @@ const Studio: React.FC = () => {
     }));
   }, [brandSettings.defaultAccentDetail, brandSettings.defaultClaspType]);
 
-  // Convert stored logo data URL to File object for API
-  const brandLogoFile = useMemo(() => {
-    if (!brandSettings.logoDataUrl) return null;
+  // Convert logo (default or custom) to File object for API
+  const [brandLogoFile, setBrandLogoFile] = useState<File | null>(null);
 
-    // Convert data URL to Blob then File
-    const arr = brandSettings.logoDataUrl.split(",");
-    const mime = arr[0].match(/:(.*?);/)?.[1] || "image/png";
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new File([u8arr], brandSettings.logoFileName || "logo.png", {
-      type: mime,
-    });
-  }, [brandSettings.logoDataUrl, brandSettings.logoFileName]);
+  useEffect(() => {
+    const loadLogo = async () => {
+      const logoUrl = getEffectiveLogo();
+      if (!logoUrl) {
+        setBrandLogoFile(null);
+        return;
+      }
+
+      try {
+        // If it's a data URL (custom upload)
+        if (logoUrl.startsWith("data:")) {
+          const arr = logoUrl.split(",");
+          const mime = arr[0].match(/:(.*?);/)?.[1] || "image/png";
+          const bstr = atob(arr[1]);
+          let n = bstr.length;
+          const u8arr = new Uint8Array(n);
+          while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+          }
+          setBrandLogoFile(
+            new File([u8arr], brandSettings.logoFileName || "logo.png", {
+              type: mime,
+            })
+          );
+        } else {
+          // It's a path (default logo) - fetch it
+          const response = await fetch(logoUrl);
+          const blob = await response.blob();
+          const fileName = logoUrl.split("/").pop() || "jewelry-tag.jpg";
+          setBrandLogoFile(new File([blob], fileName, { type: blob.type }));
+        }
+      } catch (err) {
+        console.error("Failed to load logo:", err);
+        setBrandLogoFile(null);
+      }
+    };
+
+    loadLogo();
+  }, [getEffectiveLogo, brandSettings.logoFileName]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -661,17 +711,6 @@ const Studio: React.FC = () => {
                 })}
               </div>
             </div>
-
-            {/* Staging Hint */}
-            {needsStagingFields && !brandSettings.logoDataUrl && (
-              <div className="p-3 bg-amber-50 rounded-lg border border-amber-100 text-xs text-amber-700">
-                <strong>Tip:</strong> Upload your brand logo in{" "}
-                <a href="/settings" className="underline font-medium">
-                  Settings → Brand Assets
-                </a>{" "}
-                to automatically add it to lifestyle scenes.
-              </div>
-            )}
           </div>
 
           {/* Generate Button */}

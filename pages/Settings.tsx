@@ -24,6 +24,8 @@ const Settings: React.FC = () => {
     updateSettings: updateBrand,
     setLogo,
     clearLogo,
+    resetToDefaultLogo,
+    getEffectiveLogo,
   } = useBrand();
   const { addToast } = useToast();
   const [activeSection, setActiveSection] = useState("brand");
@@ -55,74 +57,98 @@ const Settings: React.FC = () => {
         <div className="space-y-8">
           <Card className="p-6">
             <h3 className="text-lg font-medium text-foreground mb-1">
-              Brand Logo
+              Brand Logo Tag
             </h3>
             <p className="text-sm text-muted-foreground mb-6">
               This logo will automatically be used for Lifestyle Scene staging
               photos.
             </p>
 
-            {brandSettings.logoDataUrl ? (
-              <div className="flex items-center gap-4 p-4 bg-background rounded-xl border border-border">
-                <div className="w-16 h-16 rounded-lg bg-card border border-border flex items-center justify-center overflow-hidden shadow-sm">
-                  <img
-                    src={brandSettings.logoDataUrl}
-                    alt="Brand Logo"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">
-                    {brandSettings.logoFileName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Saved to browser</p>
-                </div>
-                <div className="flex gap-2">
-                  <label className="cursor-pointer">
-                    <span className="inline-flex items-center justify-center rounded-lg text-xs font-medium h-8 px-3 bg-secondary text-foreground hover:bg-muted transition-colors">
-                      Replace
-                    </span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="hidden"
-                    />
-                  </label>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      clearLogo();
-                      addToast("Logo removed", "info");
-                    }}
-                    className="h-8 px-3 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <X className="w-3 h-3 mr-1" />
-                    Remove
-                  </Button>
-                </div>
+            {/* Current Logo Display */}
+            <div className="flex items-center gap-4 p-4 bg-background rounded-xl border border-border mb-4">
+              <div className="w-16 h-16 rounded-lg bg-card border border-border flex items-center justify-center overflow-hidden shadow-sm">
+                <img
+                  src={getEffectiveLogo() || "/images/jewelry-tag.jpg"}
+                  alt="Brand Logo Tag"
+                  className="w-full h-full object-contain"
+                />
               </div>
-            ) : (
-              <div className="relative border-2 border-dashed border-border rounded-xl p-8 text-center hover:bg-background hover:border-zinc-300 transition-all cursor-pointer group">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground">
+                  {brandSettings.logoFileName ||
+                    (brandSettings.useDefaultLogo ? "Default Logo" : "No logo")}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {brandSettings.logoDataUrl
+                    ? "Custom upload"
+                    : brandSettings.useDefaultLogo
+                    ? "Using default jewelry tag"
+                    : "No logo selected"}
+                </p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-2">
+              {/* Upload Custom */}
+              <label className="cursor-pointer">
+                <span className="inline-flex items-center justify-center rounded-lg text-xs font-medium h-9 px-4 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+                  <Upload className="w-3 h-3 mr-2" />
+                  Upload Custom Logo
+                </span>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleLogoUpload}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  className="hidden"
                 />
-                <div className="flex flex-col items-center pointer-events-none">
-                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-muted-foreground group-hover:bg-muted group-hover:text-muted-foreground transition-colors">
-                    <Upload className="h-5 w-5" />
-                  </div>
-                  <span className="block text-sm font-medium text-foreground">
-                    Upload your brand logo
-                  </span>
-                  <span className="mt-1 block text-xs text-muted-foreground">
-                    PNG or JPG, will be used on product tags
-                  </span>
-                </div>
-              </div>
-            )}
+              </label>
+
+              {/* Reset to Default - show if custom uploaded */}
+              {brandSettings.logoDataUrl && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    resetToDefaultLogo();
+                    addToast("Reset to default logo", "success");
+                  }}
+                  className="h-9 px-4 text-xs"
+                >
+                  <RotateCcw className="w-3 h-3 mr-2" />
+                  Use Default
+                </Button>
+              )}
+
+              {/* Remove logo entirely - show if using default */}
+              {!brandSettings.logoDataUrl && brandSettings.useDefaultLogo && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    clearLogo();
+                    addToast("Logo removed", "info");
+                  }}
+                  className="h-9 px-4 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <X className="w-3 h-3 mr-2" />
+                  No Logo
+                </Button>
+              )}
+
+              {/* Restore default - show if no logo */}
+              {!brandSettings.logoDataUrl && !brandSettings.useDefaultLogo && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    resetToDefaultLogo();
+                    addToast("Default logo restored", "success");
+                  }}
+                  className="h-9 px-4 text-xs"
+                >
+                  <RotateCcw className="w-3 h-3 mr-2" />
+                  Restore Default
+                </Button>
+              )}
+            </div>
           </Card>
 
           <Card className="p-6">

@@ -1,8 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
+// Default logo tag image path
+const DEFAULT_LOGO_URL = "/images/jewelry-tag.jpg";
+
 interface BrandSettings {
   logoDataUrl: string | null;
   logoFileName: string | null;
+  useDefaultLogo: boolean;
   defaultClaspType: string;
   defaultAccentDetail: string;
 }
@@ -10,6 +14,7 @@ interface BrandSettings {
 const DEFAULT_BRAND_SETTINGS: BrandSettings = {
   logoDataUrl: null,
   logoFileName: null,
+  useDefaultLogo: true, // Use default logo by default
   defaultClaspType: "Lobster",
   defaultAccentDetail: "Signature Tag",
 };
@@ -19,6 +24,8 @@ interface BrandContextType {
   updateSettings: (updates: Partial<BrandSettings>) => void;
   setLogo: (file: File) => Promise<void>;
   clearLogo: () => void;
+  resetToDefaultLogo: () => void;
+  getEffectiveLogo: () => string | null;
 }
 
 const BrandContext = createContext<BrandContextType | undefined>(undefined);
@@ -74,12 +81,40 @@ export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({
       ...prev,
       logoDataUrl: null,
       logoFileName: null,
+      useDefaultLogo: false,
     }));
+  };
+
+  const resetToDefaultLogo = () => {
+    setSettings((prev) => ({
+      ...prev,
+      logoDataUrl: null,
+      logoFileName: null,
+      useDefaultLogo: true,
+    }));
+  };
+
+  // Get the effective logo URL (custom or default)
+  const getEffectiveLogo = (): string | null => {
+    if (settings.logoDataUrl) {
+      return settings.logoDataUrl;
+    }
+    if (settings.useDefaultLogo) {
+      return DEFAULT_LOGO_URL;
+    }
+    return null;
   };
 
   return (
     <BrandContext.Provider
-      value={{ settings, updateSettings, setLogo, clearLogo }}
+      value={{
+        settings,
+        updateSettings,
+        setLogo,
+        clearLogo,
+        resetToDefaultLogo,
+        getEffectiveLogo,
+      }}
     >
       {children}
     </BrandContext.Provider>
