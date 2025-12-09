@@ -9,20 +9,23 @@ import Layout from "./components/Layout";
 import Studio from "./pages/Studio";
 import Settings from "./pages/Settings";
 import { PromptProvider } from "./contexts/PromptContext";
+import { ToastProvider } from "./contexts/ToastContext";
 
 const App: React.FC = () => {
   return (
-    <PromptProvider>
-      <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Studio />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Layout>
-      </Router>
-    </PromptProvider>
+    <ToastProvider>
+      <PromptProvider>
+        <Router>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Studio />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Layout>
+        </Router>
+      </PromptProvider>
+    </ToastProvider>
   );
 };
 

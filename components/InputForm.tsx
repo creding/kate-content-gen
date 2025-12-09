@@ -29,6 +29,21 @@ const AVAILABLE_PROPS = [
   "Linen Fabric",
 ];
 
+// Helper component for field labels
+const FieldLabel: React.FC<{
+  children: React.ReactNode;
+  required?: boolean;
+  hint?: string;
+}> = ({ children, required, hint }) => (
+  <div className="flex items-baseline justify-between mb-1.5">
+    <Label className="flex items-center gap-1">
+      {children}
+      {required && <span className="text-red-400 text-xs">*</span>}
+    </Label>
+    {hint && <span className="text-[10px] text-zinc-400">{hint}</span>}
+  </div>
+);
+
 const InputForm: React.FC<InputFormProps> = ({
   details,
   setDetails,
@@ -58,24 +73,24 @@ const InputForm: React.FC<InputFormProps> = ({
   const isStagingSelected = selectedAssets.includes(AssetType.STAGING);
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 gap-5">
-        <div>
-          <Label>Product Name</Label>
-          <Input
-            type="text"
-            value={details.name}
-            onChange={(e) => handleChange("name", e.target.value)}
-            disabled={isLoading}
-            placeholder="e.g. The Royal Amethyst"
-            className="text-base"
-          />
-        </div>
+    <div className="space-y-6">
+      <div>
+        <FieldLabel required hint="Used in descriptions">
+          Product Name
+        </FieldLabel>
+        <Input
+          type="text"
+          value={details.name}
+          onChange={(e) => handleChange("name", e.target.value)}
+          disabled={isLoading}
+          placeholder="e.g. The Royal Amethyst"
+          className="text-base"
+        />
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>Type</Label>
+          <FieldLabel required>Type</FieldLabel>
           <Select
             value={details.type}
             onChange={(e) =>
@@ -91,7 +106,7 @@ const InputForm: React.FC<InputFormProps> = ({
           </Select>
         </div>
         <div>
-          <Label>Material</Label>
+          <FieldLabel hint="Optional">Material</FieldLabel>
           <Input
             type="text"
             value={details.material}
@@ -102,9 +117,9 @@ const InputForm: React.FC<InputFormProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>Stone Type</Label>
+          <FieldLabel hint="Optional">Stone Type</FieldLabel>
           <Input
             type="text"
             value={details.stone}
@@ -114,7 +129,7 @@ const InputForm: React.FC<InputFormProps> = ({
           />
         </div>
         <div>
-          <Label>Stone Shape</Label>
+          <FieldLabel hint="Optional">Stone Shape</FieldLabel>
           <Input
             type="text"
             value={details.shape}
@@ -126,7 +141,9 @@ const InputForm: React.FC<InputFormProps> = ({
       </div>
 
       <div>
-        <Label>Visual Characteristic</Label>
+        <FieldLabel hint="Improves copy quality">
+          Visual Characteristic
+        </FieldLabel>
         <Textarea
           value={details.visualCharacteristic}
           onChange={(e) => handleChange("visualCharacteristic", e.target.value)}
@@ -144,7 +161,7 @@ const InputForm: React.FC<InputFormProps> = ({
           </h4>
           <div className="space-y-4">
             <div>
-              <Label>Model Drape Length</Label>
+              <FieldLabel hint="For model shots">Model Drape Length</FieldLabel>
               <Select
                 value={details.necklaceLength || ""}
                 onChange={(e) =>
@@ -166,7 +183,7 @@ const InputForm: React.FC<InputFormProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Length (Text)</Label>
+                <FieldLabel hint="e.g. 18">Length (inches)</FieldLabel>
                 <Input
                   type="text"
                   value={details.necklaceLengthValue || ""}
@@ -174,11 +191,11 @@ const InputForm: React.FC<InputFormProps> = ({
                     handleChange("necklaceLengthValue", e.target.value)
                   }
                   disabled={isLoading}
-                  placeholder="e.g. 18"
+                  placeholder="18"
                 />
               </div>
               <div>
-                <Label>Clasp Type</Label>
+                <FieldLabel>Clasp Type</FieldLabel>
                 <Input
                   type="text"
                   value={details.claspType || ""}
@@ -198,7 +215,7 @@ const InputForm: React.FC<InputFormProps> = ({
             Earring Specifics
           </h4>
           <div>
-            <Label>Hook/Post Type</Label>
+            <FieldLabel>Hook/Post Type</FieldLabel>
             <Input
               type="text"
               value={details.hookType || ""}
@@ -211,7 +228,7 @@ const InputForm: React.FC<InputFormProps> = ({
       )}
 
       <div>
-        <Label>Accent Detail</Label>
+        <FieldLabel hint="Optional">Accent Detail</FieldLabel>
         <Input
           type="text"
           value={details.accentDetail || ""}
@@ -224,7 +241,7 @@ const InputForm: React.FC<InputFormProps> = ({
       {/* Conditional Staging Config Section */}
       {isStagingSelected && (
         <Card className="p-5 bg-zinc-900 text-white border-zinc-900 animate-in fade-in slide-in-from-top-4 duration-500 shadow-xl shadow-zinc-900/10">
-          <h4 className="text-sm font-serif font-medium text-white mb-6 flex items-center gap-2">
+          <h4 className="text-sm font-serif font-medium text-white mb-5 flex items-center gap-2">
             <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/10 border border-white/20">
               <svg
                 className="w-3 h-3 text-emerald-400"
@@ -240,12 +257,14 @@ const InputForm: React.FC<InputFormProps> = ({
                 />
               </svg>
             </span>
-            Staging Studio
+            Lifestyle Scene Options
           </h4>
 
-          <div className="mb-6">
-            <Label className="text-zinc-400 mb-3 block">Scene Props</Label>
-            <div className="grid grid-cols-2 gap-2">
+          <div className="mb-5">
+            <Label className="text-zinc-400 mb-2 block text-xs">
+              Scene Props
+            </Label>
+            <div className="grid grid-cols-2 gap-1.5">
               {AVAILABLE_PROPS.map((prop) => {
                 const isSelected = (details.stagingProps || []).includes(prop);
                 return (
@@ -253,7 +272,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     key={prop}
                     onClick={() => toggleProp(prop)}
                     className={cn(
-                      "group flex items-center space-x-2 cursor-pointer p-2 rounded-lg transition-all border border-transparent",
+                      "group flex items-center gap-2 cursor-pointer p-2 rounded-lg transition-all border border-transparent",
                       isSelected
                         ? "bg-white/10 border-white/10"
                         : "hover:bg-white/5"
@@ -261,7 +280,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   >
                     <div
                       className={cn(
-                        "w-4 h-4 rounded border flex items-center justify-center transition-colors",
+                        "w-4 h-4 rounded border flex items-center justify-center transition-colors shrink-0",
                         isSelected
                           ? "bg-emerald-500 border-emerald-500"
                           : "border-zinc-500 group-hover:border-zinc-400"
@@ -285,7 +304,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     </div>
                     <span
                       className={cn(
-                        "text-xs font-medium transition-colors",
+                        "text-[11px] font-medium transition-colors",
                         isSelected
                           ? "text-white"
                           : "text-zinc-400 group-hover:text-zinc-300"
@@ -300,12 +319,12 @@ const InputForm: React.FC<InputFormProps> = ({
           </div>
 
           <div>
-            <Label className="text-zinc-400 mb-2 block">
+            <Label className="text-zinc-400 mb-2 block text-xs">
               Brand Logo / Tag Image
             </Label>
             <div className="flex items-center gap-3 bg-white/5 p-3 rounded-lg border border-white/10">
               <label className="cursor-pointer shrink-0">
-                <span className="inline-flex items-center justify-center rounded-lg text-xs font-bold uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 h-8 px-3 bg-white text-zinc-900 hover:bg-zinc-100 shadow-sm">
+                <span className="inline-flex items-center justify-center rounded-lg text-xs font-bold uppercase tracking-wider transition-all h-8 px-3 bg-white text-zinc-900 hover:bg-zinc-100 shadow-sm">
                   {logoFile ? "Replace" : "Upload"}
                 </span>
                 <input

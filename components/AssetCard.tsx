@@ -1,16 +1,24 @@
 import React from "react";
-import { GeneratedAsset } from "../types";
+import { GeneratedAsset, AssetType } from "../types";
 import { Card, Button, cn } from "./ui";
+import { useToast } from "../contexts/ToastContext";
+import { RefreshCw, Download, Copy } from "lucide-react";
 
 interface AssetCardProps {
   asset: GeneratedAsset;
+  onRegenerate?: (assetType: AssetType) => void;
 }
 
-const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
-  const copyText = () => {
-    navigator.clipboard.writeText(asset.content);
-    // Could add toast here
-    alert("Text copied to clipboard!");
+const AssetCard: React.FC<AssetCardProps> = ({ asset, onRegenerate }) => {
+  const { addToast } = useToast();
+
+  const copyText = async () => {
+    try {
+      await navigator.clipboard.writeText(asset.content);
+      addToast("Copied to clipboard!", "success");
+    } catch {
+      addToast("Failed to copy", "error");
+    }
   };
 
   const downloadImage = () => {
@@ -22,6 +30,7 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    addToast("Image downloaded!", "success");
   };
 
   return (
@@ -66,13 +75,35 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
           </h3>
         </div>
 
-        <Button
-          variant="outline"
-          onClick={asset.isImage ? downloadImage : copyText}
-          className="h-7 text-[10px] px-2.5 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-sm"
-        >
-          {asset.isImage ? "Download" : "Copy"}
-        </Button>
+        <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200">
+          {onRegenerate && (
+            <Button
+              variant="outline"
+              onClick={() => onRegenerate(asset.type)}
+              className="h-7 text-[10px] px-2 shadow-sm"
+              title="Regenerate"
+            >
+              <RefreshCw className="w-3 h-3" />
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            onClick={asset.isImage ? downloadImage : copyText}
+            className="h-7 text-[10px] px-2.5 shadow-sm"
+          >
+            {asset.isImage ? (
+              <>
+                <Download className="w-3 h-3 mr-1" />
+                Download
+              </>
+            ) : (
+              <>
+                <Copy className="w-3 h-3 mr-1" />
+                Copy
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       <div className="p-0 flex-grow flex items-center justify-center bg-white relative">
