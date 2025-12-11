@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import {
   ArrowLeft,
   RotateCcw,
@@ -11,11 +13,11 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { Button, Card, Label, Textarea, Input, cn } from "../components/ui";
-import { usePrompts } from "../contexts/PromptContext";
-import { useBrand } from "../contexts/BrandContext";
-import { useToast } from "../contexts/ToastContext";
-import { PromptTemplateKey } from "../prompts";
+import { Button, Card, Label, Textarea, Input, cn } from "@/components/ui";
+import { usePrompts } from "@/contexts/PromptContext";
+import { useBrand } from "@/contexts/BrandContext";
+import { useToast } from "@/contexts/ToastContext";
+import { PromptTemplateKey } from "@/prompts";
 
 const Settings: React.FC = () => {
   const { templates, updateTemplate, resetTemplates } = usePrompts();
@@ -229,11 +231,10 @@ const Settings: React.FC = () => {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <Link to="/">
+          <Link href="/">
             <Button
               variant="outline"
-              size="icon"
-              className="h-9 w-9 rounded-full bg-card hover:bg-background border-border"
+              className="h-9 w-9 rounded-full bg-card hover:bg-background border-border p-0 flex items-center justify-center"
             >
               <ArrowLeft className="h-4 w-4 text-muted-foreground" />
             </Button>

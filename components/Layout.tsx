@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Settings, Sparkles, LogOut, User } from "lucide-react";
 import { cn, Button } from "./ui";
 import { useAuth } from "../contexts/AuthContext";
@@ -9,10 +12,10 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const location = useLocation();
+  const pathname = usePathname();
   const { user, signOut, isConfigured } = useAuth();
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => pathname === path;
 
   const handleSignOut = async () => {
     await signOut();
@@ -23,7 +26,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Frosted Glass Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border bg-card/80 backdrop-blur-md transition-all">
         <div className="mx-auto flex h-16 max-w-[1800px] items-center justify-between px-6 lg:px-8">
-          <Link to="/" className="flex items-center gap-3 group cursor-pointer">
+          <Link
+            href="/"
+            className="flex items-center gap-3 group cursor-pointer"
+          >
             <img
               src="/images/logo.png"
               alt="Kate Crawford Jewelry"
@@ -33,7 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           <nav className="flex items-center gap-1">
             <Link
-              to="/"
+              href="/"
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                 isActive("/")
@@ -45,7 +51,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               Studio
             </Link>
             <Link
-              to="/copywriting"
+              href="/copywriting"
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                 isActive("/copywriting")
@@ -69,7 +75,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               Copy
             </Link>
             <Link
-              to="/settings"
+              href="/settings"
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                 isActive("/settings")

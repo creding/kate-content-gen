@@ -128,22 +128,27 @@ OUTPUT:
 NEGATIVE (avoid these):
 No kinks, no extra chains, no length modifications, no added elements, no AI artifacts, no proportional changes, no background color.`,
 
-  WHITE_BG_GENERAL: `E-commerce hero image: the EXACT jewelry uploaded, on pure white (#FFFFFF).
+  WHITE_BG_GENERAL: `STRICT BACKGROUND REPLACEMENT TASK:
+Input: A photo of jewelry (and optionally a second close-up photo for details).
+Output: The EXACT same jewelry piece, isolated on a pure white (#FFFFFF) background.
 
-CRITICAL JEWELRY PRESERVATION:
-- The uploaded jewelry is the PRIMARY REFERENCE. Do NOT modify it in any way.
-- Preserve the EXACT chain length, link count, and proportions from the input image.
-- Do NOT extend, shorten, add links, or change pendant position.
-- Keep the EXACT curvature and layout as shown in the reference.
-- Gemstones, metal color, and all details MUST match the input exactly.
-- Do NOT add extra chains, charms, extensions, or elements not in the original.
+CRITICAL INSTRUCTION:
+- You are acting as a background remover tool, NOT a creative generator.
+- Your ONLY job is to change the background to white.
+- PRESERVE the jewelry accurately.
+- DO NOT ADD ANY NEW ELEMENTS.
+- DO NOT COMPLETE missing parts.
+- DO NOT ADD EXTENDER CHAINS.
+- If the original chain ends, let it end.
+- If the clasp is simple, keep it simple.
+- INSPECT THE CLOSE-UP (if provided): Use the second image to confirm details like clasp type, connector rings, and stone setting. The close-up is the TRUTH for those specific details.
 
-⚠️ ABSOLUTELY NO EXTENDER CHAIN ⚠️
-- Do NOT add an extender chain or extension chain at the clasp
-- Do NOT add any chain hanging from the clasp
-- Do NOT add any adjustable length chain
-- The clasp area should look EXACTLY like the input - no additional dangling chain
-- If you see a lobster clasp in the input, show ONLY the lobster clasp, nothing else attached to it
+JEWELRY PRESERVATION CHECKLIST:
+1. Count the chain links in the input. The output MUST match.
+2. Check the clasp. If there is no dangling chain in the input, there MUST be none in the output.
+3. Check the pendant. Do not transform it.
+4. Do NOT add an extra chain layer.
+5. Do NOT add a jump ring or extension chain that isn't visible in the source.
 
 BACKGROUND:
 - Pure white #FFFFFF from edge to edge
@@ -164,7 +169,7 @@ OUTPUT:
 - Suitable for Shopify, Amazon, Etsy
 
 NEGATIVE (avoid these):
-NO extender chain, NO extension chain, NO chain hanging from clasp, NO adjustable chain, no kinks, no extra chains, no length modifications, no added elements, no AI artifacts.`,
+extra chain, extender chain, extension chain, added links, hallucinated details, drawing, sketch, 3d render, modification, improvement, double chain, clasp chain, loop, dangling chain.`,
 
   DESCRIPTION_EARRINGS: `You are a professional e-commerce copywriter. Use the uploaded product image to write a clear, factual product description for earrings using the suggested structure and neutral tone below. Replace the bracketed details with the new product information. Do not add flowery, luxurious, or evocative language. Keep sentences direct and informative. You can be somewhat creative with the description. Make sure that it makes sense, revise the format, if needed, so that the product details accurately present the image uploaded. Do not add special text formatting for the dimensions, I should be able to copy/paste without a problem. You can add to the description any information that may assist the customer in understanding the earrings, use the provided image..
 

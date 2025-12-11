@@ -1,5 +1,7 @@
-import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+"use client";
+
+import React, { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 
@@ -9,7 +11,14 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading, isConfigured } = useAuth();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!loading && !user && isConfigured) {
+      router.replace(`/login?from=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, loading, isConfigured, router, pathname]);
 
   // If Supabase not configured, allow access (dev mode)
   if (!isConfigured) {
@@ -28,9 +37,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  // Redirect to login if not authenticated
+  // If not authenticated, don't render children (redirecting)
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return null;
   }
 
   return <>{children}</>;
