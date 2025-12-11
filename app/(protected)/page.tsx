@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useMemo } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import {
   AssetType,
   GeneratedAsset,
@@ -16,17 +18,8 @@ import {
   WhiteBgAngle,
   WhiteBgFraming,
   WhiteBgShadow,
-} from "../types";
-import InputForm from "../components/InputForm";
-import AssetCard from "../components/AssetCard";
-import Lightbox from "../components/Lightbox";
-import AssetSelector from "../components/AssetSelector";
-import { generateAsset, detectJewelryType } from "../services/geminiService";
-import { Card, Button, cn } from "../components/ui";
-import { usePrompts } from "../contexts/PromptContext";
-import { useToast } from "../contexts/ToastContext";
-import { useBrand } from "../contexts/BrandContext";
-import { PromptTemplateKey } from "../prompts";
+} from "@/types";
+import { PromptTemplateKey } from "@/prompts";
 import {
   Image,
   Sparkles,
@@ -41,6 +34,16 @@ import {
   Palette,
   ClipboardList,
 } from "lucide-react";
+
+import InputForm from "@/components/InputForm";
+import AssetCard from "@/components/AssetCard";
+import AssetSelector from "@/components/AssetSelector";
+import Lightbox from "@/components/Lightbox";
+import { usePrompts } from "@/contexts/PromptContext";
+import { useToast } from "@/contexts/ToastContext";
+import { useBrand } from "@/contexts/BrandContext";
+import { generateAsset, detectJewelryType } from "@/services/geminiService";
+import { Button, Card, cn } from "@/components/ui"; // This path depends on list_dir result but likely correct with alias if file is ui.tsx
 
 // Friendly asset type definitions
 const ASSET_TYPE_INFO: Record<

@@ -26,13 +26,15 @@ export const generateAsset = async (
   prompt: string,
   logoFile?: File | null
 ): Promise<GeneratedAsset> => {
-  if (!process.env.API_KEY) {
+  if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
     throw new Error(
       "API Key is missing. Please check your environment variables."
     );
   }
 
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({
+    apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+  });
 
   // Combine product files and optional logo file if it's a Staging Request
   const filesToProcess = [...files];
@@ -118,11 +120,13 @@ export const generateAsset = async (
  * Detect jewelry type from an uploaded image using Gemini
  */
 export const detectJewelryType = async (file: File): Promise<JewelryType> => {
-  if (!process.env.API_KEY) {
+  if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
     throw new Error("API Key is missing.");
   }
 
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({
+    apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+  });
 
   const imageData = await fileToGenerativePart(file);
 

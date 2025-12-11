@@ -1,6 +1,8 @@
+"use client";
+
 import React, { useState, useMemo } from "react";
-import { AssetType, JewelryType, ProductDetails } from "../types";
-import { generateAsset, detectJewelryType } from "../services/geminiService";
+import { AssetType, JewelryType, ProductDetails } from "@/types";
+import { generateAsset, detectJewelryType } from "@/services/geminiService";
 import {
   Card,
   Button,
@@ -9,11 +11,11 @@ import {
   Select,
   Textarea,
   cn,
-} from "../components/ui";
-import { usePrompts } from "../contexts/PromptContext";
-import { useToast } from "../contexts/ToastContext";
-import { useBrand } from "../contexts/BrandContext";
-import { PromptTemplateKey } from "../prompts";
+} from "@/components/ui";
+import { usePrompts } from "@/contexts/PromptContext";
+import { useToast } from "@/contexts/ToastContext";
+import { useBrand } from "@/contexts/BrandContext";
+import { PromptTemplateKey } from "@/prompts";
 import {
   Upload,
   X,
