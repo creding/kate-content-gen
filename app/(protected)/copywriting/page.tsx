@@ -2,7 +2,10 @@
 
 import React, { useState, useMemo } from "react";
 import { AssetType, JewelryType, ProductDetails } from "@/types";
-import { generateAsset, detectJewelryType } from "@/services/geminiService";
+import {
+  generateAssetAction,
+  detectJewelryTypeAction,
+} from "@/app/actions/gemini";
 import {
   Card,
   Button,
@@ -69,7 +72,9 @@ const Copywriting: React.FC = () => {
       // Auto-detect jewelry type
       setIsDetecting(true);
       try {
-        const detectedType = await detectJewelryType(newFile);
+        const formData = new FormData();
+        formData.append("file", newFile);
+        const detectedType = await detectJewelryTypeAction(formData);
         setDetails((prev) => ({ ...prev, type: detectedType }));
         addToast(`Detected: ${detectedType}`, "success");
       } catch (err) {
@@ -123,24 +128,26 @@ const Copywriting: React.FC = () => {
           getTemplateKey("description"),
           variables
         );
-        const descResult = await generateAsset(
-          [file],
-          AssetType.DESCRIPTION,
-          descPrompt,
-          null
-        );
+
+        const formData = new FormData();
+        formData.append("files", file);
+        formData.append("assetType", AssetType.DESCRIPTION);
+        formData.append("prompt", descPrompt);
+
+        const descResult = await generateAssetAction(formData);
         setDescription(descResult.content);
       }
 
       // Generate social post
       if (generationType === "social" || generationType === "both") {
         const socialPrompt = renderPrompt(getTemplateKey("social"), variables);
-        const socialResult = await generateAsset(
-          [file],
-          AssetType.SOCIAL_POST,
-          socialPrompt,
-          null
-        );
+
+        const formData = new FormData();
+        formData.append("files", file);
+        formData.append("assetType", AssetType.SOCIAL_POST);
+        formData.append("prompt", socialPrompt);
+
+        const socialResult = await generateAssetAction(formData);
         setSocialPost(socialResult.content);
       }
 
@@ -161,21 +168,23 @@ const Copywriting: React.FC = () => {
     try {
       if (type === "description") {
         const prompt = renderPrompt(getTemplateKey("description"), variables);
-        const result = await generateAsset(
-          [file],
-          AssetType.DESCRIPTION,
-          prompt,
-          null
-        );
+
+        const formData = new FormData();
+        formData.append("files", file);
+        formData.append("assetType", AssetType.DESCRIPTION);
+        formData.append("prompt", prompt);
+
+        const result = await generateAssetAction(formData);
         setDescription(result.content);
       } else {
         const prompt = renderPrompt(getTemplateKey("social"), variables);
-        const result = await generateAsset(
-          [file],
-          AssetType.SOCIAL_POST,
-          prompt,
-          null
-        );
+
+        const formData = new FormData();
+        formData.append("files", file);
+        formData.append("assetType", AssetType.SOCIAL_POST);
+        formData.append("prompt", prompt);
+
+        const result = await generateAssetAction(formData);
         setSocialPost(result.content);
       }
       addToast(

@@ -42,8 +42,11 @@ import Lightbox from "@/components/Lightbox";
 import { usePrompts } from "@/contexts/PromptContext";
 import { useToast } from "@/contexts/ToastContext";
 import { useBrand } from "@/contexts/BrandContext";
-import { generateAsset, detectJewelryType } from "@/services/geminiService";
-import { Button, Card, cn } from "@/components/ui"; // This path depends on list_dir result but likely correct with alias if file is ui.tsx
+import {
+  generateAssetAction,
+  detectJewelryTypeAction,
+} from "@/app/actions/gemini";
+import { Button, Card, cn } from "@/components/ui";
 
 // Friendly asset type definitions
 const ASSET_TYPE_INFO: Record<
@@ -185,7 +188,9 @@ const Studio: React.FC = () => {
       // Auto-detect jewelry type from first image
       setIsDetecting(true);
       try {
-        const detectedType = await detectJewelryType(newFiles[0]);
+        const formData = new FormData();
+        formData.append("file", newFiles[0]);
+        const detectedType = await detectJewelryTypeAction(formData);
         setDetails((prev) => ({ ...prev, type: detectedType }));
         addToast(`Detected: ${detectedType}`, "success");
       } catch (err) {
@@ -410,7 +415,15 @@ const Studio: React.FC = () => {
         const logoToUse =
           assetType === AssetType.STAGING ? brandLogoFile : null;
 
-        return generateAsset(files, assetType, prompt, logoToUse);
+        const formData = new FormData();
+        files.forEach((file) => formData.append("files", file));
+        formData.append("assetType", assetType);
+        formData.append("prompt", prompt);
+        if (logoToUse) {
+          formData.append("logoFile", logoToUse);
+        }
+
+        return generateAssetAction(formData);
       });
 
       const results = await Promise.allSettled(promises);
@@ -457,7 +470,16 @@ const Studio: React.FC = () => {
       const variables = getPromptVariables(details);
       const prompt = renderPrompt(templateKey, variables);
       const logoToUse = assetType === AssetType.STAGING ? brandLogoFile : null;
-      const newAsset = await generateAsset(files, assetType, prompt, logoToUse);
+
+      const formData = new FormData();
+      files.forEach((file) => formData.append("files", file));
+      formData.append("assetType", assetType);
+      formData.append("prompt", prompt);
+      if (logoToUse) {
+        formData.append("logoFile", logoToUse);
+      }
+
+      const newAsset = await generateAssetAction(formData);
 
       setGeneratedAssets((prev) =>
         prev.map((a) => (a.type === assetType ? newAsset : a))

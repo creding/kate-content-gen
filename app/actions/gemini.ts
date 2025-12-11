@@ -1,42 +1,39 @@
+"use server";
+
 import { GoogleGenAI } from "@google/genai";
-import { AssetType, GeneratedAsset, JewelryType } from "../types";
+import { AssetType, GeneratedAsset, JewelryType } from "@/types";
 
 const getSystemInstruction = () => {
   return "You are an expert jewelry product photographer and copywriter. You specialize in high-end, luxurious aesthetics.";
 };
 
 // Helper to convert File to base64 string
-export const fileToGenerativePart = async (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result as string;
-      // Remove data URL part if present (e.g., "data:image/jpeg;base64,")
-      const base64Data = base64String.split(",")[1];
-      resolve(base64Data);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+const fileToGenerativePart = async (file: File): Promise<string> => {
+  const arrayBuffer = await file.arrayBuffer();
+  const base64String = Buffer.from(arrayBuffer).toString("base64");
+  return base64String;
 };
 
-export const generateAsset = async (
-  files: File[],
-  assetType: AssetType,
-  prompt: string,
-  logoFile?: File | null
+export const generateAssetAction = async (
+  formData: FormData
 ): Promise<GeneratedAsset> => {
-  if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
+  const apiKey =
+    process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  if (!apiKey) {
     throw new Error(
       "API Key is missing. Please check your environment variables."
     );
   }
 
-  const ai = new GoogleGenAI({
-    apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
-  });
+  const ai = new GoogleGenAI({ apiKey });
 
-  // Combine product files and optional logo file if it's a Staging Request
+  // Extract data from FormData
+  const assetType = formData.get("assetType") as AssetType;
+  const prompt = formData.get("prompt") as string;
+  const files = formData.getAll("files") as File[];
+  const logoFile = formData.get("logoFile") as File | null;
+
+  // Combine product files and optional logo file
   const filesToProcess = [...files];
   if (assetType === AssetType.STAGING && logoFile) {
     filesToProcess.push(logoFile);
@@ -52,7 +49,7 @@ export const generateAsset = async (
     }))
   );
 
-  let modelName = "gemini-2.5-flash-image"; // Default for images per "nano banana" mapping
+  let modelName = "gemini-2.5-flash-image";
   let isImageOutput = true;
 
   // Determine model and output type based on AssetType
@@ -74,7 +71,6 @@ export const generateAsset = async (
         parts: [...imageParts, { text: prompt }],
       },
       config: {
-        // Only include system instructions for text generation models or if supported by the image model
         systemInstruction: !isImageOutput ? getSystemInstruction() : undefined,
       },
     });
@@ -82,7 +78,6 @@ export const generateAsset = async (
     let content = "";
 
     if (isImageOutput) {
-      // Iterate through parts to find the image
       const parts = response.candidates?.[0]?.content?.parts;
       if (parts) {
         for (const part of parts) {
@@ -92,9 +87,7 @@ export const generateAsset = async (
           }
         }
       }
-      // Fallback if no inlineData but text (some models return text url) - unlikely with 2.5 flash image direct gen but good safety
       if (!content && response.text) {
-        // If the model refused and returned text, we might want to throw it or return it
         throw new Error(`Generation failed: ${response.text}`);
       }
     } else {
@@ -110,23 +103,29 @@ export const generateAsset = async (
       content,
       isImage: isImageOutput,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini API Error:", error);
-    throw error;
+    throw new Error(
+      error.message || "An unexpected error occurred during generation."
+    );
   }
 };
 
-/**
- * Detect jewelry type from an uploaded image using Gemini
- */
-export const detectJewelryType = async (file: File): Promise<JewelryType> => {
-  if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
+export const detectJewelryTypeAction = async (
+  formData: FormData
+): Promise<JewelryType> => {
+  const apiKey =
+    process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  if (!apiKey) {
     throw new Error("API Key is missing.");
   }
 
-  const ai = new GoogleGenAI({
-    apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
-  });
+  const ai = new GoogleGenAI({ apiKey });
+
+  const file = formData.get("file") as File;
+  if (!file) {
+    throw new Error("No file uploaded for detection.");
+  }
 
   const imageData = await fileToGenerativePart(file);
 
@@ -157,7 +156,6 @@ Just the single word, nothing else.`;
 
     const text = response.text?.trim() || "";
 
-    // Map response to JewelryType enum
     const typeMap: Record<string, JewelryType> = {
       necklace: JewelryType.NECKLACE,
       earrings: JewelryType.EARRINGS,
