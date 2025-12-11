@@ -80,28 +80,27 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Settings className="w-4 h-4" />
               Settings
             </Link>
-          </nav>
 
-          {/* User Menu */}
-          {isConfigured && user && (
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <User className="w-4 h-4" />
-                <span className="hidden sm:inline max-w-[150px] truncate">
-                  {user.email}
-                </span>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSignOut}
-                className="h-8 px-3 text-xs"
-              >
-                <LogOut className="w-3 h-3 mr-1.5" />
-                Logout
-              </Button>
-            </div>
-          )}
+            {/* User Menu - integrated in nav */}
+            {isConfigured && user && (
+              <>
+                <div className="w-px h-6 bg-border mx-2" />
+                <div className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline max-w-[120px] truncate">
+                    {user.email}
+                  </span>
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden sm:inline">Logout</span>
+                </button>
+              </>
+            )}
+          </nav>
         </div>
       </header>
 
