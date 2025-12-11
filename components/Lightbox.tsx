@@ -39,15 +39,23 @@ const Lightbox: React.FC<LightboxProps> = ({
     };
   }, [handleKeyDown]);
 
-  const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = currentImage.src;
-    link.download = `${currentImage.label
-      .toLowerCase()
-      .replace(/\s/g, "-")}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(currentImage.src);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${currentImage.label
+        .toLowerCase()
+        .replace(/\s/g, "-")}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Download failed", e);
+    }
   };
 
   return (

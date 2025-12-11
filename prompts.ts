@@ -14,8 +14,11 @@ CRITICAL JEWELRY PRESERVATION:
 SURFACE & PLACEMENT:
 Place the jewelry {{layoutInstruction}} on {{surfaceInstruction}}.
 
-TAG PLACEMENT:
-Include a small, tasteful jewelry tag positioned near the piece, and apply the provided logo clearly onto this tag. The tag should be subtly designed (e.g., a small rectangular card, a delicate metal charm) and its presence should enhance, not detract from, the jewelry. If a specific logo image is provided among the inputs, use it as the source texture for this tag.
+CARD PLACEMENT:
+- Include one small, tasteful jewelry card positioned near the piece, using the provided logo. 
+- Do not include any additional text or information on the card. 
+- Do not attach the card to the jewelry. 
+- Do not cover the jewelry with the card.
 
 BACKGROUND & COMPOSITION:
 The background should be clean and simple with a shallow depth of field, ensuring the jewelry remains the sole focal point. Aim for a luxurious, sophisticated, and clean aesthetic that emphasizes craftsmanship and quality.
@@ -100,90 +103,64 @@ SETTING:
 
 NEGATIVE: No jewelry modifications, no distracting elements.`,
 
-  WHITE_BG_EARRINGS: `E-commerce hero image: the EXACT earrings uploaded, on pure white (#FFFFFF).
+  WHITE_BG_EARRINGS: `Generate a high-end e-commerce product shot of the provided earrings on a solid white background.
 
-CRITICAL JEWELRY PRESERVATION:
-- The uploaded jewelry is the PRIMARY REFERENCE. Do NOT modify it in any way.
-- Preserve the EXACT proportions, details, and appearance from the input image.
-- Gemstones, metal color, and all details MUST match the input exactly.
-- Do NOT add extra elements, charms, or decorations not in the original.
+INPUT PRESERVATION:
+- The input image is the absolute reference. Preserve the earrings EXACTLY as they appear.
+- Do not modify stones, metal, or shape.
 
-BACKGROUND:
-- Pure white #FFFFFF from edge to edge
-- No gradients, no textures, no floor lines
+BACKGROUND & LIGHTING:
+- Background: Pure White (Hex code #FFFFFF). DO NOT ADD A GRADIENT OR VIGNETTE. THE BACKGROUND MUST BE PURE WHITE ACROSS THE ENTIRE IMAGE.
+- Lighting: Professional studio lighting. Even, diffused brightness.
+- Shadow: {{whiteBgShadowInstruction}}
+- Framing: {{whiteBgAngleInstruction}}, {{whiteBgFramingInstruction}}
 
-CAMERA & FRAMING:
-{{whiteBgAngleInstruction}}
-{{whiteBgFramingInstruction}}
+INSTRUCTIONS:
+- Position the earrings naturally as if laid flat or displayed on a stand, but invisible stand processing.
+- Ensure the background is uniformly white (255, 255, 255) with no vignette or gray corners.
+- High contrast between the jewelry and the white background.
 
-LIGHTING:
-- 360° diffused 5700K soft lighting
-- Every stone should sparkle, metal should glow
-{{whiteBgShadowInstruction}}
+NEGATIVE PROMPT:
+gray background, off-white, textured background, studio floor, vignette, dark corners, low quality, blur, distortion, extra jewelry, hallucinated details.`,
 
-OUTPUT:
-- High resolution, e-commerce ready
-- Suitable for Shopify, Amazon, Etsy
+  WHITE_BG_GENERAL: `Generate a high-end e-commerce product shot of the provided jewelry piece on a solid white background.
 
-NEGATIVE (avoid these):
-No kinks, no extra chains, no length modifications, no added elements, no AI artifacts, no proportional changes, no background color.`,
+INPUT PRESERVATION:
+- The input image is the absolute reference. Preserve the piece EXACTLY.
+- Do not add extra chains, links, or charms.
+- Keep the exact structure of the original piece.
 
-  WHITE_BG_GENERAL: `STRICT BACKGROUND REPLACEMENT TASK:
-Input: A photo of jewelry (and optionally a second close-up photo for details).
-Output: The EXACT same jewelry piece, isolated on a pure white (#FFFFFF) background.
+BACKGROUND & LIGHTING:
+- Background: Pure White (Hex code #FFFFFF). DO NOT ADD A GRADIENT OR VIGNETTE. THE BACKGROUND MUST BE PURE WHITE ACROSS THE ENTIRE IMAGE.
+- Lighting: Professional studio lighting. Even, bright, and clean.
+- Shadow: {{whiteBgShadowInstruction}}
+- Framing: {{whiteBgAngleInstruction}}, {{whiteBgFramingInstruction}}
 
-CRITICAL INSTRUCTION:
-- You are acting as a background remover tool, NOT a creative generator.
-- Your ONLY job is to change the background to white.
-- PRESERVE the jewelry accurately.
-- DO NOT ADD ANY NEW ELEMENTS.
-- DO NOT COMPLETE missing parts.
-- DO NOT ADD EXTENDER CHAINS.
-- If the original chain ends, let it end.
-- If the clasp is simple, keep it simple.
-- INSPECT THE CLOSE-UP (if provided): Use the second image to confirm details like clasp type, connector rings, and stone setting. The close-up is the TRUTH for those specific details.
+INSTRUCTIONS:
+- Isolate the product on the pure white background.
+- Ensure there is no gray cast or gradient on the background.
+- The goal is a ready-to-use e-commerce image.
 
-JEWELRY PRESERVATION CHECKLIST:
-1. Count the chain links in the input. The output MUST match.
-2. Check the clasp. If there is no dangling chain in the input, there MUST be none in the output.
-3. Check the pendant. Do not transform it.
-4. Do NOT add an extra chain layer.
-5. Do NOT add a jump ring or extension chain that isn't visible in the source.
-
-BACKGROUND:
-- Pure white #FFFFFF from edge to edge
-- No gradients, no textures, no floor lines
-
-CAMERA & FRAMING:
-{{whiteBgAngleInstruction}}
-{{whiteBgFramingInstruction}}
-
-LIGHTING:
-- 360° diffused 5700K soft lighting
-- Every link visible, every stone sparkling
-- Metal glows with professional sheen
-{{whiteBgShadowInstruction}}
-
-OUTPUT:
-- High resolution, e-commerce ready
-- Suitable for Shopify, Amazon, Etsy
-
-NEGATIVE (avoid these):
-extra chain, extender chain, extension chain, added links, hallucinated details, drawing, sketch, 3d render, modification, improvement, double chain, clasp chain, loop, dangling chain.`,
+NEGATIVE PROMPT:
+gray background, off-white, gradient, vignette, textured floor, studio props, blur, noise, distortion, extra chain, extender chain, modifications.`,
 
   DESCRIPTION_EARRINGS: `You are a professional e-commerce copywriter. Write a clear, factual product description for earrings matching the EXACT structure below.
 
   <Structure>
   Discover {{name}}, a pair designed for daily wear. It features {{stoneDimensions}} {{stone}} selected for their {{visualCharacteristic}}.
-  Stone: {{stoneGrade}}, {{stoneDimensions}}, {{stone}}.
-  Material: {{material}}.
-  Details: Includes a {{claspType}} and a {{charmDetails}}.
-  Ideal Wear: {{idealWear}}.
+
+  - **Stone**: {{stoneGrade}}, {{stoneDimensions}}, {{stone}}.
+  - **Material**: {{material}}.
+  - **Details**: Includes a {{claspType}} and a {{charmDetails}}.
+  - **Ideal Wear**: {{idealWear}}.
   </Structure>
 
   <Instructions>
   - Replace the variables {{variable}} with the provided details.
   - CRITICAL: If a variable (like {{stoneDimensions}}, {{stoneGrade}}, etc.) is empty, unknown, or "undefined", COMPLETELY DISREGARD that part of the sentence. Do NOT invent or hallucinate a value.
+  - STRICTLY FORBIDDEN: Do NOT use placeholders like "[Length to be specified]" or "undefined". If data is missing, delete the sentence.
+  - STRICTLY FORBIDDEN: Do NOT use the bullet character (•). Use a standard hyphen (-) for the list.
+  - FORMATTING: Output the specifications as a properly formatted Markdown list. Each item MUST be on its own new line.
   - Example: If {{stoneDimensions}} is missing, just say "features {{stone}}".
   - Example: If {{charmDetails}} is missing, just say "Includes a {{claspType}}."
   - Keep the structure but adapt slightly for grammar if fields are missing.
@@ -194,19 +171,23 @@ extra chain, extender chain, extension chain, added links, hallucinated details,
   
   <Structure>
   Discover {{name}}, a piece designed for daily wear. It features {{stoneDimensions}} {{stone}} selected for their {{visualCharacteristic}}. The {{necklaceLengthValue}} inch chain lays flat and moves smoothly.
-  Stone: {{stoneGrade}}, {{stoneDimensions}}, {{stone}}.
-  Chain Material: {{chainMaterial}}.
-  Length: {{necklaceLengthValue}} inches, suitable for most necklines or layering.
-  Details: Includes a {{claspType}} and a {{charmDetails}} on the back.
-  Ideal Wear: {{idealWear}}.
+
+  - **Stone**: {{stoneGrade}}, {{stoneDimensions}}, {{stone}}.
+  - **Chain Material**: {{chainMaterial}}.
+  - **Length**: {{necklaceLengthValue}} inches, suitable for most necklines or layering.
+  - **Details**: Includes a {{claspType}} and a {{charmDetails}} on the back.
+  - **Ideal Wear**: {{idealWear}}.
   </Structure>
   
   <Instructions>
   - Replace the variables {{variable}} with the provided details.
   - CRITICAL: If a variable (like {{stoneDimensions}}, {{chainMaterial}}) is empty, unknown, or "undefined", COMPLETELY DISREGARD that part of the sentence or line. Do NOT invent or hallucinate a value.
+  - STRICTLY FORBIDDEN: Do NOT use placeholders like "[Length to be specified]" or "undefined". If data is missing, delete the sentence.
+  - STRICTLY FORBIDDEN: Do NOT use the bullet character (•). Use a standard hyphen (-) for the list.
+  - FORMATTING: Output the specifications as a properly formatted Markdown list. Each item MUST be on its own new line.
   - Example: If {{chainMaterial}} is missing, remove the "Chain Material" line entirely.
+  - Example: If {{necklaceLengthValue}} is missing, remove the sentence "The {{necklaceLengthValue}} inch chain lays flat..." AND remove the "Length:" list item entirely.
   - Example: If {{charmDetails}} is missing, just say "Includes a {{claspType}}."
-  - Keep the structure but adapt slightly for grammar if fields are missing.
   - The "Chain Material" line is critical ONLY if the value exists.
   </Instructions>`,
 

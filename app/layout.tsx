@@ -4,8 +4,8 @@ import { Providers } from "../components/Providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Jewelry GenAI Studio",
-  description: "AI-powered content generation for jewelry brands",
+  title: "Kate Crawford Jewelry",
+  description: "Content generation for Kate Crawford Jewelry",
 };
 
 export default function RootLayout({

@@ -6,11 +6,22 @@ import {
   AssetType,
   GeneratedAsset,
   ProductDetails,
+  StagingSurface,
+  LightingMood,
+  StagingLayout,
+  WhiteBgAngle,
+  WhiteBgFraming,
+  WhiteBgShadow,
+  ModelSkinTone,
+  ModelShotType,
+  ModelBackground,
+  ModelLighting,
+  ModelClothing,
 } from "@/types";
 import { generateAssetAction } from "@/app/actions/gemini";
-import AssetSelector from "@/components/AssetSelector";
-import AssetCard from "@/components/AssetCard";
 import { Button } from "@/components/ui";
+import Lightbox from "./Lightbox";
+import SmartAssetCard from "./SmartAssetCard";
 import { usePrompts } from "@/contexts/PromptContext";
 import { useToast } from "@/contexts/ToastContext";
 import { useBrand } from "@/contexts/BrandContext";
@@ -68,10 +79,46 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
   const { settings: brandSettings, getEffectiveLogo } = useBrand();
   const { user } = useAuth(); // Need user for storage path
 
-  const [selectedAssets, setSelectedAssets] = useState<AssetType[]>([]);
+  // State
   const [generatedAssets, setGeneratedAssets] = useState<GeneratedAsset[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingAssets, setLoadingAssets] = useState<AssetType[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  // Lightbox State
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  // Compute images for lightbox
+  const lightboxImages = generatedAssets
+    .filter((a) => a.isImage)
+    .map((a) => ({ src: a.content, label: ASSET_TYPE_INFO[a.type].label }));
+
+  const handleViewLarger = (assetType: AssetType) => {
+    // Find index of this asset type among images
+    // Note: If multiple of same type exist, this finds first.
+    // Ideally we pass index or UUID, but for now type is unique enough in this UI context?
+    // Actually, we might have multiple if we didn't clear them?
+    // The current UI just appends. Let's find by index in the *displayed* list?
+    // AssetCard is rendered from generatedAssets map.
+    // But onViewLarger only passes type.
+    // Let's modify AssetCard or work around it.
+    // Workaround: Find the asset with that type in generatedAssets.
+    const index = generatedAssets.findIndex(
+      (a) => a.type === assetType && a.isImage
+    );
+    // Be careful, we need index in *lightboxImages*, not generatedAssets.
+    if (index === -1) return;
+
+    const targetAsset = generatedAssets[index];
+    const lbIndex = lightboxImages.findIndex(
+      (img) => img.src === targetAsset.content
+    );
+
+    if (lbIndex !== -1) {
+      setLightboxIndex(lbIndex);
+      setLightboxOpen(true);
+    }
+  };
 
   // Load existing assets on mount
   React.useEffect(() => {
@@ -97,16 +144,23 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
   }, [item.id]);
 
   // Local details state (initialized from item, but editable for generation context)
-  // Casting to ProductDetails to ensure compatibility, though item.details should match.
-  const [details, setDetails] = useState<ProductDetails>(item.details);
+  const [details, setDetails] = useState<ProductDetails>({
+    stagingProps: ["Gift Box", "Fresh Flowers", "Silk Ribbon"],
+    stagingSurface: StagingSurface.MARBLE,
+    lightingMood: LightingMood.SOFT,
+    stagingLayout: StagingLayout.DRAPED,
+    whiteBgAngle: WhiteBgAngle.TOP_DOWN,
+    whiteBgFraming: WhiteBgFraming.FULL_PRODUCT,
+    whiteBgShadow: WhiteBgShadow.NONE,
+    modelSkinTone: ModelSkinTone.LIGHT,
+    modelShotType: ModelShotType.CLOSE_UP,
+    modelBackground: ModelBackground.LIFESTYLE,
+    modelLighting: ModelLighting.SOFT_NATURAL,
+    modelClothing: ModelClothing.WHITE,
+    ...item.details,
+  });
 
   const visualTypes = [AssetType.WHITE_BG, AssetType.STAGING, AssetType.MODEL];
-
-  const toggleAssetSelection = (type: AssetType) => {
-    setSelectedAssets((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
-  };
 
   // Helper: Fetch Logo File
   const getLogoFile = async () => {
@@ -195,7 +249,12 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
       surfaceInstruction: d.stagingSurface || "Luxurious surface",
       whiteBgAngleInstruction: d.whiteBgAngle || "Top down view",
       whiteBgFramingInstruction: d.whiteBgFraming || "Centered product",
-      whiteBgShadowInstruction: d.whiteBgShadow || "No shadow",
+      whiteBgShadowInstruction:
+        d.whiteBgShadow === "No Shadow" || !d.whiteBgShadow
+          ? "STRICTLY NO SHADOWS. Flat lighting. No floor shadow. Pure #FFFFFF background."
+          : d.whiteBgShadow === "Reflection"
+          ? "Subtle reflection on pure white surface."
+          : "Soft, natural shadow grounding the object.",
       modelSkinToneInstruction: d.modelSkinTone
         ? `Model with ${d.modelSkinTone} skin`
         : "Model",
@@ -240,10 +299,19 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
         finalContent = publicUrl;
       } catch (e) {
         console.error("Failed to upload generated asset", e);
-        // Fallback: don't save if upload failed, or save base64 (not recommended but preserves data)?
-        // For now, fail silently on storage and just don't save DB record to avoid broken links
         return;
       }
+    }
+
+    // REPLACE existing asset: Delete old ones first
+    const { error: deleteError } = await supabase
+      .from("generated_assets")
+      .delete()
+      .eq("item_id", item.id)
+      .eq("type", asset.type);
+
+    if (deleteError) {
+      console.error("Failed to clear old assets", deleteError);
     }
 
     // Insert into DB
@@ -261,12 +329,11 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
     }
   };
 
-  const handleGenerate = async () => {
-    if (selectedAssets.length === 0) {
-      setError("Select at least one asset type.");
-      return;
-    }
-    setIsLoading(true);
+  const handleGenerate = async (targetType: AssetType) => {
+    // Only generate one type
+    if (loadingAssets.includes(targetType)) return;
+
+    setLoadingAssets((prev) => [...prev, targetType]);
     setError(null);
 
     try {
@@ -276,44 +343,32 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
 
       const logoFile = await getLogoFile();
 
-      const promises = selectedAssets.map((assetType) => {
-        const templateKey = getTemplateKey(assetType);
-        const variables = getPromptVariables(details);
-        const prompt = renderPrompt(templateKey, variables);
+      const templateKey = getTemplateKey(targetType);
+      const variables = getPromptVariables(details);
+      const prompt = renderPrompt(templateKey, variables);
 
-        const formData = new FormData();
-        itemFiles.forEach((f) => formData.append("files", f));
-        formData.append("assetType", assetType);
-        formData.append("prompt", prompt);
-        if (assetType === AssetType.STAGING && logoFile) {
-          formData.append("logoFile", logoFile);
-        }
-
-        return generateAssetAction(formData);
-      });
-
-      const results = await Promise.allSettled(promises);
-      const successful: GeneratedAsset[] = [];
-      const errors: string[] = [];
-
-      for (const res of results) {
-        if (res.status === "fulfilled") {
-          const asset = res.value;
-          // Save to DB immediately
-          await saveAssetToDb(asset);
-
-          // If it was an image, we want the UI to update with the URL version eventually,
-          // but for immediate feedback Base64 is fine.
-          // Actually, since saveAssetToDb is async and we want to refresh the list...
-          // better to just re-fetch or optimistically add.
-          // Optimistic is tricky if we want the verified URL.
-          // Let's refetch all assets after batch to be safe and consistent.
-          successful.push(asset);
-        } else errors.push(res.reason?.message || "Unknown error");
+      const formData = new FormData();
+      itemFiles.forEach((f) => formData.append("files", f));
+      formData.append("assetType", targetType);
+      formData.append("prompt", prompt);
+      if (targetType === AssetType.STAGING && logoFile) {
+        formData.append("logoFile", logoFile);
       }
 
-      // Re-fetch to get the persisted versions (with URLs)
-      if (successful.length > 0 && supabase) {
+      const asset = await generateAssetAction(formData);
+
+      // Sanitize Description Markdown
+      if (targetType === AssetType.DESCRIPTION) {
+        asset.content = asset.content
+          .replace(/[•●]\s*/g, "\n- ") // Replace common bullet chars with markdown hyphen
+          .replace(/(?<!\n)- /g, "\n- "); // Ensure hyphens start on a new line
+      }
+
+      // Save
+      await saveAssetToDb(asset);
+
+      // Re-fetch to get the persisted versions
+      if (supabase) {
         const { data } = await supabase
           .from("generated_assets")
           .select("*")
@@ -330,92 +385,87 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
         }
       }
 
-      //   setGeneratedAssets(successful); // Replaced by refetch above
-      if (successful.length > 0)
-        addToast(`Generated ${successful.length} assets`, "success");
-      if (errors.length > 0) setError(`Errors: ${errors.join(", ")}`);
+      addToast(`Generated ${ASSET_TYPE_INFO[targetType].label}`, "success");
     } catch (e: any) {
       console.error(e);
       setError(e.message || "Generation failed");
     } finally {
-      setIsLoading(false);
+      setLoadingAssets((prev) => prev.filter((t) => t !== targetType));
     }
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      {/* Sidebar Controls */}
-      <div className="lg:col-span-4 space-y-6">
-        <div className="bg-card border border-border rounded-xl p-6">
-          <h3 className="font-semibold mb-4">Select Assets to Generate</h3>
-          <div className="space-y-2">
-            {visualTypes.map((type) => (
-              <AssetSelector
-                key={type}
+    <div className="space-y-8">
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg text-sm border border-red-200 dark:border-red-900/30">
+          {error}
+        </div>
+      )}
+
+      {/* Visual Assets Grid */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-primary" />
+          Visual Studio
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {visualTypes.map((type) => (
+            <div key={type} className="h-[420px]">
+              <SmartAssetCard
                 assetType={type}
-                label={ASSET_TYPE_INFO[type].label}
-                icon={ASSET_TYPE_INFO[type].icon}
-                isSelected={selectedAssets.includes(type)}
-                onToggle={() => toggleAssetSelection(type)}
+                generatedAsset={generatedAssets.find(
+                  (a) => a.type === type && a.isImage
+                )}
+                onGenerate={() => handleGenerate(type)}
+                isGenerating={loadingAssets.includes(type)}
+                onViewLarger={handleViewLarger}
                 details={details}
                 setDetails={setDetails}
-                isLoading={isLoading}
               />
-            ))}
-            <div className="border-t border-border my-2 pt-2">
-              {[AssetType.DESCRIPTION, AssetType.SOCIAL_POST].map((type) => (
-                <AssetSelector
-                  key={type}
-                  assetType={type}
-                  label={ASSET_TYPE_INFO[type].label}
-                  icon={ASSET_TYPE_INFO[type].icon}
-                  isSelected={selectedAssets.includes(type)}
-                  onToggle={() => toggleAssetSelection(type)}
-                  details={details}
-                  setDetails={setDetails}
-                  isLoading={isLoading}
-                />
-              ))}
             </div>
-          </div>
-
-          <Button
-            onClick={handleGenerate}
-            disabled={isLoading || selectedAssets.length === 0}
-            className="w-full mt-6"
-          >
-            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            Generate Content
-          </Button>
-
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+          ))}
         </div>
       </div>
 
-      {/* Results Area */}
-      <div className="lg:col-span-8 space-y-6">
-        {generatedAssets.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {generatedAssets.map((asset, idx) => (
-              <AssetCard
-                key={idx}
-                asset={asset}
-                onRegenerate={() => {}} // TODO implement single regen?
-                isRegenerating={false}
+      {/* Text Assets Grid */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <FileText className="w-5 h-5 text-primary" />
+          Content Studio
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[AssetType.DESCRIPTION, AssetType.SOCIAL_POST].map((type) => (
+            <div key={type} className="h-[500px]">
+              <SmartAssetCard
+                assetType={type}
+                generatedAsset={generatedAssets.find(
+                  (a) => a.type === type && !a.isImage
+                )}
+                onGenerate={() => handleGenerate(type)}
+                isGenerating={loadingAssets.includes(type)}
+                details={details}
+                setDetails={setDetails}
               />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-border rounded-xl bg-muted/20 min-h-[300px]">
-            <Sparkles className="w-10 h-10 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium">Ready to Visualize</h3>
-            <p className="text-muted-foreground text-center max-w-sm">
-              Select your desired assets and styling options on the left to
-              generating stunning content for this item.
-            </p>
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </div>
+
+      {lightboxOpen && (
+        <Lightbox
+          images={lightboxImages}
+          currentIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+          onNext={() =>
+            setLightboxIndex((prev) => (prev + 1) % lightboxImages.length)
+          }
+          onPrev={() =>
+            setLightboxIndex((prev) =>
+              prev === 0 ? lightboxImages.length - 1 : prev - 1
+            )
+          }
+        />
+      )}
     </div>
   );
 }

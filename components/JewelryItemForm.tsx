@@ -5,7 +5,22 @@ import { useRouter } from "next/navigation";
 import { Loader2, Upload, X } from "lucide-react";
 import { Button, Input, Label, Textarea, Card } from "./ui";
 // Removed bad imports
-import { JewelryType, JewelryItemInsert, ProductDetails } from "@/types";
+import {
+  JewelryType,
+  JewelryItemInsert,
+  ProductDetails,
+  StagingSurface,
+  LightingMood,
+  StagingLayout,
+  WhiteBgAngle,
+  WhiteBgFraming,
+  WhiteBgShadow,
+  ModelSkinTone,
+  ModelShotType,
+  ModelBackground,
+  ModelLighting,
+  ModelClothing,
+} from "@/types";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import AttributeInput from "./AttributeInput";
@@ -55,6 +70,26 @@ export default function JewelryItemForm({
     chainMaterial: initialDetails.chainMaterial || "",
     charmDetails: initialDetails.charmDetails || "",
     idealWear: initialDetails.idealWear || "Built for everyday use",
+
+    // Generation Defaults
+    stagingProps: initialDetails.stagingProps || [
+      "Gift Box",
+      "Fresh Flowers",
+      "Silk Ribbon",
+    ],
+    stagingSurface: initialDetails.stagingSurface || StagingSurface.MARBLE,
+    lightingMood: initialDetails.lightingMood || LightingMood.SOFT,
+    stagingLayout: initialDetails.stagingLayout || StagingLayout.DRAPED,
+    whiteBgAngle: initialDetails.whiteBgAngle || WhiteBgAngle.TOP_DOWN,
+    whiteBgFraming:
+      initialDetails.whiteBgFraming || WhiteBgFraming.FULL_PRODUCT,
+    whiteBgShadow: initialDetails.whiteBgShadow || WhiteBgShadow.NONE,
+    modelSkinTone: initialDetails.modelSkinTone || ModelSkinTone.LIGHT,
+    modelShotType: initialDetails.modelShotType || ModelShotType.CLOSE_UP,
+    modelBackground:
+      initialDetails.modelBackground || ModelBackground.LIFESTYLE,
+    modelLighting: initialDetails.modelLighting || ModelLighting.SOFT_NATURAL,
+    modelClothing: initialDetails.modelClothing || ModelClothing.WHITE,
   });
 
   // Images State
@@ -79,7 +114,8 @@ export default function JewelryItemForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !supabase) return;
+    const client = supabase;
+    if (!user || !client) return;
 
     setLoading(true);
     setError(null);
@@ -96,7 +132,7 @@ export default function JewelryItemForm({
         // We'll trust the unique constraint or check locally.
         // Simpler: Just try insert and ignore error.
         try {
-          await supabase
+          await client
             .from("jewelry_attributes")
             .insert({ category, value: value.trim(), user_id: user.id })
             .select();
@@ -105,8 +141,8 @@ export default function JewelryItemForm({
         }
       };
 
-      // Fire and forget attribute saving (parallel)
-      Promise.all([
+      // Save attributes
+      await Promise.all([
         saveAttribute("material", details.material || ""),
         saveAttribute("gemstone", details.stone || ""),
         saveAttribute("shape", details.shape || ""),
@@ -122,52 +158,48 @@ export default function JewelryItemForm({
         saveAttribute("ideal_wear", details.idealWear || ""),
       ]);
 
+      // Upload files
       for (const file of newFiles) {
         const fileExt = file.name.split(".").pop();
-        const fileName = `${user.id}/${Date.now()}-${Math.random()
-          .toString(36)
-          .substring(7)}.${fileExt}`;
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${user.id}/${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError } = await client.storage
           .from("jewelry-images")
-          .upload(fileName, file);
+          .upload(filePath, file);
 
         if (uploadError) throw uploadError;
 
         const {
           data: { publicUrl },
-        } = supabase.storage.from("jewelry-images").getPublicUrl(fileName);
+        } = client.storage.from("jewelry-images").getPublicUrl(filePath);
 
         uploadedUrls.push(publicUrl);
       }
 
-      const allImages = [...existingImages, ...uploadedUrls];
-
-      // 2. Insert/Update Item
+      // 2. Save Item to DB
       const itemData: JewelryItemInsert = {
+        user_id: user.id,
         name,
         description,
         type,
-        images: allImages,
+        images: [...existingImages, ...uploadedUrls],
         details: {
           ...details,
           name, // Sync name
           type, // Sync type
-        } as any, // Json cast
-        user_id: user.id,
+        } as any, // Cast to any for JSONB compatibility if needed
       };
 
-      if (mode === "create") {
-        const { error: insertError } = await supabase
-          .from("jewelry_items")
-          .insert(itemData);
-        if (insertError) throw insertError;
-      } else if (mode === "edit" && initialData?.id) {
-        const { error: updateError } = await supabase
+      if (mode === "edit" && initialData?.id) {
+        const { error } = await client
           .from("jewelry_items")
           .update(itemData)
           .eq("id", initialData.id);
-        if (updateError) throw updateError;
+        if (error) throw error;
+      } else {
+        const { error } = await client.from("jewelry_items").insert(itemData);
+        if (error) throw error;
       }
 
       if (onSuccess) {
@@ -176,8 +208,8 @@ export default function JewelryItemForm({
         router.push("/dashboard");
       }
     } catch (err: any) {
-      console.error("Submission failed:", err);
-      setError(err.message || "Failed to save item.");
+      console.error("Error saving item:", err);
+      setError(err.message || "Failed to save item");
     } finally {
       setLoading(false);
     }
@@ -294,6 +326,32 @@ export default function JewelryItemForm({
               placeholder="e.g. AA+ to AAA"
             />
           </div>
+
+          {/* New Fields for Description Completeness */}
+          <div className="space-y-2">
+            <Label>Length (inches)</Label>
+            <Input
+              value={details.necklaceLengthValue}
+              onChange={(e) =>
+                setDetails((prev) => ({
+                  ...prev,
+                  necklaceLengthValue: e.target.value,
+                }))
+              }
+              placeholder="e.g. 18"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Clasp Type</Label>
+            <Input
+              value={details.claspType}
+              onChange={(e) =>
+                setDetails((prev) => ({ ...prev, claspType: e.target.value }))
+              }
+              placeholder="e.g. Spring ring"
+            />
+          </div>
+
           <div className="space-y-2">
             <Label>Chain/Base Material</Label>
             <Input
