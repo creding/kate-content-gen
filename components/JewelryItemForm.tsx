@@ -8,6 +8,7 @@ import { Button, Input, Label, Textarea, Card } from "./ui";
 import { JewelryType, JewelryItemInsert, ProductDetails } from "@/types";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import AttributeInput from "./AttributeInput";
 
 interface JewelryItemFormProps {
   initialData?: Partial<JewelryItemInsert>;
@@ -49,6 +50,8 @@ export default function JewelryItemForm({
     visualCharacteristic: initialDetails.visualCharacteristic || "",
     stoneDimensions: initialDetails.stoneDimensions || "",
     stoneGrade: initialDetails.stoneGrade || "",
+    necklaceLengthValue: initialDetails.necklaceLengthValue || "",
+    claspType: initialDetails.claspType || "",
     chainMaterial: initialDetails.chainMaterial || "",
     charmDetails: initialDetails.charmDetails || "",
     idealWear: initialDetails.idealWear || "Built for everyday use",
@@ -84,6 +87,40 @@ export default function JewelryItemForm({
     try {
       // 1. Upload New Images
       const uploadedUrls: string[] = [];
+
+      // Helper to save attributes
+      const saveAttribute = async (category: string, value: string) => {
+        if (!value || !value.trim()) return;
+        // Check if exists could be skipped via UNIQUE constraint + ON CONFLICT DO NOTHING
+        // but Supabase JS doesn't expose easy ON CONFLICT without setup.
+        // We'll trust the unique constraint or check locally.
+        // Simpler: Just try insert and ignore error.
+        try {
+          await supabase
+            .from("jewelry_attributes")
+            .insert({ category, value: value.trim(), user_id: user.id })
+            .select();
+        } catch (e) {
+          // Ignore duplicate error
+        }
+      };
+
+      // Fire and forget attribute saving (parallel)
+      Promise.all([
+        saveAttribute("material", details.material || ""),
+        saveAttribute("gemstone", details.stone || ""),
+        saveAttribute("shape", details.shape || ""),
+        saveAttribute(
+          "visual_characteristic",
+          details.visualCharacteristic || ""
+        ),
+        saveAttribute("stone_dimensions", details.stoneDimensions || ""),
+        saveAttribute("stone_grade", details.stoneGrade || ""),
+        saveAttribute("chain_material", details.chainMaterial || ""),
+        saveAttribute("charm_detail", details.charmDetails || ""),
+        saveAttribute("clasp_type", details.claspType || ""),
+        saveAttribute("ideal_wear", details.idealWear || ""),
+      ]);
 
       for (const file of newFiles) {
         const fileExt = file.name.split(".").pop();
@@ -204,49 +241,36 @@ export default function JewelryItemForm({
         <p className="text-sm text-muted-foreground">Used for AI generation.</p>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>Material</Label>
-            <Input
-              value={details.material}
-              onChange={(e) =>
-                setDetails((prev) => ({ ...prev, material: e.target.value }))
-              }
-              placeholder="e.g. 18k Gold"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Gemstone</Label>
-            <Input
-              value={details.stone}
-              onChange={(e) =>
-                setDetails((prev) => ({ ...prev, stone: e.target.value }))
-              }
-              placeholder="e.g. Diamond"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Shape/Cut</Label>
-            <Input
-              value={details.shape}
-              onChange={(e) =>
-                setDetails((prev) => ({ ...prev, shape: e.target.value }))
-              }
-              placeholder="e.g. Oval"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Visual Characteristic</Label>
-            <Input
-              value={details.visualCharacteristic}
-              onChange={(e) =>
-                setDetails((prev) => ({
-                  ...prev,
-                  visualCharacteristic: e.target.value,
-                }))
-              }
-              placeholder="e.g. Vintage"
-            />
-          </div>
+          <AttributeInput
+            category="material"
+            label="Material"
+            value={details.material}
+            onChange={(v) => setDetails((prev) => ({ ...prev, material: v }))}
+            placeholder="e.g. 18k Gold"
+          />
+          <AttributeInput
+            category="gemstone"
+            label="Gemstone"
+            value={details.stone}
+            onChange={(v) => setDetails((prev) => ({ ...prev, stone: v }))}
+            placeholder="e.g. Diamond"
+          />
+          <AttributeInput
+            category="shape"
+            label="Shape/Cut"
+            value={details.shape}
+            onChange={(v) => setDetails((prev) => ({ ...prev, shape: v }))}
+            placeholder="e.g. Oval"
+          />
+          <AttributeInput
+            category="visual_characteristic"
+            label="Visual Characteristic"
+            value={details.visualCharacteristic}
+            onChange={(v) =>
+              setDetails((prev) => ({ ...prev, visualCharacteristic: v }))
+            }
+            placeholder="e.g. Vintage"
+          />
           <div className="space-y-2">
             <Label>Stone Dimensions</Label>
             <Input

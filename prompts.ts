@@ -171,25 +171,24 @@ OUTPUT:
 NEGATIVE (avoid these):
 extra chain, extender chain, extension chain, added links, hallucinated details, drawing, sketch, 3d render, modification, improvement, double chain, clasp chain, loop, dangling chain.`,
 
-  DESCRIPTION_EARRINGS: `You are a professional e-commerce copywriter. Use the uploaded product image to write a clear, factual product description for earrings using the suggested structure and neutral tone below. Replace the bracketed details with the new product information. Do not add flowery, luxurious, or evocative language. Keep sentences direct and informative. You can be somewhat creative with the description. Make sure that it makes sense, revise the format, if needed, so that the product details accurately present the image uploaded. Do not add special text formatting for the dimensions, I should be able to copy/paste without a problem. You can add to the description any information that may assist the customer in understanding the earrings, use the provided image..
+  DESCRIPTION_EARRINGS: `You are a professional e-commerce copywriter. Write a clear, factual product description for earrings matching the EXACT structure below.
 
-Basic Format - use the provided image to add to this:
-Discover the [Earring Name], a pair designed for daily wear. It features a [shape] of Genuine [Stone Type], selected for its [visual characteristic]. The earrings hang from [hook/hoop/post] made of [earring material].
+  <Structure>
+  Discover {{name}}, a pair designed for daily wear. It features {{stoneDimensions}} {{stone}} selected for their {{visualCharacteristic}}.
+  Stone: {{stoneGrade}}, {{stoneDimensions}}, {{stone}}.
+  Material: {{material}}.
+  Details: Includes a {{claspType}} and a {{charmDetails}}.
+  Ideal Wear: {{idealWear}}.
+  </Structure>
 
-• Stone: Polished, [shape] Genuine [Stone Type].
-• Earring Material: [earring material] [hook/hoop/post].
-• Style: [drop/stud/hoop]
-• Details: Includes a [clasp type/backing type] and a [accent detail] on the back.
-• Ideal Wear: Built for everyday use
-
-Now generate using these details:
-
-* Earring Name: {{name}}
-* Stone Type: {{stone}}
-* Shape: {{shape}}
-* Visual Characteristic: {{visualCharacteristic}}
-* Hook/Hoop/Post: {{hookType}}
-* Earring Material: {{material}}`,
+  <Instructions>
+  - Replace the variables {{variable}} with the provided details.
+  - CRITICAL: If a variable (like {{stoneDimensions}}, {{stoneGrade}}, etc.) is empty, unknown, or "undefined", COMPLETELY DISREGARD that part of the sentence. Do NOT invent or hallucinate a value.
+  - Example: If {{stoneDimensions}} is missing, just say "features {{stone}}".
+  - Example: If {{charmDetails}} is missing, just say "Includes a {{claspType}}."
+  - Keep the structure but adapt slightly for grammar if fields are missing.
+  - Do NOT reference chains or necklace lengths for earrings.
+  </Instructions>`,
 
   DESCRIPTION_NECKLACE: `You are a professional e-commerce copywriter. Write a clear, factual product description for a necklace matching the EXACT structure below.
   
@@ -204,9 +203,11 @@ Now generate using these details:
   
   <Instructions>
   - Replace the variables {{variable}} with the provided details.
-  - If a variable is empty or 'undefined', do not include it or the surrounding text if it makes the sentence awkward. Instead, adapt slightly to be grammatically correct, but prioritize the structure.
-  - Keep it factual. No fluff.
-  - The "Chain Material" line is critical.
+  - CRITICAL: If a variable (like {{stoneDimensions}}, {{chainMaterial}}) is empty, unknown, or "undefined", COMPLETELY DISREGARD that part of the sentence or line. Do NOT invent or hallucinate a value.
+  - Example: If {{chainMaterial}} is missing, remove the "Chain Material" line entirely.
+  - Example: If {{charmDetails}} is missing, just say "Includes a {{claspType}}."
+  - Keep the structure but adapt slightly for grammar if fields are missing.
+  - The "Chain Material" line is critical ONLY if the value exists.
   </Instructions>`,
 
   SOCIAL: `Create a professional, concise social media post (no emojis) using the provided image.

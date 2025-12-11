@@ -14,7 +14,17 @@ import { Button } from "@/components/ui";
 import { usePrompts } from "@/contexts/PromptContext";
 import { useToast } from "@/contexts/ToastContext";
 import { useBrand } from "@/contexts/BrandContext";
-import { Image, Sparkles, User, FileText, Share2, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
+import {
+  Image,
+  Sparkles,
+  User,
+  FileText,
+  Share2,
+  Loader2,
+  Trash2,
+} from "lucide-react";
 import { PromptTemplateKey } from "@/prompts";
 
 interface AssetGeneratorProps {
@@ -56,11 +66,35 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
   const { renderPrompt } = usePrompts();
   const { addToast } = useToast();
   const { settings: brandSettings, getEffectiveLogo } = useBrand();
+  const { user } = useAuth(); // Need user for storage path
 
   const [selectedAssets, setSelectedAssets] = useState<AssetType[]>([]);
   const [generatedAssets, setGeneratedAssets] = useState<GeneratedAsset[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Load existing assets on mount
+  React.useEffect(() => {
+    const fetchAssets = async () => {
+      if (!item.id || !supabase) return;
+      const { data } = await supabase
+        .from("generated_assets")
+        .select("*")
+        .eq("item_id", item.id)
+        .order("created_at", { ascending: false });
+
+      if (data) {
+        setGeneratedAssets(
+          data.map((d) => ({
+            type: d.type as AssetType,
+            content: d.content,
+            isImage: d.is_image,
+          }))
+        );
+      }
+    };
+    fetchAssets();
+  }, [item.id]);
 
   // Local details state (initialized from item, but editable for generation context)
   // Casting to ProductDetails to ensure compatibility, though item.details should match.
@@ -176,6 +210,57 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
     };
   };
 
+  const saveAssetToDb = async (asset: GeneratedAsset) => {
+    if (!user || !supabase) return;
+
+    let finalContent = asset.content;
+
+    // If image, upload to storage first
+    if (asset.isImage && asset.content.startsWith("data:")) {
+      try {
+        const res = await fetch(asset.content);
+        const blob = await res.blob();
+        const fileExt = asset.content.substring(
+          asset.content.indexOf("/") + 1,
+          asset.content.indexOf(";")
+        );
+        const fileName = `${user.id}/generated/${Date.now()}-${Math.random()
+          .toString(36)
+          .substring(7)}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("jewelry-images")
+          .upload(fileName, blob);
+
+        if (uploadError) throw uploadError;
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("jewelry-images").getPublicUrl(fileName);
+        finalContent = publicUrl;
+      } catch (e) {
+        console.error("Failed to upload generated asset", e);
+        // Fallback: don't save if upload failed, or save base64 (not recommended but preserves data)?
+        // For now, fail silently on storage and just don't save DB record to avoid broken links
+        return;
+      }
+    }
+
+    // Insert into DB
+    const { error: insertError } = await supabase
+      .from("generated_assets")
+      .insert({
+        item_id: item.id,
+        type: asset.type,
+        content: finalContent,
+        is_image: asset.isImage,
+      });
+
+    if (insertError) {
+      console.error("Failed to save asset record", insertError);
+    }
+  };
+
   const handleGenerate = async () => {
     if (selectedAssets.length === 0) {
       setError("Select at least one asset type.");
@@ -211,12 +296,41 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
       const successful: GeneratedAsset[] = [];
       const errors: string[] = [];
 
-      results.forEach((res) => {
-        if (res.status === "fulfilled") successful.push(res.value);
-        else errors.push(res.reason?.message || "Unknown error");
-      });
+      for (const res of results) {
+        if (res.status === "fulfilled") {
+          const asset = res.value;
+          // Save to DB immediately
+          await saveAssetToDb(asset);
 
-      setGeneratedAssets(successful);
+          // If it was an image, we want the UI to update with the URL version eventually,
+          // but for immediate feedback Base64 is fine.
+          // Actually, since saveAssetToDb is async and we want to refresh the list...
+          // better to just re-fetch or optimistically add.
+          // Optimistic is tricky if we want the verified URL.
+          // Let's refetch all assets after batch to be safe and consistent.
+          successful.push(asset);
+        } else errors.push(res.reason?.message || "Unknown error");
+      }
+
+      // Re-fetch to get the persisted versions (with URLs)
+      if (successful.length > 0 && supabase) {
+        const { data } = await supabase
+          .from("generated_assets")
+          .select("*")
+          .eq("item_id", item.id)
+          .order("created_at", { ascending: false });
+        if (data) {
+          setGeneratedAssets(
+            data.map((d) => ({
+              type: d.type as AssetType,
+              content: d.content,
+              isImage: d.is_image,
+            }))
+          );
+        }
+      }
+
+      //   setGeneratedAssets(successful); // Replaced by refetch above
       if (successful.length > 0)
         addToast(`Generated ${successful.length} assets`, "success");
       if (errors.length > 0) setError(`Errors: ${errors.join(", ")}`);
