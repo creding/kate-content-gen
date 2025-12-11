@@ -191,33 +191,23 @@ Now generate using these details:
 * Hook/Hoop/Post: {{hookType}}
 * Earring Material: {{material}}`,
 
-  DESCRIPTION_NECKLACE: `You are a professional e-commerce copywriter. Write a clear, factual product description for a necklace using the suggested structure and neutral tone below. Replace the bracketed details with the new product information. Do not add flowery, luxurious, or evocative language. Keep sentences direct and informative. You can be somewhat creative with the description.
-
-**Format:**
-
-Discover the [Necklace Name], a piece designed for daily wear. It features a [shape] of Genuine [Stone Type], selected for its [visual characteristic].
-
-The pendant hangs from a [length]-inch [chain style] made of [chain material]. This construction provides a tarnish-resistant finish. The chain lays flat and moves smoothly.
-
-• **Stone:** Polished, [shape] Genuine [Stone Type].
-• **Chain Material:** [chain material] [chain style].
-• **Length:** [length] inches, suitable for most necklines or layering.
-• **Details:** Includes a [clasp type] and a [accent detail] on the back.
-• **Ideal Wear:** Built for everyday use, resists tarnish, and retains shine.
-
-**Now generate using these details:**
-
-- Necklace Name: {{name}}
-- Stone Type: {{stone}}
-- Shape: {{shape}}
-- Visual Characteristic: {{visualCharacteristic}}
-- Length: {{necklaceLengthValue}}
-- Chain Style: Cable chain
-- Chain Material: {{material}}
-- Clasp Type: {{claspType}}
-- Accent Detail: {{accentDetail}}
-
-Use plain, factual language only. No metaphors, prestige, or poetic phrasing.`,
+  DESCRIPTION_NECKLACE: `You are a professional e-commerce copywriter. Write a clear, factual product description for a necklace matching the EXACT structure below.
+  
+  <Structure>
+  Discover {{name}}, a piece designed for daily wear. It features {{stoneDimensions}} {{stone}} selected for their {{visualCharacteristic}}. The {{necklaceLengthValue}} inch chain lays flat and moves smoothly.
+  Stone: {{stoneGrade}}, {{stoneDimensions}}, {{stone}}.
+  Chain Material: {{chainMaterial}}.
+  Length: {{necklaceLengthValue}} inches, suitable for most necklines or layering.
+  Details: Includes a {{claspType}} and a {{charmDetails}} on the back.
+  Ideal Wear: {{idealWear}}.
+  </Structure>
+  
+  <Instructions>
+  - Replace the variables {{variable}} with the provided details.
+  - If a variable is empty or 'undefined', do not include it or the surrounding text if it makes the sentence awkward. Instead, adapt slightly to be grammatically correct, but prioritize the structure.
+  - Keep it factual. No fluff.
+  - The "Chain Material" line is critical.
+  </Instructions>`,
 
   SOCIAL: `Create a professional, concise social media post (no emojis) using the provided image.
 
