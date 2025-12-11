@@ -49,7 +49,7 @@ export const generateAssetAction = async (
     }))
   );
 
-  let modelName = "gemini-2.5-flash-image";
+  let modelName = "gemini-3-pro-image-preview";
   let isImageOutput = true;
 
   // Determine model and output type based on AssetType
