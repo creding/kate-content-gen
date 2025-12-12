@@ -111,6 +111,12 @@ export interface ProductDetails {
   modelBackground?: ModelBackground;
   modelLighting?: ModelLighting;
   modelClothing?: ModelClothing;
+  // New fields for structured description
+  stoneDimensions?: string;
+  stoneGrade?: string;
+  chainMaterial?: string;
+  charmDetails?: string;
+  idealWear?: string;
 }
 
 export enum AssetType {

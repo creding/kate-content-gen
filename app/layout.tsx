@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Providers } from "../components/Providers";
-import Layout from "../components/Layout";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Jewelry GenAI Studio",
-  description: "AI-powered content generation for jewelry brands",
+  title: "Kate Crawford Jewelry",
+  description: "Content generation for Kate Crawford Jewelry",
 };
 
 export default function RootLayout({
@@ -16,9 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>
-          <Layout>{children}</Layout>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
