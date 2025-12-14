@@ -14,7 +14,8 @@ import {
   ModelShotType,
   ModelBackground,
   ModelLighting,
-  ModelClothing,
+  ModelClothingColor,
+  ModelClothingType,
 } from "../types";
 import { Input, Label, Select, Textarea, Card, cn } from "./ui";
 

@@ -62,6 +62,7 @@ CRITICAL JEWELRY PRESERVATION:
 - The earrings are the PRIMARY REFERENCE. Keep them EXACTLY the same.
 - Keep all gemstone details, metal color, and design exactly as shown.
 - Do NOT modify any aspect of the earrings.
+- {{typeSpecificInstruction}}
 
 MODEL APPEARANCE:
 {{modelSkinToneInstruction}}
@@ -108,6 +109,7 @@ NEGATIVE: No jewelry modifications, no distracting elements.`,
 INPUT PRESERVATION:
 - The input image is the absolute reference. Preserve the earrings EXACTLY as they appear.
 - Do not modify stones, metal, or shape.
+- {{typeSpecificInstruction}}
 
 BACKGROUND & LIGHTING:
 - Background: Pure White (Hex code #FFFFFF). DO NOT ADD A GRADIENT OR VIGNETTE. THE BACKGROUND MUST BE PURE WHITE ACROSS THE ENTIRE IMAGE.
@@ -116,7 +118,8 @@ BACKGROUND & LIGHTING:
 - Framing: {{whiteBgAngleInstruction}}, {{whiteBgFramingInstruction}}
 
 INSTRUCTIONS:
-- Position the earrings naturally as if laid flat or displayed on a stand, but invisible stand processing.
+- CRITICAL FRAMING: Portrait orientation (3:4 aspect ratio). Ensure exactly 30% whitespace padding around the jewelry piece on all sides. Zoom out slightly to ensure the entire item is visible with generous breathing room. DO NOT CROP.
+- Position the earrings according to the specified framing angle.
 - Ensure the background is uniformly white (255, 255, 255) with no vignette or gray corners.
 - High contrast between the jewelry and the white background.
 
@@ -127,8 +130,9 @@ gray background, off-white, textured background, studio floor, vignette, dark co
 
 INPUT PRESERVATION:
 - The input image is the absolute reference. Preserve the piece EXACTLY.
-- Do not add extra chains, links, or charms.
-- Keep the exact structure of the original piece.
+- CRITICAL: Preserve all original details including charms, pendants, extender chains, and signature logo tags.
+- CLASP DETAILS: Ensure the clasp area is rendered EXACTLY as in the original image. Do not remove or smooth out the signature tag, logo charm, or extender chain at the clasp.
+- Do not add fake or hallucinated details, but strictly keep what is present in the input.
 
 BACKGROUND & LIGHTING:
 - Background: Pure White (Hex code #FFFFFF). DO NOT ADD A GRADIENT OR VIGNETTE. THE BACKGROUND MUST BE PURE WHITE ACROSS THE ENTIRE IMAGE.
@@ -137,12 +141,13 @@ BACKGROUND & LIGHTING:
 - Framing: {{whiteBgAngleInstruction}}, {{whiteBgFramingInstruction}}
 
 INSTRUCTIONS:
+- CRITICAL FRAMING: Portrait orientation (3:4 aspect ratio). Ensure exactly 30% whitespace padding around the jewelry piece on all sides. Zoom out slightly to ensure the entire item is visible with generous breathing room. DO NOT CROP.
 - Isolate the product on the pure white background.
 - Ensure there is no gray cast or gradient on the background.
 - The goal is a ready-to-use e-commerce image.
 
 NEGATIVE PROMPT:
-gray background, off-white, gradient, vignette, textured floor, studio props, blur, noise, distortion, extra chain, extender chain, modifications.`,
+gray background, off-white, gradient, vignette, textured floor, studio props, blur, noise, distortion, modifications, changes to design, removing signature tags, removing clasp details, missing chain.`,
 
   DESCRIPTION_EARRINGS: `You are a professional e-commerce copywriter. Write a clear, factual product description for earrings matching the EXACT structure below.
 
@@ -151,6 +156,7 @@ gray background, off-white, gradient, vignette, textured floor, studio props, bl
 
   - **Stone**: {{stoneGrade}}, {{stoneDimensions}}, {{stone}}.
   - **Material**: {{material}}.
+  - **Design**: {{stoneCount}}, {{earringLength}}.
   - **Details**: Includes a {{claspType}} and a {{charmDetails}}.
   - **Ideal Wear**: {{idealWear}}.
   </Structure>
@@ -163,6 +169,7 @@ gray background, off-white, gradient, vignette, textured floor, studio props, bl
   - FORMATTING: Output the specifications as a properly formatted Markdown list. Each item MUST be on its own new line.
   - Example: If {{stoneDimensions}} is missing, just say "features {{stone}}".
   - Example: If {{charmDetails}} is missing, just say "Includes a {{claspType}}."
+  - Example: If {{earringLength}} is missing, just remove that part from "Design".
   - Keep the structure but adapt slightly for grammar if fields are missing.
   - Do NOT reference chains or necklace lengths for earrings.
   </Instructions>`,

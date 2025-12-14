@@ -15,7 +15,8 @@ import {
   ModelShotType,
   ModelBackground,
   ModelLighting,
-  ModelClothing,
+  ModelClothingColor,
+  ModelClothingType,
 } from "../types";
 import { Select, cn } from "./ui";
 
@@ -386,7 +387,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                 <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Skin Tone
                 </label>
-                <div className="grid grid-cols-4 gap-1.5">
+                <div className="grid grid-cols-3 gap-1.5">
                   {Object.values(ModelSkinTone).map((tone) => {
                     const sel = details.modelSkinTone === tone;
                     return (
@@ -407,30 +408,54 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                 </div>
               </div>
 
-              {/* Clothing */}
+              {/* Clothing Color */}
               <div>
                 <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
-                  Clothing
+                  Clothing Color
                 </label>
-                <div className="grid grid-cols-5 gap-1.5">
-                  {Object.values(ModelClothing).map((color) => {
-                    const sel = details.modelClothing === color;
-                    return (
-                      <div
-                        key={color}
-                        onClick={() => handleChange("modelClothing", color)}
-                        className={cn(
-                          "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
-                          sel
-                            ? "bg-card text-foreground border-card"
-                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
-                        )}
-                      >
-                        {color}
-                      </div>
-                    );
-                  })}
-                </div>
+                <Select
+                  value={details.modelClothingColor || ""}
+                  onChange={(e) =>
+                    handleChange(
+                      "modelClothingColor",
+                      e.target.value as ModelClothingColor
+                    )
+                  }
+                  disabled={isLoading}
+                  className="!bg-primary/80 !border-primary-foreground/30 text-primary-foreground text-sm hover:!bg-primary/70 focus:!bg-primary/70"
+                >
+                  <option value="">-- Select --</option>
+                  {Object.values(ModelClothingColor).map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+
+              {/* Clothing Type */}
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
+                  Clothing Type
+                </label>
+                <Select
+                  value={details.modelClothingType || ""}
+                  onChange={(e) =>
+                    handleChange(
+                      "modelClothingType",
+                      e.target.value as ModelClothingType
+                    )
+                  }
+                  disabled={isLoading}
+                  className="!bg-primary/80 !border-primary-foreground/30 text-primary-foreground text-sm hover:!bg-primary/70 focus:!bg-primary/70"
+                >
+                  <option value="">-- Select --</option>
+                  {Object.values(ModelClothingType).map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </Select>
               </div>
 
               {/* Shot Type */}
@@ -438,25 +463,24 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                 <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Shot Type
                 </label>
-                <div className="grid grid-cols-3 gap-1.5">
-                  {Object.values(ModelShotType).map((shot) => {
-                    const sel = details.modelShotType === shot;
-                    return (
-                      <div
-                        key={shot}
-                        onClick={() => handleChange("modelShotType", shot)}
-                        className={cn(
-                          "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
-                          sel
-                            ? "bg-card text-foreground border-card"
-                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
-                        )}
-                      >
-                        {shot}
-                      </div>
-                    );
-                  })}
-                </div>
+                <Select
+                  value={details.modelShotType || ""}
+                  onChange={(e) =>
+                    handleChange(
+                      "modelShotType",
+                      e.target.value as ModelShotType
+                    )
+                  }
+                  disabled={isLoading}
+                  className="!bg-primary/80 !border-primary-foreground/30 text-primary-foreground text-sm hover:!bg-primary/70 focus:!bg-primary/70"
+                >
+                  <option value="">-- Select --</option>
+                  {Object.values(ModelShotType).map((shot) => (
+                    <option key={shot} value={shot}>
+                      {shot}
+                    </option>
+                  ))}
+                </Select>
               </div>
 
               {/* Background */}
@@ -464,25 +488,24 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({
                 <label className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2 block">
                   Background
                 </label>
-                <div className="grid grid-cols-3 gap-1.5">
-                  {Object.values(ModelBackground).map((bg) => {
-                    const sel = details.modelBackground === bg;
-                    return (
-                      <div
-                        key={bg}
-                        onClick={() => handleChange("modelBackground", bg)}
-                        className={cn(
-                          "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
-                          sel
-                            ? "bg-card text-foreground border-card"
-                            : "bg-primary-foreground/5 text-primary-foreground/80 border-transparent hover:bg-primary-foreground/10"
-                        )}
-                      >
-                        {bg}
-                      </div>
-                    );
-                  })}
-                </div>
+                <Select
+                  value={details.modelBackground || ""}
+                  onChange={(e) =>
+                    handleChange(
+                      "modelBackground",
+                      e.target.value as ModelBackground
+                    )
+                  }
+                  disabled={isLoading}
+                  className="!bg-primary/80 !border-primary-foreground/30 text-primary-foreground text-sm hover:!bg-primary/70 focus:!bg-primary/70"
+                >
+                  <option value="">-- Select --</option>
+                  {Object.values(ModelBackground).map((bg) => (
+                    <option key={bg} value={bg}>
+                      {bg}
+                    </option>
+                  ))}
+                </Select>
               </div>
 
               {/* Lighting */}

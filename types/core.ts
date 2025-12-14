@@ -40,51 +40,62 @@ export enum WhiteBgAngle {
   TOP_DOWN = "Top-Down (Aerial)",
   ANGLE_45 = "45° Angle",
   EYE_LEVEL = "Eye Level",
+  SIDE_VIEW = "Side View",
+  THREE_QUARTER = "3/4 View",
+  FLAT_LAY = "Flat Lay",
+  DYNAMIC_PAIR = "Dynamic Pair (Front & Side)",
 }
 
 export enum WhiteBgFraming {
-  CLOSE_UP = "Close-Up Detail",
   FULL_PRODUCT = "Full Product",
-  WITH_PADDING = "With Padding",
+  CLOSE_UP = "Detailed Close-Up",
+  MACRO = "Extreme Macro (Texture)",
 }
 
 export enum WhiteBgShadow {
-  NONE = "No Shadow",
-  SOFT = "Soft Shadow",
+  NONE = "No Shadow (Pure White)",
+  NATURAL = "Soft Natural Shadow",
   REFLECTION = "Reflection",
 }
 
 export enum ModelSkinTone {
   LIGHT = "Light",
-  MEDIUM = "Medium",
-  OLIVE = "Olive",
-  DEEP = "Deep",
+  TAN = "Tan",
+  DARK = "Dark",
 }
 
 export enum ModelShotType {
-  CLOSE_UP = "Close-Up",
-  PORTRAIT = "Portrait",
-  LIFESTYLE = "Lifestyle",
+  CLOSE_UP = "Close-Up (Jewelry Focus)",
+  PORTRAIT = "Portrait (Head & Shoulders)",
+  BUST = "Bust (Upper Body)",
 }
 
 export enum ModelBackground {
   STUDIO = "Studio Neutral",
   GRADIENT = "Soft Gradient",
   LIFESTYLE = "Blurred Lifestyle",
+  ELEGANT = "Elegant Lifestyle",
 }
 
 export enum ModelLighting {
   SOFT_NATURAL = "Soft Natural",
+  STUDIO_DRAMATIC = "Studio Dramatic",
   GOLDEN_HOUR = "Golden Hour",
-  STUDIO = "Studio Professional",
 }
 
-export enum ModelClothing {
-  BLACK = "Black",
+export enum ModelClothingColor {
   WHITE = "White",
-  CREAM = "Cream/Nude",
-  GRAY = "Gray",
-  NAVY = "Navy",
+  BLACK = "Black",
+  NEUTRAL = "Neutral/Beige",
+  PASTEL = "Soft Pastel",
+}
+
+export enum ModelClothingType {
+  BLOUSE = "Blouse",
+  SHIRT = "Shirt",
+  DRESS = "Dress",
+  TOP = "Simple Top",
+  TURTLENECK = "Turtleneck",
 }
 
 export interface ProductDetails {
@@ -110,13 +121,41 @@ export interface ProductDetails {
   modelShotType?: ModelShotType;
   modelBackground?: ModelBackground;
   modelLighting?: ModelLighting;
-  modelClothing?: ModelClothing;
+  modelClothingColor?: ModelClothingColor;
+  modelClothingType?: ModelClothingType;
   // New fields for structured description
   stoneDimensions?: string;
   stoneGrade?: string;
   chainMaterial?: string;
   charmDetails?: string;
   idealWear?: string;
+  earringLength?: EarringLength;
+  stoneCount?: StoneCount;
+  // Multi-stone support
+  detailedGemstones?: {
+    type: string;
+    dimensions: string;
+    shape: string;
+    grade?: string;
+    count?: string;
+  }[];
+}
+
+export enum EarringLength {
+  STUD = "Stud / Button",
+  HUGGIE = "Huggie / Small Hoop",
+  SHORT_DROP = 'Short Drop (0.5"-1")',
+  MEDIUM_DROP = 'Medium Drop (1"-2")',
+  LONG_DROP = 'Long Drop (2"+)',
+  SHOULDER = "Shoulder Duster",
+  HOOP = "Large Hoop",
+}
+
+export enum StoneCount {
+  ONE = "Solitaire / One Stone",
+  TWO = "Two Stones / Moi et Toi",
+  THREE = "Three Stones / Trinity",
+  MULTI = "Multi-Stone / Pave",
 }
 
 export enum AssetType {

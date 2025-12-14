@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AssetType,
   GeneratedAsset,
@@ -15,9 +15,12 @@ import {
   ModelShotType,
   ModelBackground,
   ModelLighting,
-  ModelClothing,
+  ModelClothingColor,
+  ModelClothingType,
+  EarringLength,
+  StoneCount,
 } from "../types";
-import { Card, Button, Input, Select, cn } from "./ui";
+import { Card, Button, Input, Select, Label, cn } from "./ui";
 import { useToast } from "../contexts/ToastContext";
 import {
   Settings,
@@ -28,17 +31,48 @@ import {
   Maximize2,
   Image as ImageIcon,
   Sparkles,
-  User,
   FileText,
   Share2,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
+// Asset Type Metadata
+const ASSET_TYPE_INFO: Record<
+  AssetType,
+  { label: string; icon: React.ElementType; description: string }
+> = {
+  [AssetType.STAGING]: {
+    label: "Staging",
+    icon: ImageIcon,
+    description: "Photorealistic staging on a surface",
+  },
+  [AssetType.MODEL]: {
+    label: "Model",
+    icon: Share2,
+    description: "Realistic model try-on shot",
+  },
+  [AssetType.WHITE_BG]: {
+    label: "White BG",
+    icon: Maximize2, // Placeholder
+    description: "Clean white background product shot",
+  },
+  [AssetType.DESCRIPTION]: {
+    label: "Copy",
+    icon: FileText,
+    description: "SEO-optimized product description",
+  },
+  [AssetType.SOCIAL_POST]: {
+    label: "Social",
+    icon: Share2,
+    description: "Engaging social media caption",
+  },
+};
+
+const isModelShot = (type: AssetType) => type === AssetType.MODEL;
+
 interface SmartAssetCardProps {
   assetType: AssetType;
-  generatedAsset?: GeneratedAsset;
+  generatedAsset?: GeneratedAsset | null;
   onGenerate: () => void;
   isGenerating?: boolean;
   onViewLarger?: (assetType: AssetType) => void;
@@ -58,37 +92,6 @@ const AVAILABLE_PROPS = [
   "Vintage Book",
   "Linen Fabric",
 ];
-
-const ASSET_TYPE_INFO: Record<
-  AssetType,
-  { label: string; description: string; icon: React.ElementType }
-> = {
-  [AssetType.WHITE_BG]: {
-    label: "Clean Product Shot",
-    description: "E-commerce ready white background",
-    icon: ImageIcon,
-  },
-  [AssetType.STAGING]: {
-    label: "Lifestyle Scene",
-    description: "Elegant staging with props",
-    icon: Sparkles,
-  },
-  [AssetType.MODEL]: {
-    label: "Model Showcase",
-    description: "Jewelry worn on a model",
-    icon: User,
-  },
-  [AssetType.DESCRIPTION]: {
-    label: "Product Description",
-    description: "SEO-friendly listing copy",
-    icon: FileText,
-  },
-  [AssetType.SOCIAL_POST]: {
-    label: "Social Media Post",
-    description: "Engaging caption & hashtags",
-    icon: Share2,
-  },
-};
 
 const hasSettings = (type: AssetType) => {
   return [AssetType.WHITE_BG, AssetType.STAGING, AssetType.MODEL].includes(
@@ -113,6 +116,33 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
   const handleChange = (field: keyof ProductDetails, value: any) => {
     setDetails((prev) => ({ ...prev, [field]: value }));
   };
+
+  // Auto-infer Necklace Length if not set
+  useEffect(() => {
+    if (
+      details.type === JewelryType.NECKLACE &&
+      !details.necklaceLength &&
+      details.necklaceLengthValue
+    ) {
+      const val = parseInt(
+        details.necklaceLengthValue.replace(/[^0-9]/g, ""),
+        10
+      );
+      if (!isNaN(val)) {
+        let derivedLength: NecklaceLength | undefined;
+        if (val < 14) derivedLength = NecklaceLength.COLLAR;
+        else if (val < 17) derivedLength = NecklaceLength.CHOKER;
+        else if (val < 20) derivedLength = NecklaceLength.PRINCESS;
+        else if (val < 25) derivedLength = NecklaceLength.MATINEE;
+        else if (val < 37) derivedLength = NecklaceLength.OPERA;
+        else derivedLength = NecklaceLength.ROPE;
+
+        if (derivedLength) {
+          handleChange("necklaceLength", derivedLength);
+        }
+      }
+    }
+  }, [details.type, details.necklaceLength, details.necklaceLengthValue]);
 
   const toggleProp = (prop: string) => {
     const currentProps = details.stagingProps || [];
@@ -242,6 +272,65 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
           </div>
 
           <div className="flex-grow overflow-y-auto space-y-5 pr-2 scrollbar-thin scrollbar-thumb-border">
+            {/* GENERAL PRODUCT SPECS - Available for all visual types */}
+            {hasSettings(assetType) && (
+              <div className="border-b border-border pb-4 mb-4 space-y-4">
+                {/* Earring Length (Only for Model Shots) */}
+                {isModelShot(assetType) &&
+                  details.type === JewelryType.EARRINGS && (
+                    <div className="mb-4">
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
+                        Earring Length
+                      </label>
+                      <Select
+                        className="w-full text-sm"
+                        value={details.earringLength || ""}
+                        onChange={(e) =>
+                          handleChange(
+                            "earringLength",
+                            e.target.value as EarringLength
+                          )
+                        }
+                      >
+                        <option value="">Select Length...</option>
+                        {Object.values(EarringLength).map((len) => (
+                          <option key={len} value={len}>
+                            {len}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                  )}
+
+                {/* Necklace Length (Only for Model Shots) */}
+                {isModelShot(assetType) &&
+                  details.type === JewelryType.NECKLACE && (
+                    <div className="mb-4">
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
+                        Necklace Length
+                      </label>
+                      <Select
+                        className="w-full text-sm"
+                        value={details.necklaceLength || ""}
+                        onChange={(e) =>
+                          handleChange(
+                            "necklaceLength",
+                            e.target.value as NecklaceLength
+                          )
+                        }
+                      >
+                        <option value="">Select Length...</option>
+                        {Object.values(NecklaceLength).map((len) => (
+                          <option key={len} value={len}>
+                            {len}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                  )}
+              </div>
+            )}
+
             {/* WHITE BACKGROUND SETTINGS */}
             {assetType === AssetType.WHITE_BG && (
               <>
@@ -251,23 +340,32 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
                     Camera Angle
                   </label>
                   <div className="grid grid-cols-3 gap-2">
-                    {Object.values(WhiteBgAngle).map((angle) => {
-                      const sel = details.whiteBgAngle === angle;
-                      return (
-                        <div
-                          key={angle}
-                          onClick={() => handleChange("whiteBgAngle", angle)}
-                          className={cn(
-                            "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center flex items-center justify-center min-h-[40px]",
-                            sel
-                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                              : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          {angle}
-                        </div>
-                      );
-                    })}
+                    {Object.values(WhiteBgAngle)
+                      .filter((angle) => {
+                        if (
+                          angle === WhiteBgAngle.DYNAMIC_PAIR &&
+                          details.type !== JewelryType.EARRINGS
+                        )
+                          return false;
+                        return true;
+                      })
+                      .map((angle) => {
+                        const sel = details.whiteBgAngle === angle;
+                        return (
+                          <div
+                            key={angle}
+                            onClick={() => handleChange("whiteBgAngle", angle)}
+                            className={cn(
+                              "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center flex items-center justify-center min-h-[40px]",
+                              sel
+                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
+                            )}
+                          >
+                            {angle}
+                          </div>
+                        );
+                      })}
                   </div>
                 </div>
                 {/* Framing */}
@@ -452,7 +550,7 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                     Skin Tone
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     {Object.values(ModelSkinTone).map((tone) => {
                       const sel = details.modelSkinTone === tone;
                       return (
@@ -473,58 +571,76 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
                   </div>
                 </div>
 
-                {/* Clothing */}
+                {/* Clothing Color */}
                 <div>
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
-                    Clothing
+                    Clothing Color
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {Object.values(ModelClothing).map((clothing) => {
-                      const sel = details.modelClothing === clothing;
-                      return (
-                        <div
-                          key={clothing}
-                          onClick={() =>
-                            handleChange("modelClothing", clothing)
-                          }
-                          className={cn(
-                            "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
-                            sel
-                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                              : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          {clothing}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.modelClothingColor || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "modelClothingColor",
+                        e.target.value as ModelClothingColor
+                      )
+                    }
+                  >
+                    <option value="">Select Color...</option>
+                    {Object.values(ModelClothingColor).map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
 
-                {/* Shot */}
+                {/* Clothing Type */}
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
+                    Clothing Type
+                  </label>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.modelClothingType || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "modelClothingType",
+                        e.target.value as ModelClothingType
+                      )
+                    }
+                  >
+                    <option value="">Select Type...</option>
+                    {Object.values(ModelClothingType).map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+
+                {/* Shot Type */}
                 <div>
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                     Shot Type
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.values(ModelShotType).map((shot) => {
-                      const sel = details.modelShotType === shot;
-                      return (
-                        <div
-                          key={shot}
-                          onClick={() => handleChange("modelShotType", shot)}
-                          className={cn(
-                            "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
-                            sel
-                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                              : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          {shot}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.modelShotType || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "modelShotType",
+                        e.target.value as ModelShotType
+                      )
+                    }
+                  >
+                    <option value="">Select Shot Type...</option>
+                    {Object.values(ModelShotType).map((shot) => (
+                      <option key={shot} value={shot}>
+                        {shot}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
 
                 {/* Background */}
@@ -532,21 +648,45 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                     Background
                   </label>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.modelBackground || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "modelBackground",
+                        e.target.value as ModelBackground
+                      )
+                    }
+                  >
+                    <option value="">Select Background...</option>
+                    {Object.values(ModelBackground).map((bg) => (
+                      <option key={bg} value={bg}>
+                        {bg}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+
+                {/* Lighting */}
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
+                    Lighting
+                  </label>
                   <div className="grid grid-cols-2 gap-2">
-                    {Object.values(ModelBackground).map((bg) => {
-                      const sel = details.modelBackground === bg;
+                    {Object.values(ModelLighting).map((light) => {
+                      const sel = details.modelLighting === light;
                       return (
                         <div
-                          key={bg}
-                          onClick={() => handleChange("modelBackground", bg)}
+                          key={light}
+                          onClick={() => handleChange("modelLighting", light)}
                           className={cn(
-                            "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center",
+                            "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center flex items-center justify-center min-h-[40px]",
                             sel
                               ? "bg-primary text-primary-foreground border-primary shadow-sm"
                               : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
                           )}
                         >
-                          {bg}
+                          {light}
                         </div>
                       );
                     })}

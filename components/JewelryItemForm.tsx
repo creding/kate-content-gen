@@ -19,7 +19,10 @@ import {
   ModelShotType,
   ModelBackground,
   ModelLighting,
-  ModelClothing,
+  ModelClothingColor,
+  ModelClothingType,
+  StoneCount,
+  EarringLength,
 } from "@/types";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -53,6 +56,7 @@ export default function JewelryItemForm({
   // Details State
   const initialDetails =
     (initialData?.details as unknown as ProductDetails) || {};
+
   const [details, setDetails] = useState<ProductDetails>({
     // Spread initial first
     ...initialDetails,
@@ -70,6 +74,8 @@ export default function JewelryItemForm({
     chainMaterial: initialDetails.chainMaterial || "",
     charmDetails: initialDetails.charmDetails || "",
     idealWear: initialDetails.idealWear || "Built for everyday use",
+    stoneCount: initialDetails.stoneCount,
+    earringLength: initialDetails.earringLength,
 
     // Generation Defaults
     stagingProps: initialDetails.stagingProps || [
@@ -86,11 +92,34 @@ export default function JewelryItemForm({
     whiteBgShadow: initialDetails.whiteBgShadow || WhiteBgShadow.NONE,
     modelSkinTone: initialDetails.modelSkinTone || ModelSkinTone.LIGHT,
     modelShotType: initialDetails.modelShotType || ModelShotType.CLOSE_UP,
-    modelBackground:
-      initialDetails.modelBackground || ModelBackground.LIFESTYLE,
+    modelBackground: initialDetails.modelBackground || ModelBackground.ELEGANT,
     modelLighting: initialDetails.modelLighting || ModelLighting.SOFT_NATURAL,
-    modelClothing: initialDetails.modelClothing || ModelClothing.WHITE,
+    modelClothingColor:
+      initialDetails.modelClothingColor || ModelClothingColor.WHITE,
+    modelClothingType:
+      initialDetails.modelClothingType || ModelClothingType.BLOUSE,
   });
+
+  // Migrate legacy to detailed on load if needed
+  React.useEffect(() => {
+    if (
+      (!details.detailedGemstones || details.detailedGemstones.length === 0) &&
+      details.stone
+    ) {
+      setDetails((prev) => ({
+        ...prev,
+        detailedGemstones: [
+          {
+            type: prev.stone || "",
+            dimensions: prev.stoneDimensions || "",
+            shape: prev.shape || "",
+            grade: prev.stoneGrade || "",
+            count: "1",
+          },
+        ],
+      }));
+    }
+  }, []); // Run once on mount
 
   // Images State
   const [existingImages, setExistingImages] = useState<string[]>(
@@ -216,7 +245,7 @@ export default function JewelryItemForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-5xl mx-auto">
       <Card className="p-6 space-y-6">
         <h2 className="text-xl font-semibold">Basic Information</h2>
 
@@ -239,7 +268,7 @@ export default function JewelryItemForm({
           <div className="relative">
             <select
               id="type"
-              className="w-full flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full flex h-10 items-center justify-between rounded-md border border-input bg-background text-foreground px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               value={type}
               onChange={(e) => {
                 const t = e.target.value as JewelryType;
@@ -280,20 +309,178 @@ export default function JewelryItemForm({
             onChange={(v) => setDetails((prev) => ({ ...prev, material: v }))}
             placeholder="e.g. 18k Gold"
           />
-          <AttributeInput
-            category="gemstone"
-            label="Gemstone"
-            value={details.stone}
-            onChange={(v) => setDetails((prev) => ({ ...prev, stone: v }))}
-            placeholder="e.g. Diamond"
-          />
-          <AttributeInput
-            category="shape"
-            label="Shape/Cut"
-            value={details.shape}
-            onChange={(v) => setDetails((prev) => ({ ...prev, shape: v }))}
-            placeholder="e.g. Oval"
-          />
+        </div>
+
+        {type === JewelryType.EARRINGS && (
+          <div className="space-y-2">
+            <Label>Earring Length</Label>
+            <div className="relative">
+              <select
+                className="w-full flex h-10 items-center justify-between rounded-md border border-input bg-background text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                value={details.earringLength || ""}
+                onChange={(e) =>
+                  setDetails((prev) => ({
+                    ...prev,
+                    earringLength: e.target.value as EarringLength,
+                  }))
+                }
+              >
+                <option value="">Select Length...</option>
+                {Object.values(EarringLength).map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
+        {/* Detailed Gemstones Section */}
+        <div className="space-y-3 p-4 border rounded-md bg-secondary/10">
+          <div className="flex justify-between items-center">
+            <Label className="mb-0">Gemstones & Details</Label>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                setDetails((prev) => ({
+                  ...prev,
+                  detailedGemstones: [
+                    ...(prev.detailedGemstones || []),
+                    {
+                      type: "",
+                      dimensions: "",
+                      shape: "",
+                      count: "1",
+                      grade: "",
+                    },
+                  ],
+                }));
+              }}
+            >
+              + Add Stone
+            </Button>
+          </div>
+
+          {(!details.detailedGemstones ||
+            details.detailedGemstones.length === 0) && (
+            <p className="text-xs text-muted-foreground italic">
+              Add specific stones (e.g. 5mm Citrine) for accurate descriptions.
+            </p>
+          )}
+
+          {details.detailedGemstones?.map((stone, idx) => (
+            <div
+              key={idx}
+              className="grid grid-cols-12 gap-2 items-start bg-card/50 p-2 rounded border border-border/50"
+            >
+              <div className="col-span-1">
+                <Label className="text-[10px]">Count</Label>
+                <Input
+                  placeholder="1"
+                  className="h-9 text-xs"
+                  value={stone.count}
+                  onChange={(e) => {
+                    const newStones = [...(details.detailedGemstones || [])];
+                    newStones[idx].count = e.target.value;
+                    setDetails((prev) => ({
+                      ...prev,
+                      detailedGemstones: newStones,
+                    }));
+                  }}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label className="text-[10px]">Dimensions</Label>
+                <Input
+                  placeholder="5mm"
+                  className="h-9 text-xs"
+                  value={stone.dimensions}
+                  onChange={(e) => {
+                    const newStones = [...(details.detailedGemstones || [])];
+                    newStones[idx].dimensions = e.target.value;
+                    setDetails((prev) => ({
+                      ...prev,
+                      detailedGemstones: newStones,
+                    }));
+                  }}
+                />
+              </div>
+              <div className="col-span-3">
+                <AttributeInput
+                  label="Gemstone"
+                  category="gemstone"
+                  value={stone.type}
+                  onChange={(v) => {
+                    const newStones = [...(details.detailedGemstones || [])];
+                    newStones[idx].type = v;
+                    setDetails((prev) => ({
+                      ...prev,
+                      detailedGemstones: newStones,
+                    }));
+                  }}
+                  placeholder="e.g. Citrine"
+                  className="text-xs"
+                />
+              </div>
+              <div className="col-span-3">
+                <AttributeInput
+                  label="Shape"
+                  category="shape"
+                  value={stone.shape}
+                  onChange={(v) => {
+                    const newStones = [...(details.detailedGemstones || [])];
+                    newStones[idx].shape = v;
+                    setDetails((prev) => ({
+                      ...prev,
+                      detailedGemstones: newStones,
+                    }));
+                  }}
+                  placeholder="e.g. Round"
+                  className="text-xs"
+                />
+              </div>
+              <div className="col-span-2">
+                <Label className="text-[10px]">Grade</Label>
+                <Input
+                  placeholder="AAA"
+                  className="h-9 text-xs"
+                  value={stone.grade || ""}
+                  onChange={(e) => {
+                    const newStones = [...(details.detailedGemstones || [])];
+                    newStones[idx].grade = e.target.value;
+                    setDetails((prev) => ({
+                      ...prev,
+                      detailedGemstones: newStones,
+                    }));
+                  }}
+                />
+              </div>
+              <div className="col-span-1 flex justify-center pt-6">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-red-500 hover:text-red-700 hover:bg-red-50"
+                  onClick={() => {
+                    const newStones = [...(details.detailedGemstones || [])];
+                    newStones.splice(idx, 1);
+                    setDetails((prev) => ({
+                      ...prev,
+                      detailedGemstones: newStones,
+                    }));
+                  }}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
           <AttributeInput
             category="visual_characteristic"
             label="Visual Characteristic"
@@ -303,91 +490,81 @@ export default function JewelryItemForm({
             }
             placeholder="e.g. Vintage"
           />
-          <div className="space-y-2">
-            <Label>Stone Dimensions</Label>
-            <Input
-              value={details.stoneDimensions}
-              onChange={(e) =>
-                setDetails((prev) => ({
-                  ...prev,
-                  stoneDimensions: e.target.value,
-                }))
-              }
-              placeholder="e.g. 5.5mm x 6.7mm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Stone Grade</Label>
-            <Input
-              value={details.stoneGrade}
-              onChange={(e) =>
-                setDetails((prev) => ({ ...prev, stoneGrade: e.target.value }))
-              }
-              placeholder="e.g. AA+ to AAA"
-            />
-          </div>
+          {/* Removed legacy inputs */}
+        </div>
 
-          {/* New Fields for Description Completeness */}
-          <div className="space-y-2">
-            <Label>Length (inches)</Label>
-            <Input
-              value={details.necklaceLengthValue}
-              onChange={(e) =>
-                setDetails((prev) => ({
-                  ...prev,
-                  necklaceLengthValue: e.target.value,
-                }))
-              }
-              placeholder="e.g. 18"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Clasp Type</Label>
-            <Input
-              value={details.claspType}
-              onChange={(e) =>
-                setDetails((prev) => ({ ...prev, claspType: e.target.value }))
-              }
-              placeholder="e.g. Spring ring"
-            />
-          </div>
+        {/* New Fields for Description Completeness */}
+        {/* Type-Specific Fields: Necklace & Bracelet */}
+        {(type === JewelryType.NECKLACE || type === JewelryType.BRACELET) && (
+          <div className="space-y-4 pt-2 border-t border-border/50">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Length (inches)</Label>
+                <Input
+                  value={details.necklaceLengthValue}
+                  onChange={(e) =>
+                    setDetails((prev) => ({
+                      ...prev,
+                      necklaceLengthValue: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. 18"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Clasp Type</Label>
+                <Input
+                  value={details.claspType}
+                  onChange={(e) =>
+                    setDetails((prev) => ({
+                      ...prev,
+                      claspType: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. Spring ring"
+                />
+              </div>
+            </div>
 
-          <div className="space-y-2">
-            <Label>Chain/Base Material</Label>
-            <Input
-              value={details.chainMaterial}
-              onChange={(e) =>
-                setDetails((prev) => ({
-                  ...prev,
-                  chainMaterial: e.target.value,
-                }))
-              }
-              placeholder="e.g. Freshwater Pearls"
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Chain/Base Material</Label>
+                <Input
+                  value={details.chainMaterial}
+                  onChange={(e) =>
+                    setDetails((prev) => ({
+                      ...prev,
+                      chainMaterial: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. Freshwater Pearls"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Charm/Detail</Label>
+                <Input
+                  value={details.charmDetails}
+                  onChange={(e) =>
+                    setDetails((prev) => ({
+                      ...prev,
+                      charmDetails: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. Crown charm"
+                />
+              </div>
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label>Charm/Detail</Label>
-            <Input
-              value={details.charmDetails}
-              onChange={(e) =>
-                setDetails((prev) => ({
-                  ...prev,
-                  charmDetails: e.target.value,
-                }))
-              }
-              placeholder="e.g. Crown charm"
-            />
-          </div>
-          <div className="space-y-2 col-span-2">
-            <Label>Ideal Wear</Label>
-            <Input
-              value={details.idealWear}
-              onChange={(e) =>
-                setDetails((prev) => ({ ...prev, idealWear: e.target.value }))
-              }
-              placeholder="e.g. Built for everyday use"
-            />
-          </div>
+        )}
+        <div className="space-y-2 col-span-2">
+          <Label>Ideal Wear</Label>
+          <Input
+            value={details.idealWear}
+            onChange={(e) =>
+              setDetails((prev) => ({ ...prev, idealWear: e.target.value }))
+            }
+            placeholder="e.g. Built for everyday use"
+          />
         </div>
       </Card>
 
