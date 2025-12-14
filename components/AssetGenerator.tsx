@@ -200,54 +200,13 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
 
   const visualTypes = [AssetType.WHITE_BG, AssetType.STAGING, AssetType.MODEL];
 
-  // Helper: Fetch Logo File
-  const getLogoFile = async () => {
-    const logoUrl = getEffectiveLogo();
-    if (!logoUrl) return null;
-    try {
-      if (logoUrl.startsWith("data:")) {
-        const arr = logoUrl.split(",");
-        const mime = arr[0].match(/:(.*?);/)?.[1] || "image/png";
-        const bstr = atob(arr[1]);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-        while (n--) u8arr[n] = bstr.charCodeAt(n);
-        return new File([u8arr], brandSettings.logoFileName || "logo.png", {
-          type: mime,
-        });
-      } else {
-        const response = await fetch(logoUrl);
-        const blob = await response.blob();
-        return new File([blob], "logo.png", { type: blob.type });
-      }
-    } catch (e) {
-      console.error("Failed to load logo", e);
-      return null;
-    }
-  };
-
-  // Helper: Fetch Item Images as Files
-  const getItemFiles = async () => {
-    const files: File[] = [];
-    if (!item.images) return files;
-
-    for (const url of item.images) {
-      try {
-        const res = await fetch(url);
-        const blob = await res.blob();
-        // Extract filename from URL or default
-        const filename = url.split("/").pop()?.split("?")[0] || "image.jpg";
-        files.push(new File([blob], filename, { type: blob.type }));
-      } catch (e) {
-        console.error("Failed to download image:", url, e);
-      }
-    }
-    return files;
+  // Helper: Fetch Logo URL
+  const getLogoUrl = () => {
+    return getEffectiveLogo();
   };
 
   // --- Logic reused from original Studio ---
   const getTemplateKey = (assetType: AssetType): PromptTemplateKey => {
-    // ... (Logic from original file)
     switch (assetType) {
       case AssetType.STAGING:
         return "STAGING";
@@ -270,9 +229,6 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
     }
   };
 
-  // Simplified strict version of getPromptVariables since we don't have the complexity of all maps right here,
-  // or we can just paste the whole helper. For now, I'll implement a basic version or TODO: Import this helper?
-  // It's better to move `getPromptVariables` to a utility file, but for now I'll inline the essential map logic.
   const getPromptVariables = (d: ProductDetails) => {
     // Gemstone Logic: Fallback to detailedGemstones[0] if top-level is empty
     const primaryGemstone = d.detailedGemstones?.[0];
@@ -372,9 +328,6 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
       gemstoneSummary: stoneDetailsText, // Add this new variable
     };
 
-    // Combine extras into typeSpecificInstruction if needed, or keep separate
-    // We'll append to typeSpecificInstruction for simplicity in prompts that only use that,
-    // but also keep individual keys for granular prompts.
     let typeSpec =
       d.type.toLowerCase() === "earrings" ? "Show both earrings." : "";
     if (d.whiteBgAngle === WhiteBgAngle.DYNAMIC_PAIR && d.type === "Earrings") {
@@ -390,14 +343,8 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
       typeSpecificInstruction: typeSpec,
       stoneDetails:
         stoneDetailsText ||
-        (d.stone ? `${d.stoneDimensions || "approx"} ${d.stone}` : ""), // Fallback for description prompt if strict vars used
+        (d.stone ? `${d.stoneDimensions || "approx"} ${d.stone}` : ""),
     };
-
-    // For Description prompt, we might want to override the simple {{stone}} vars if we have detailed ones.
-    // For now, the prompts use {{stoneDimensions}} {{stone}}, so we might need to be smart.
-    // Ideally, we'd update prompts to use {{stoneDetails}} if available.
-    // Let's just create a composite variable that can be injected if we update the prompt,
-    // or we can hack it by prepending to "typeSpecificInstruction" which is used in image prompts.
 
     return finalVars;
   };
@@ -470,25 +417,23 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
     setError(null);
 
     try {
-      const itemFiles = await getItemFiles();
-      if (itemFiles.length === 0)
-        throw new Error("Could not load item images.");
+      if (!item.images || item.images.length === 0)
+        throw new Error("No images available for this item.");
 
-      const logoFile = await getLogoFile();
+      const imageUrls = item.images;
+      const logoUrl = getLogoUrl();
 
       const templateKey = getTemplateKey(targetType);
       const variables = getPromptVariables(details);
       const prompt = renderPrompt(templateKey, variables);
 
-      const formData = new FormData();
-      itemFiles.forEach((f) => formData.append("files", f));
-      formData.append("assetType", targetType);
-      formData.append("prompt", prompt);
-      if (targetType === AssetType.STAGING && logoFile) {
-        formData.append("logoFile", logoFile);
-      }
-
-      const asset = await generateAssetAction(formData);
+      // Call Server Action with URLs
+      const asset = await generateAssetAction({
+        assetType: targetType,
+        prompt,
+        imageUrls,
+        logoUrl: targetType === AssetType.STAGING ? logoUrl : undefined,
+      });
 
       // Sanitize Description Markdown
       if (targetType === AssetType.DESCRIPTION) {

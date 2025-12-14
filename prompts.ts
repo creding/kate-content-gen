@@ -1,15 +1,18 @@
 export const DEFAULT_TEMPLATES = {
-  STAGING: `Generate a high-resolution product image featuring the provided jewelry piece.
+  STAGING: `You are a professional luxuryjewelry photographer. Generate a high-resolution product image featuring the provided jewelry piece. use the props to tastefully enhance the image.
 
-CRITICAL JEWELRY PRESERVATION:
-- The uploaded jewelry is the PRIMARY REFERENCE. Do NOT modify it in any way.
-- Preserve the EXACT chain length, link count, and proportions from the input image.
-- Do NOT extend, shorten, add links, or change pendant position.
-- Keep the EXACT curvature, drape, and layout as shown in the reference.
-- Gemstones, metal color, and all details MUST match the input exactly.
-- Do NOT add extra chains, charms, extensions, or elements not in the original.
+CRITICAL JEWELRY PRESERVATION: 
+- You will be provided one or more images of the jewelry piece. 
+- Use the first image as the absolute reference. Preserve the jewelry piece EXACTLY as it appears.
+- Use the closeup image as the absolute reference for the pendant, you must render the pendant EXACTLY as pictured. 
+- Use the full shot image as the absolute reference for the jewelry piece. 
+- CRITICAL: Preserve all original details including charms, pendants, and signature logo tags.
+- CLASP DETAILS: Ensure the clasp area is rendered EXACTLY as in the original image. Do not remove anything from the clasp area.
+- Do not add fake or hallucinated details, but strictly keep what is present in the input.
+- Remove any extender chains.
 
-{{lightingInstruction}}
+
+Lighting:{{lightingInstruction}}
 
 SURFACE & PLACEMENT:
 Place the jewelry {{layoutInstruction}} on {{surfaceInstruction}}.
@@ -30,7 +33,7 @@ The background should be clean and simple with a shallow depth of field, ensurin
 NEGATIVE (avoid these):
 No kinks, no extra chains, no length modifications, no added charms, no AI artifacts, no proportional changes.`,
 
-  MODEL_NECKLACE: `Generate a beautiful model shot featuring the provided necklace.
+  MODEL_NECKLACE: `You are a professional luxuryjewelry photographer. Generate a beautiful model shot featuring the provided necklace.
 
 CRITICAL JEWELRY PRESERVATION:
 - The necklace is the PRIMARY REFERENCE. Keep it EXACTLY the same.
@@ -56,7 +59,7 @@ SETTING:
 
 NEGATIVE: No extender chains, no jewelry modifications, no distracting elements.`,
 
-  MODEL_EARRINGS: `Generate a beautiful model shot featuring the provided earrings.
+  MODEL_EARRINGS: `You are a professional luxuryjewelry photographer. Generate a beautiful model shot featuring the provided earrings.
   
   CRITICAL JEWELRY PRESERVATION:
   - The earrings are the PRIMARY REFERENCE. Keep them EXACTLY the same.
@@ -82,7 +85,7 @@ NEGATIVE: No extender chains, no jewelry modifications, no distracting elements.
   
   NEGATIVE: No jewelry modifications, no distracting elements, no hair covering earrings, no full face portraits.`,
 
-  MODEL_RING: `Generate a beautiful model shot featuring the provided ring.
+  MODEL_RING: `You are a professional luxuryjewelry photographer. Generate a beautiful model shot featuring the provided ring.
 
 CRITICAL JEWELRY PRESERVATION:
 - The ring is the PRIMARY REFERENCE. Keep it EXACTLY the same.
@@ -105,7 +108,7 @@ SETTING:
 
 NEGATIVE: No jewelry modifications, no distracting elements.`,
 
-  WHITE_BG_EARRINGS: `Generate a high-end e-commerce product shot of the provided earrings on a solid white background.
+  WHITE_BG_EARRINGS: `You are a professional luxuryjewelry photographer. Generate a high-end e-commerce product shot of the provided earrings on a solid white background.
 
 INPUT PRESERVATION:
 - The input image is the absolute reference. Preserve the earrings EXACTLY as they appear.
@@ -127,13 +130,17 @@ INSTRUCTIONS:
 NEGATIVE PROMPT:
 gray background, off-white, textured background, studio floor, vignette, dark corners, low quality, blur, distortion, extra jewelry, hallucinated details.`,
 
-  WHITE_BG_GENERAL: `Generate a high-end e-commerce product shot of the provided jewelry piece on a solid white background.
+  WHITE_BG_GENERAL: `You are a professional luxuryjewelry photographer. Generate a high-end e-commerce product shot of the provided jewelry piece on a solid white background.
 
-INPUT PRESERVATION:
-- The input image is the absolute reference. Preserve the piece EXACTLY.
-- CRITICAL: Preserve all original details including charms, pendants, extender chains, and signature logo tags.
-- CLASP DETAILS: Ensure the clasp area is rendered EXACTLY as in the original image. Do not remove or smooth out the signature tag, logo charm, or extender chain at the clasp.
+CRITICAL JEWELRY PRESERVATION: 
+- You will be provided one or more images of the jewelry piece. 
+- Use the first image as the absolute reference. Preserve the jewelry piece EXACTLY as it appears.
+- Use the closeup image as the absolute reference for the pendant, you must render the pendant EXACTLY as pictured. 
+- Use the full shot image as the absolute reference for the jewelry piece. 
+- CRITICAL: Preserve all original details including charms, pendants, and signature logo tags.
+- CLASP DETAILS: Ensure the clasp area is rendered EXACTLY as in the original image. Do not remove anything from the clasp area.
 - Do not add fake or hallucinated details, but strictly keep what is present in the input.
+- Remove any extender chains.
 
 BACKGROUND & LIGHTING:
 - Background: Pure White (Hex code #FFFFFF). DO NOT ADD A GRADIENT OR VIGNETTE. THE BACKGROUND MUST BE PURE WHITE ACROSS THE ENTIRE IMAGE.
@@ -147,8 +154,7 @@ INSTRUCTIONS:
 - Ensure there is no gray cast or gradient on the background.
 - The goal is a ready-to-use e-commerce image.
 
-NEGATIVE PROMPT:
-gray background, off-white, gradient, vignette, textured floor, studio props, blur, noise, distortion, modifications, changes to design, removing signature tags, removing clasp details, missing chain.`,
+`,
 
   DESCRIPTION_EARRINGS: `You are a professional jewelry copywriter with an eye for detail. Write a sophisticated, natural product description.
   

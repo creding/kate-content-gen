@@ -2,21 +2,82 @@
 
 import { GoogleGenAI } from "@google/genai";
 import { AssetType, GeneratedAsset, JewelryType } from "@/types";
+import fs from "fs/promises";
+import path from "path";
 
 const getSystemInstruction = () => {
   return "You are an expert jewelry product photographer and copywriter. You specialize in high-end, luxurious aesthetics.";
 };
 
-// Helper to convert File to base64 string
-const fileToGenerativePart = async (file: File): Promise<string> => {
-  const arrayBuffer = await file.arrayBuffer();
+// Helper to get base64 from URL (remote, data URI, or local public file)
+const urlToGenerativePart = async (
+  url: string
+): Promise<{ inlineData: { data: string; mimeType: string } }> => {
+  // Handle Data URIs
+  if (url.startsWith("data:")) {
+    const mimeType = url.substring(5, url.indexOf(";"));
+    const data = url.substring(url.indexOf(",") + 1);
+    return {
+      inlineData: {
+        data,
+        mimeType,
+      },
+    };
+  }
+
+  // Handle Local Public Files (Relative URLs)
+  if (url.startsWith("/")) {
+    try {
+      const filePath = path.join(process.cwd(), "public", url);
+      const buffer = await fs.readFile(filePath);
+      const base64String = buffer.toString("base64");
+
+      const ext = path.extname(url).toLowerCase();
+      let mimeType = "image/jpeg";
+      if (ext === ".png") mimeType = "image/png";
+      if (ext === ".webp") mimeType = "image/webp";
+
+      return {
+        inlineData: {
+          data: base64String,
+          mimeType,
+        },
+      };
+    } catch (e) {
+      console.error(`Failed to read local file ${url}:`, e);
+      throw new Error(`Failed to load local asset: ${url}`);
+    }
+  }
+
+  // Handle Remote URLs
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch image from ${url}`);
+  }
+  const arrayBuffer = await response.arrayBuffer();
   const base64String = Buffer.from(arrayBuffer).toString("base64");
-  return base64String;
+  const mimeType = response.headers.get("content-type") || "image/jpeg";
+  return {
+    inlineData: {
+      data: base64String,
+      mimeType,
+    },
+  };
 };
 
-export const generateAssetAction = async (
-  formData: FormData
-): Promise<GeneratedAsset> => {
+interface GenerateAssetParams {
+  assetType: AssetType;
+  prompt: string;
+  imageUrls: string[];
+  logoUrl?: string | null;
+}
+
+export const generateAssetAction = async ({
+  assetType,
+  prompt,
+  imageUrls,
+  logoUrl,
+}: GenerateAssetParams): Promise<GeneratedAsset> => {
   const apiKey =
     process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   if (!apiKey) {
@@ -27,29 +88,20 @@ export const generateAssetAction = async (
 
   const ai = new GoogleGenAI({ apiKey });
 
-  // Extract data from FormData
-  const assetType = formData.get("assetType") as AssetType;
-  const prompt = formData.get("prompt") as string;
   console.log("--- GEMINI PROMPT BEGIN ---");
   console.log(prompt);
   console.log("--- GEMINI PROMPT END ---");
-  const files = formData.getAll("files") as File[];
-  const logoFile = formData.get("logoFile") as File | null;
+  console.log(`Processing ${imageUrls.length} images...`);
 
   // Combine product files and optional logo file
-  const filesToProcess = [...files];
-  if (assetType === AssetType.STAGING && logoFile) {
-    filesToProcess.push(logoFile);
+  const urlsToProcess = [...imageUrls];
+  if (assetType === AssetType.STAGING && logoUrl) {
+    urlsToProcess.push(logoUrl);
   }
 
-  // Convert all files to inlineData parts
+  // Convert all URLs to inlineData parts
   const imageParts = await Promise.all(
-    filesToProcess.map(async (file) => ({
-      inlineData: {
-        data: await fileToGenerativePart(file),
-        mimeType: file.type,
-      },
-    }))
+    urlsToProcess.map((url) => urlToGenerativePart(url))
   );
 
   let modelName = "gemini-3-pro-image-preview";
@@ -71,6 +123,8 @@ export const generateAssetAction = async (
     const response = await ai.models.generateContent({
       model: modelName,
       contents: {
+        // @ts-ignore - type definition might slightly differ for single object but this is valid for SDK
+        role: "user",
         parts: [...imageParts, { text: prompt }],
       },
       config: {
@@ -91,6 +145,7 @@ export const generateAssetAction = async (
         }
       }
       if (!content && response.text) {
+        // Sometimes it returns text explaining why it failed or if it misunderstood
         throw new Error(`Generation failed: ${response.text}`);
       }
     } else {
@@ -112,6 +167,13 @@ export const generateAssetAction = async (
       error.message || "An unexpected error occurred during generation."
     );
   }
+};
+
+// Helper to convert File to base64 string (Keep for detection)
+const fileToGenerativePart = async (file: File): Promise<string> => {
+  const arrayBuffer = await file.arrayBuffer();
+  const base64String = Buffer.from(arrayBuffer).toString("base64");
+  return base64String;
 };
 
 export const detectJewelryTypeAction = async (
