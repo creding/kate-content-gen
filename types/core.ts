@@ -59,9 +59,12 @@ export enum WhiteBgShadow {
 }
 
 export enum ModelSkinTone {
+  FAIR = "Fair / Pale",
   LIGHT = "Light",
+  MEDIUM = "Medium",
+  OLIVE = "Olive",
   TAN = "Tan",
-  DARK = "Dark",
+  DEEP = "Deep / Dark",
 }
 
 export enum ModelShotType {
@@ -75,12 +78,6 @@ export enum ModelBackground {
   GRADIENT = "Soft Gradient",
   LIFESTYLE = "Blurred Lifestyle",
   ELEGANT = "Elegant Lifestyle",
-}
-
-export enum ModelLighting {
-  SOFT_NATURAL = "Soft Natural",
-  STUDIO_DRAMATIC = "Studio Dramatic",
-  GOLDEN_HOUR = "Golden Hour",
 }
 
 export enum ModelClothingColor {
@@ -120,13 +117,14 @@ export interface ProductDetails {
   modelSkinTone?: ModelSkinTone;
   modelShotType?: ModelShotType;
   modelBackground?: ModelBackground;
-  modelLighting?: ModelLighting;
+  modelLighting?: LightingMood;
   modelClothingColor?: ModelClothingColor;
   modelClothingType?: ModelClothingType;
   // New fields for structured description
   stoneDimensions?: string;
   stoneGrade?: string;
   chainMaterial?: string;
+  chainStyle?: string;
   charmDetails?: string;
   idealWear?: string;
   earringLength?: EarringLength;
@@ -149,6 +147,7 @@ export enum EarringLength {
   LONG_DROP = 'Long Drop (2"+)',
   SHOULDER = "Shoulder Duster",
   HOOP = "Large Hoop",
+  CHANDELIER = "Chandelier",
 }
 
 export enum StoneCount {

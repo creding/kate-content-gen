@@ -57,29 +57,30 @@ SETTING:
 NEGATIVE: No extender chains, no jewelry modifications, no distracting elements.`,
 
   MODEL_EARRINGS: `Generate a beautiful model shot featuring the provided earrings.
-
-CRITICAL JEWELRY PRESERVATION:
-- The earrings are the PRIMARY REFERENCE. Keep them EXACTLY the same.
-- Keep all gemstone details, metal color, and design exactly as shown.
-- Do NOT modify any aspect of the earrings.
-- {{typeSpecificInstruction}}
-
-MODEL APPEARANCE:
-{{modelSkinToneInstruction}}
-{{modelClothingInstruction}}
-- Smooth, flawless skin with natural makeup
-- Hair pulled back or styled to show earrings clearly
-
-SHOT COMPOSITION:
-{{modelShotTypeInstruction}}
-- Focus on the earrings while showing human context
-- Both earrings should be visible and the focal point
-
-SETTING:
-{{modelBackgroundInstruction}}
-{{modelLightingInstruction}}
-
-NEGATIVE: No jewelry modifications, no distracting elements, no hair covering earrings.`,
+  
+  CRITICAL JEWELRY PRESERVATION:
+  - The earrings are the PRIMARY REFERENCE. Keep them EXACTLY the same.
+  - Keep all gemstone details, metal color, and design exactly as shown.
+  - Do NOT modify any aspect of the earrings.
+  - {{typeSpecificInstruction}}
+  
+  MODEL APPEARANCE:
+  {{modelSkinToneInstruction}}
+  - The model is SECONDARY. Used only for context and scale.
+  - Hair pulled back completely to show earrings clearly.
+  - Model's face/features should be soft or partially cropped to focus on the ear/jawline area.
+  
+  SHOT COMPOSITION:
+  - **EXTREME CLOSE-UP**: The earrings must be the absolute focal point.
+  - **MACRO LENS STYLE**: Sharp focus ONLY on the earrings. Shallow depth of field (bokeh) for the model.
+  - The earrings should occupy a significant portion of the frame.
+  - Do NOT generate a full portrait. Focus on the ear and neck area only.
+  
+  SETTING:
+  {{modelBackgroundInstruction}}
+  {{modelLightingInstruction}}
+  
+  NEGATIVE: No jewelry modifications, no distracting elements, no hair covering earrings, no full face portraits.`,
 
   MODEL_RING: `Generate a beautiful model shot featuring the provided ring.
 
@@ -149,73 +150,102 @@ INSTRUCTIONS:
 NEGATIVE PROMPT:
 gray background, off-white, gradient, vignette, textured floor, studio props, blur, noise, distortion, modifications, changes to design, removing signature tags, removing clasp details, missing chain.`,
 
-  DESCRIPTION_EARRINGS: `You are a professional e-commerce copywriter. Write a clear, factual product description for earrings matching the EXACT structure below.
+  DESCRIPTION_EARRINGS: `You are a professional jewelry copywriter with an eye for detail. Write a sophisticated, natural product description.
+  
+  <Goal>
+  Create a description that sounds human-written and follows the user's details EXACTLY. 
+  - phrasing should be fluid (e.g. "features 5mm Citrine studs" is better than "features stone dimensions 5mm stone Citrine").
+  - Do NOT be "robotic".
+  - Do NOT hallucinate values.
+  </Goal>
 
-  <Structure>
+  <Template>
   Discover {{name}}, a pair designed for daily wear. It features {{stoneDimensions}} {{stone}} selected for their {{visualCharacteristic}}.
 
-  - **Stone**: {{stoneGrade}}, {{stoneDimensions}}, {{stone}}.
+  - **Stone**: {{gemstoneSummary}} OR {{stoneDimensions}} {{stone}}.
   - **Material**: {{material}}.
-  - **Design**: {{stoneCount}}, {{earringLength}}.
-  - **Details**: Includes a {{claspType}} and a {{charmDetails}}.
+  - **Design**: {{earringLength}}.
+  - **Details**: {{claspType}} / {{charmDetails}}.
   - **Ideal Wear**: {{idealWear}}.
-  </Structure>
+  </Template>
 
   <Instructions>
-  - Replace the variables {{variable}} with the provided details.
-  - CRITICAL: If a variable (like {{stoneDimensions}}, {{stoneGrade}}, etc.) is empty, unknown, or "undefined", COMPLETELY DISREGARD that part of the sentence. Do NOT invent or hallucinate a value.
-  - STRICTLY FORBIDDEN: Do NOT use placeholders like "[Length to be specified]" or "undefined". If data is missing, delete the sentence.
-  - STRICTLY FORBIDDEN: Do NOT use the bullet character (•). Use a standard hyphen (-) for the list.
-  - FORMATTING: Output the specifications as a properly formatted Markdown list. Each item MUST be on its own new line.
-  - Example: If {{stoneDimensions}} is missing, just say "features {{stone}}".
-  - Example: If {{charmDetails}} is missing, just say "Includes a {{claspType}}."
-  - Example: If {{earringLength}} is missing, just remove that part from "Design".
-  - Keep the structure but adapt slightly for grammar if fields are missing.
-  - Do NOT reference chains or necklace lengths for earrings.
+  1. Use the <Template> as a guide for structure, but ensure the sentences flow naturally.
+  2. **Crucial Rule on Stones**:
+     - *Priority*: If {{gemstoneSummary}} is provided (e.g. "Gemstones featured: ..."), USE IT as the description for the Stone bullet point.
+     - *Fallback*: If no summary, use "{{stoneDimensions}} {{stone}}".
+  3. **Crucial Rule on Material**:
+     - Use the EXACT material name provided (e.g. "14k Gold Filled").
+  4. Cleanup:
+     - Remove empty variables nicely.
+     - If {{charmDetails}} is empty, just say "Finished with a {{claspType}}" or remove the Details line if both are empty.
+     - Fix punctuation (no double commas).
+  5. Return ONLY the final formatted text.
   </Instructions>`,
 
-  DESCRIPTION_NECKLACE: `You are a professional e-commerce copywriter. Write a clear, factual product description for a necklace matching the EXACT structure below.
+  DESCRIPTION_NECKLACE: `You are a professional jewelry copywriter with an eye for detail. Write a sophisticated, natural product description.
   
-  <Structure>
-  Discover {{name}}, a piece designed for daily wear. It features {{stoneDimensions}} {{stone}} selected for their {{visualCharacteristic}}. The {{necklaceLengthValue}} inch chain lays flat and moves smoothly.
+  <Goal>
+  Create a description that sounds human-written and follows the user's details EXACTLY. 
+  - phrasing should be fluid (e.g. "hangs from an 18-inch 14k Gold Filled Paperclip chain" is better than "chain crafted from 14k Gold Filled").
+  - Do NOT be "robotic".
+  - Do NOT hallucinate values.
+  </Goal>
+
+  <Template>
+  Discover {{name}}, a piece designed for daily wear. It features {{stoneDimensions}} {{stone}} selected for their {{visualCharacteristic}}. The pendant hangs from a {{necklaceLengthValue}}-inch {{chainMaterial}} {{chainStyle}} chain.
 
   - **Stone**: {{stoneGrade}}, {{stoneDimensions}}, {{stone}}.
   - **Chain Material**: {{chainMaterial}}.
+  - **Chain Style**: {{chainStyle}}.
   - **Length**: {{necklaceLengthValue}} inches, suitable for most necklines or layering.
-  - **Details**: Includes a {{claspType}} and a {{charmDetails}} on the back.
+  - **Clasp**: {{claspType}}.
+  - **Details**: Features {{charmDetails}} on the back.
   - **Ideal Wear**: {{idealWear}}.
-  </Structure>
+  </Template>
   
   <Instructions>
-  - Replace the variables {{variable}} with the provided details.
-  - CRITICAL: If a variable (like {{stoneDimensions}}, {{chainMaterial}}) is empty, unknown, or "undefined", COMPLETELY DISREGARD that part of the sentence or line. Do NOT invent or hallucinate a value.
-  - STRICTLY FORBIDDEN: Do NOT use placeholders like "[Length to be specified]" or "undefined". If data is missing, delete the sentence.
-  - STRICTLY FORBIDDEN: Do NOT use the bullet character (•). Use a standard hyphen (-) for the list.
-  - FORMATTING: Output the specifications as a properly formatted Markdown list. Each item MUST be on its own new line.
-  - Example: If {{chainMaterial}} is missing, remove the "Chain Material" line entirely.
-  - Example: If {{necklaceLengthValue}} is missing, remove the sentence "The {{necklaceLengthValue}} inch chain lays flat..." AND remove the "Length:" list item entirely.
-  - Example: If {{charmDetails}} is missing, just say "Includes a {{claspType}}."
-  - The "Chain Material" line is critical ONLY if the value exists.
+  1. Use the <Template> as a guide for structure, but ensure the sentences flow naturally.
+  2. **Crucial Rule on Chain Style**: 
+     - If {{chainStyle}} is provided (e.g. "Paperclip"), use it naturally: "14k Gold Filled Paperclip chain".
+     - If {{chainStyle}} is MISSING, do NOT invent one. Just say "14k Gold Filled chain". NEVER guess "cable".
+  3. **Crucial Rule on Material**:
+     - Use the EXACT material name provided (e.g. "14k Gold Filled").
+  4. Cleanup:
+     - Remove empty variables nicely.
+     - If {{claspType}} is missing, remove the "Clasp" line.
+     - If {{charmDetails}} is missing, remove the "Details" line completely.
+     - Fix punctuation (no double commas).
+  5. Return ONLY the final formatted text.
   </Instructions>`,
 
   SOCIAL: `Create a professional, concise social media post (no emojis) using the provided image.
+  
+  <Product_Details>
+  - Name: {{name}}
+  - Type: {{type}}
+  - Stone: {{stone}} ({{stoneDimensions}})
+  - Material: {{material}} / {{chainMaterial}}
+  - Style: {{chainStyle}}
+  - Wear: {{idealWear}}
+  </Product_Details>
 
-The post should be structured with a body detailing the product's main features. Include a separate list of 4-5 relevant hashtags.
-
-<Example_Post_Instructions>
-The post should be written in a similar voice but not exactly like this, be creative, do not add features or anything like a product description, this is a friendly social media post, do not copy the example exactly, use the provided product link to craft the post, the details will not match the example, it is important that you only use the details from the linked page to write a post similar to the example. Do not use em dashes
-</Example_Post_instructions>
-
-<Example_Post>
-“I designed these to be the perfect pair you reach for every single day. They feature a stunning combination of genuine stones: approximately 6mm round Amethyst beads and a deep, richly colored 6mm square Natural Smoky Quartz. Each stone has a beautiful, polished clarity that catches the light just right. They feel special without being over the top.
-
-[Link]
-
-[Hastags]”
-
-</Example_Post>
-
-The post should be personal, craft a social media post that compliments the image. Present it in a format I can easily copy to paste in my social media app`,
+  The post should be structured with a body detailing the product's main features. Include a separate list of 4-5 relevant hashtags.
+  
+  <Example_Post_Instructions>
+  The post should be written in a similar voice but not exactly like this, be creative, do not add features or anything like a product description, this is a friendly social media post, do not copy the example exactly, use the provided product details to craft the post. Do not use em dashes.
+  </Example_Post_instructions>
+  
+  <Example_Post>
+  “I designed these to be the perfect pair you reach for every single day. They feature a stunning combination of genuine stones: approximately 6mm round Amethyst beads and a deep, richly colored 6mm square Natural Smoky Quartz. Each stone has a beautiful, polished clarity that catches the light just right. They feel special without being over the top.
+  
+  Link in first comment below.
+  
+  [Hastags]”
+  
+  </Example_Post>
+  
+  The post should be personal, craft a social media post that compliments the image and the product details. Present it in a format I can easily copy to paste in my social media app`,
 };
 
 export type PromptTemplateKey = keyof typeof DEFAULT_TEMPLATES;

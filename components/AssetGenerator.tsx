@@ -15,9 +15,8 @@ import {
   ModelSkinTone,
   ModelShotType,
   ModelBackground,
-  ModelLighting,
-  ModelClothingColor,
   ModelClothingType,
+  ModelClothingColor,
 } from "@/types";
 import { generateAssetAction } from "@/app/actions/gemini";
 import { Button } from "@/components/ui";
@@ -150,9 +149,6 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
     stagingSurface: StagingSurface.MARBLE,
     lightingMood: LightingMood.SOFT,
     stagingLayout: StagingLayout.DRAPED,
-    whiteBgAngle: WhiteBgAngle.TOP_DOWN,
-    whiteBgFraming: WhiteBgFraming.FULL_PRODUCT,
-    whiteBgShadow: WhiteBgShadow.NONE,
     ...item.details,
     // Enforce defaults with validation
     modelSkinTone: Object.values(ModelSkinTone).includes(
@@ -170,11 +166,11 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
     )
       ? item.details!.modelBackground
       : ModelBackground.ELEGANT,
-    modelLighting: Object.values(ModelLighting).includes(
-      item.details?.modelLighting as ModelLighting
+    modelLighting: Object.values(LightingMood).includes(
+      item.details?.modelLighting as LightingMood
     )
       ? item.details!.modelLighting
-      : ModelLighting.SOFT_NATURAL,
+      : LightingMood.SOFT,
     modelClothingColor: Object.values(ModelClothingColor).includes(
       item.details?.modelClothingColor as ModelClothingColor
     )
@@ -185,6 +181,21 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
     )
       ? item.details!.modelClothingType
       : ModelClothingType.BLOUSE,
+    whiteBgAngle: Object.values(WhiteBgAngle).includes(
+      item.details?.whiteBgAngle as WhiteBgAngle
+    )
+      ? item.details!.whiteBgAngle
+      : WhiteBgAngle.TOP_DOWN,
+    whiteBgFraming: Object.values(WhiteBgFraming).includes(
+      item.details?.whiteBgFraming as WhiteBgFraming
+    )
+      ? item.details!.whiteBgFraming
+      : WhiteBgFraming.FULL_PRODUCT,
+    whiteBgShadow: Object.values(WhiteBgShadow).includes(
+      item.details?.whiteBgShadow as WhiteBgShadow
+    )
+      ? item.details!.whiteBgShadow
+      : WhiteBgShadow.NONE,
   });
 
   const visualTypes = [AssetType.WHITE_BG, AssetType.STAGING, AssetType.MODEL];
@@ -263,10 +274,19 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
   // or we can just paste the whole helper. For now, I'll implement a basic version or TODO: Import this helper?
   // It's better to move `getPromptVariables` to a utility file, but for now I'll inline the essential map logic.
   const getPromptVariables = (d: ProductDetails) => {
+    // Gemstone Logic: Fallback to detailedGemstones[0] if top-level is empty
+    const primaryGemstone = d.detailedGemstones?.[0];
+    const stoneValue = d.stone || primaryGemstone?.type || "";
+    const stoneDimensionsValue =
+      d.stoneDimensions || primaryGemstone?.dimensions || "";
+    const stoneGradeValue = d.stoneGrade || primaryGemstone?.grade || "";
+
     // Enhanced variable mapping
     const basicVars = {
       ...d,
       type: d.type.toLowerCase(),
+      stone: stoneValue,
+      stoneGrade: stoneGradeValue,
       propsInstruction: d.stagingProps?.length
         ? `Add props: ${d.stagingProps.join(", ")}`
         : "",
@@ -313,6 +333,22 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
       stoneCountInstruction: d.stoneCount
         ? `Design feature: ${d.stoneCount}`
         : "",
+      chainStyle: d.chainStyle || "",
+
+      // Cleaned variables for strict text processing prompts
+      necklaceLengthValue: d.necklaceLengthValue
+        ? d.necklaceLengthValue.replace(/in(ches)?/gi, "").trim()
+        : "",
+      claspType:
+        d.claspType && !d.claspType.toLowerCase().includes("clasp")
+          ? `${d.claspType} clasp`
+          : d.claspType,
+      stoneDimensions: stoneDimensionsValue
+        ? stoneDimensionsValue.replace("approx", "").trim()
+        : "",
+      charmDetails: d.charmDetails
+        ? d.charmDetails.replace(/,\s*/g, " & ").trim()
+        : "",
     };
 
     // Construct Detailed Gemstone info if available
@@ -325,11 +361,16 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
             (g) =>
               `${g.dimensions} ${g.shape} ${g.type}${
                 g.grade ? ` (${g.grade})` : ""
-              }${g.count ? ` (x${g.count})` : ""}`
+              }${g.count && g.count !== "1" ? ` (x${g.count})` : ""}`
           )
           .join(", ") +
         ".";
     }
+
+    return {
+      ...basicVars,
+      gemstoneSummary: stoneDetailsText, // Add this new variable
+    };
 
     // Combine extras into typeSpecificInstruction if needed, or keep separate
     // We'll append to typeSpecificInstruction for simplicity in prompts that only use that,

@@ -18,7 +18,6 @@ import {
   ModelSkinTone,
   ModelShotType,
   ModelBackground,
-  ModelLighting,
   ModelClothingColor,
   ModelClothingType,
   StoneCount,
@@ -93,7 +92,7 @@ export default function JewelryItemForm({
     modelSkinTone: initialDetails.modelSkinTone || ModelSkinTone.LIGHT,
     modelShotType: initialDetails.modelShotType || ModelShotType.CLOSE_UP,
     modelBackground: initialDetails.modelBackground || ModelBackground.ELEGANT,
-    modelLighting: initialDetails.modelLighting || ModelLighting.SOFT_NATURAL,
+    modelLighting: initialDetails.modelLighting || LightingMood.SOFT,
     modelClothingColor:
       initialDetails.modelClothingColor || ModelClothingColor.WHITE,
     modelClothingType:
@@ -537,7 +536,20 @@ export default function JewelryItemForm({
                       chainMaterial: e.target.value,
                     }))
                   }
-                  placeholder="e.g. Freshwater Pearls"
+                  placeholder="e.g. 18k Gold"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Chain Style</Label>
+                <Input
+                  value={details.chainStyle}
+                  onChange={(e) =>
+                    setDetails((prev) => ({
+                      ...prev,
+                      chainStyle: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. Paperclip, Rope"
                 />
               </div>
               <div className="space-y-2">

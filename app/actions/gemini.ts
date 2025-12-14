@@ -30,6 +30,9 @@ export const generateAssetAction = async (
   // Extract data from FormData
   const assetType = formData.get("assetType") as AssetType;
   const prompt = formData.get("prompt") as string;
+  console.log("--- GEMINI PROMPT BEGIN ---");
+  console.log(prompt);
+  console.log("--- GEMINI PROMPT END ---");
   const files = formData.getAll("files") as File[];
   const logoFile = formData.get("logoFile") as File | null;
 

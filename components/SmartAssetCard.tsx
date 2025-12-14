@@ -14,12 +14,11 @@ import {
   ModelSkinTone,
   ModelShotType,
   ModelBackground,
-  ModelLighting,
   ModelClothingColor,
   ModelClothingType,
   EarringLength,
   StoneCount,
-} from "../types";
+} from "@/types";
 import { Card, Button, Input, Select, Label, cn } from "./ui";
 import { useToast } from "../contexts/ToastContext";
 import {
@@ -272,12 +271,13 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
           </div>
 
           <div className="flex-grow overflow-y-auto space-y-5 pr-2 scrollbar-thin scrollbar-thumb-border">
-            {/* GENERAL PRODUCT SPECS - Available for all visual types */}
-            {hasSettings(assetType) && (
-              <div className="border-b border-border pb-4 mb-4 space-y-4">
-                {/* Earring Length (Only for Model Shots) */}
-                {isModelShot(assetType) &&
-                  details.type === JewelryType.EARRINGS && (
+            {/* GENERAL PRODUCT SPECS - Only for Model shots with specific jewelry types */}
+            {isModelShot(assetType) &&
+              (details.type === JewelryType.EARRINGS ||
+                details.type === JewelryType.NECKLACE) && (
+                <div className="border-b border-border pb-4 mb-4 space-y-4">
+                  {/* Earring Length (Only for Model Shots) */}
+                  {details.type === JewelryType.EARRINGS && (
                     <div className="mb-4">
                       <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                         Earring Length
@@ -302,9 +302,8 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
                     </div>
                   )}
 
-                {/* Necklace Length (Only for Model Shots) */}
-                {isModelShot(assetType) &&
-                  details.type === JewelryType.NECKLACE && (
+                  {/* Necklace Length (Only for Model Shots) */}
+                  {details.type === JewelryType.NECKLACE && (
                     <div className="mb-4">
                       <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                         Necklace Length
@@ -328,8 +327,8 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
                       </Select>
                     </div>
                   )}
-              </div>
-            )}
+                </div>
+              )}
 
             {/* WHITE BACKGROUND SETTINGS */}
             {assetType === AssetType.WHITE_BG && (
@@ -339,86 +338,71 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                     Camera Angle
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {Object.values(WhiteBgAngle)
-                      .filter((angle) => {
-                        if (
-                          angle === WhiteBgAngle.DYNAMIC_PAIR &&
-                          details.type !== JewelryType.EARRINGS
-                        )
-                          return false;
-                        return true;
-                      })
-                      .map((angle) => {
-                        const sel = details.whiteBgAngle === angle;
-                        return (
-                          <div
-                            key={angle}
-                            onClick={() => handleChange("whiteBgAngle", angle)}
-                            className={cn(
-                              "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center flex items-center justify-center min-h-[40px]",
-                              sel
-                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                                : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
-                            )}
-                          >
-                            {angle}
-                          </div>
-                        );
-                      })}
-                  </div>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.whiteBgAngle || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "whiteBgAngle",
+                        e.target.value as WhiteBgAngle
+                      )
+                    }
+                  >
+                    <option value="">Select Angle...</option>
+                    {Object.values(WhiteBgAngle).map((angle) => (
+                      <option key={angle} value={angle}>
+                        {angle}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
+
                 {/* Framing */}
                 <div>
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                     Framing
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {Object.values(WhiteBgFraming).map((framing) => {
-                      const sel = details.whiteBgFraming === framing;
-                      return (
-                        <div
-                          key={framing}
-                          onClick={() =>
-                            handleChange("whiteBgFraming", framing)
-                          }
-                          className={cn(
-                            "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center flex items-center justify-center min-h-[40px]",
-                            sel
-                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                              : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          {framing}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.whiteBgFraming || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "whiteBgFraming",
+                        e.target.value as WhiteBgFraming
+                      )
+                    }
+                  >
+                    <option value="">Select Framing...</option>
+                    {Object.values(WhiteBgFraming).map((framing) => (
+                      <option key={framing} value={framing}>
+                        {framing}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
+
                 {/* Shadow */}
                 <div>
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                     Shadow
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {Object.values(WhiteBgShadow).map((shadow) => {
-                      const sel = details.whiteBgShadow === shadow;
-                      return (
-                        <div
-                          key={shadow}
-                          onClick={() => handleChange("whiteBgShadow", shadow)}
-                          className={cn(
-                            "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center flex items-center justify-center min-h-[40px]",
-                            sel
-                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                              : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          {shadow}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.whiteBgShadow || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "whiteBgShadow",
+                        e.target.value as WhiteBgShadow
+                      )
+                    }
+                  >
+                    <option value="">Select Shadow...</option>
+                    {Object.values(WhiteBgShadow).map((shadow) => (
+                      <option key={shadow} value={shadow}>
+                        {shadow}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
               </>
             )}
@@ -426,30 +410,80 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
             {/* STAGING SETTINGS */}
             {assetType === AssetType.STAGING && (
               <>
+                {/* Necklace Length - only for necklaces */}
+                {details.type === JewelryType.NECKLACE && (
+                  <div>
+                    <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
+                      Necklace Length
+                    </label>
+                    <Select
+                      className="w-full text-sm"
+                      value={details.necklaceLength || ""}
+                      onChange={(e) =>
+                        handleChange(
+                          "necklaceLength",
+                          e.target.value as NecklaceLength
+                        )
+                      }
+                    >
+                      <option value="">-- Auto --</option>
+                      {Object.values(NecklaceLength).map((l) => (
+                        <option key={l} value={l}>
+                          {l}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+                )}
+
+                {/* Earring Length - only for earrings */}
+                {details.type === JewelryType.EARRINGS && (
+                  <div>
+                    <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
+                      Earring Length
+                    </label>
+                    <Select
+                      className="w-full text-sm"
+                      value={details.earringLength || ""}
+                      onChange={(e) =>
+                        handleChange(
+                          "earringLength",
+                          e.target.value as EarringLength
+                        )
+                      }
+                    >
+                      <option value="">-- Auto --</option>
+                      {Object.values(EarringLength).map((l) => (
+                        <option key={l} value={l}>
+                          {l}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+                )}
+
                 {/* Layout */}
                 <div>
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                     Layout
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.values(StagingLayout).map((layout) => {
-                      const sel = details.stagingLayout === layout;
-                      return (
-                        <div
-                          key={layout}
-                          onClick={() => handleChange("stagingLayout", layout)}
-                          className={cn(
-                            "cursor-pointer p-2 rounded-lg text-[11px] font-medium transition-all border text-center",
-                            sel
-                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                              : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          {layout}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.stagingLayout || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "stagingLayout",
+                        e.target.value as StagingLayout
+                      )
+                    }
+                  >
+                    <option value="">Select Layout...</option>
+                    {Object.values(StagingLayout).map((layout) => (
+                      <option key={layout} value={layout}>
+                        {layout}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
 
                 {/* Surface */}
@@ -457,27 +491,23 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                     Surface
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.values(StagingSurface).map((surface) => {
-                      const sel = details.stagingSurface === surface;
-                      return (
-                        <div
-                          key={surface}
-                          onClick={() =>
-                            handleChange("stagingSurface", surface)
-                          }
-                          className={cn(
-                            "cursor-pointer p-2 rounded-lg text-[11px] font-medium transition-all border text-center",
-                            sel
-                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                              : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          {surface}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.stagingSurface || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "stagingSurface",
+                        e.target.value as StagingSurface
+                      )
+                    }
+                  >
+                    <option value="">Select Surface...</option>
+                    {Object.values(StagingSurface).map((surface) => (
+                      <option key={surface} value={surface}>
+                        {surface}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
 
                 {/* Lighting */}
@@ -485,25 +515,23 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                     Lighting
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.values(LightingMood).map((mood) => {
-                      const sel = details.lightingMood === mood;
-                      return (
-                        <div
-                          key={mood}
-                          onClick={() => handleChange("lightingMood", mood)}
-                          className={cn(
-                            "cursor-pointer p-2 rounded-lg text-[11px] font-medium transition-all border text-center",
-                            sel
-                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                              : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          {mood}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.lightingMood || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "lightingMood",
+                        e.target.value as LightingMood
+                      )
+                    }
+                  >
+                    <option value="">Select Lighting...</option>
+                    {Object.values(LightingMood).map((mood) => (
+                      <option key={mood} value={mood}>
+                        {mood}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
 
                 {/* Props */}
@@ -550,25 +578,23 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                     Skin Tone
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {Object.values(ModelSkinTone).map((tone) => {
-                      const sel = details.modelSkinTone === tone;
-                      return (
-                        <div
-                          key={tone}
-                          onClick={() => handleChange("modelSkinTone", tone)}
-                          className={cn(
-                            "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center flex items-center justify-center min-h-[40px]",
-                            sel
-                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                              : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          {tone}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.modelSkinTone || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "modelSkinTone",
+                        e.target.value as ModelSkinTone
+                      )
+                    }
+                  >
+                    <option value="">Select Skin Tone...</option>
+                    {Object.values(ModelSkinTone).map((tone) => (
+                      <option key={tone} value={tone}>
+                        {tone}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
 
                 {/* Clothing Color */}
@@ -672,25 +698,23 @@ const SmartAssetCard: React.FC<SmartAssetCardProps> = ({
                   <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
                     Lighting
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.values(ModelLighting).map((light) => {
-                      const sel = details.modelLighting === light;
-                      return (
-                        <div
-                          key={light}
-                          onClick={() => handleChange("modelLighting", light)}
-                          className={cn(
-                            "cursor-pointer p-2 rounded-lg text-[10px] font-medium transition-all border text-center flex items-center justify-center min-h-[40px]",
-                            sel
-                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                              : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          {light}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <Select
+                    className="w-full text-sm"
+                    value={details.modelLighting || ""}
+                    onChange={(e) =>
+                      handleChange(
+                        "modelLighting",
+                        e.target.value as LightingMood
+                      )
+                    }
+                  >
+                    <option value="">Select Lighting...</option>
+                    {Object.values(LightingMood).map((mood) => (
+                      <option key={mood} value={mood}>
+                        {mood}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
               </>
             )}

@@ -41,17 +41,18 @@ export const PromptProvider: React.FC<{ children: React.ReactNode }> = ({
     useState<typeof DEFAULT_TEMPLATES>(DEFAULT_TEMPLATES);
 
   // Load from local storage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("prompt_templates");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setTemplates({ ...DEFAULT_TEMPLATES, ...parsed });
-      } catch (e) {
-        console.error("Failed to parse saved prompts");
-      }
-    }
-  }, []);
+  // Load from local storage on mount
+  // useEffect(() => {
+  //   const saved = localStorage.getItem("prompt_templates");
+  //   if (saved) {
+  //     try {
+  //       const parsed = JSON.parse(saved);
+  //       setTemplates({ ...DEFAULT_TEMPLATES, ...parsed });
+  //     } catch (e) {
+  //       console.error("Failed to parse saved prompts");
+  //     }
+  //   }
+  // }, []);
 
   const updateTemplate = (key: PromptTemplateKey, content: string) => {
     const newTemplates = { ...templates, [key]: content };
