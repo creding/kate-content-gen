@@ -30,10 +30,14 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
+
 const Copywriting: React.FC = () => {
   const { renderPrompt } = usePrompts();
   const { addToast } = useToast();
   const { settings: brandSettings } = useBrand();
+  const { user } = useAuth();
 
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -112,6 +116,27 @@ const Copywriting: React.FC = () => {
     };
   };
 
+  const uploadTemporaryImage = async (fileToUpload: File): Promise<string> => {
+    if (!user || !supabase) throw new Error("Not authenticated");
+
+    const fileExt = fileToUpload.name.split(".").pop();
+    const fileName = `${user.id}/temp/${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(7)}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("jewelry-images")
+      .upload(fileName, fileToUpload);
+
+    if (uploadError) throw uploadError;
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("jewelry-images").getPublicUrl(fileName);
+
+    return publicUrl;
+  };
+
   const handleGenerate = async () => {
     if (!file) {
       addToast("Please upload a product image", "error");
@@ -122,6 +147,9 @@ const Copywriting: React.FC = () => {
     const variables = getPromptVariables();
 
     try {
+      // Upload image once
+      const imageUrl = await uploadTemporaryImage(file);
+
       // Generate description
       if (generationType === "description" || generationType === "both") {
         const descPrompt = renderPrompt(
@@ -129,12 +157,11 @@ const Copywriting: React.FC = () => {
           variables
         );
 
-        const formData = new FormData();
-        formData.append("files", file);
-        formData.append("assetType", AssetType.DESCRIPTION);
-        formData.append("prompt", descPrompt);
-
-        const descResult = await generateAssetAction(formData);
+        const descResult = await generateAssetAction({
+          assetType: AssetType.DESCRIPTION,
+          prompt: descPrompt,
+          imageUrls: [imageUrl],
+        });
         setDescription(descResult.content);
       }
 
@@ -142,12 +169,11 @@ const Copywriting: React.FC = () => {
       if (generationType === "social" || generationType === "both") {
         const socialPrompt = renderPrompt(getTemplateKey("social"), variables);
 
-        const formData = new FormData();
-        formData.append("files", file);
-        formData.append("assetType", AssetType.SOCIAL_POST);
-        formData.append("prompt", socialPrompt);
-
-        const socialResult = await generateAssetAction(formData);
+        const socialResult = await generateAssetAction({
+          assetType: AssetType.SOCIAL_POST,
+          prompt: socialPrompt,
+          imageUrls: [imageUrl],
+        });
         setSocialPost(socialResult.content);
       }
 
@@ -166,25 +192,28 @@ const Copywriting: React.FC = () => {
     const variables = getPromptVariables();
 
     try {
+      // Re-upload? Or optimize to basic upload logic.
+      // For simplicity/robustness, we re-upload or logic could become complex tracking state.
+      // Ideally we'd store the uploaded URL, but let's just upload again for now to keep state simple.
+      const imageUrl = await uploadTemporaryImage(file);
+
       if (type === "description") {
         const prompt = renderPrompt(getTemplateKey("description"), variables);
 
-        const formData = new FormData();
-        formData.append("files", file);
-        formData.append("assetType", AssetType.DESCRIPTION);
-        formData.append("prompt", prompt);
-
-        const result = await generateAssetAction(formData);
+        const result = await generateAssetAction({
+          assetType: AssetType.DESCRIPTION,
+          prompt,
+          imageUrls: [imageUrl],
+        });
         setDescription(result.content);
       } else {
         const prompt = renderPrompt(getTemplateKey("social"), variables);
 
-        const formData = new FormData();
-        formData.append("files", file);
-        formData.append("assetType", AssetType.SOCIAL_POST);
-        formData.append("prompt", prompt);
-
-        const result = await generateAssetAction(formData);
+        const result = await generateAssetAction({
+          assetType: AssetType.SOCIAL_POST,
+          prompt,
+          imageUrls: [imageUrl],
+        });
         setSocialPost(result.content);
       }
       addToast(
