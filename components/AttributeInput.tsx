@@ -79,7 +79,7 @@ export default function AttributeInput({
         <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-3 top-3.5 pointer-events-none" />
 
         {isOpen && (
-          <div className="absolute z-10 w-full mt-1 bg-popover text-popover-foreground border border-border rounded-md shadow-md max-h-60 overflow-auto bg-white dark:bg-black">
+          <div className="absolute z-10 w-full mt-1 bg-popover text-popover-foreground border border-border rounded-md shadow-md max-h-60 overflow-auto">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((opt) => (
                 <div

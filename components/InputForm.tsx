@@ -13,9 +13,9 @@ import {
   ModelSkinTone,
   ModelShotType,
   ModelBackground,
-  ModelLighting,
-  ModelClothing,
-} from "../types";
+  ModelClothingColor,
+  ModelClothingType,
+} from "@/types";
 import { Input, Label, Select, Textarea, Card, cn } from "./ui";
 
 interface InputFormProps {

@@ -15,8 +15,8 @@ import {
   ModelSkinTone,
   ModelShotType,
   ModelBackground,
-  ModelLighting,
-  ModelClothing,
+  ModelClothingType,
+  ModelClothingColor,
 } from "@/types";
 import { generateAssetAction } from "@/app/actions/gemini";
 import { Button } from "@/components/ui";
@@ -149,15 +149,53 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
     stagingSurface: StagingSurface.MARBLE,
     lightingMood: LightingMood.SOFT,
     stagingLayout: StagingLayout.DRAPED,
-    whiteBgAngle: WhiteBgAngle.TOP_DOWN,
-    whiteBgFraming: WhiteBgFraming.FULL_PRODUCT,
-    whiteBgShadow: WhiteBgShadow.NONE,
-    modelSkinTone: ModelSkinTone.LIGHT,
-    modelShotType: ModelShotType.CLOSE_UP,
-    modelBackground: ModelBackground.LIFESTYLE,
-    modelLighting: ModelLighting.SOFT_NATURAL,
-    modelClothing: ModelClothing.WHITE,
     ...item.details,
+    // Enforce defaults with validation
+    modelSkinTone: Object.values(ModelSkinTone).includes(
+      item.details?.modelSkinTone as ModelSkinTone
+    )
+      ? item.details!.modelSkinTone
+      : ModelSkinTone.LIGHT,
+    modelShotType: Object.values(ModelShotType).includes(
+      item.details?.modelShotType as ModelShotType
+    )
+      ? item.details!.modelShotType
+      : ModelShotType.CLOSE_UP,
+    modelBackground: Object.values(ModelBackground).includes(
+      item.details?.modelBackground as ModelBackground
+    )
+      ? item.details!.modelBackground
+      : ModelBackground.ELEGANT,
+    modelLighting: Object.values(LightingMood).includes(
+      item.details?.modelLighting as LightingMood
+    )
+      ? item.details!.modelLighting
+      : LightingMood.SOFT,
+    modelClothingColor: Object.values(ModelClothingColor).includes(
+      item.details?.modelClothingColor as ModelClothingColor
+    )
+      ? item.details!.modelClothingColor
+      : ModelClothingColor.WHITE,
+    modelClothingType: Object.values(ModelClothingType).includes(
+      item.details?.modelClothingType as ModelClothingType
+    )
+      ? item.details!.modelClothingType
+      : ModelClothingType.BLOUSE,
+    whiteBgAngle: Object.values(WhiteBgAngle).includes(
+      item.details?.whiteBgAngle as WhiteBgAngle
+    )
+      ? item.details!.whiteBgAngle
+      : WhiteBgAngle.TOP_DOWN,
+    whiteBgFraming: Object.values(WhiteBgFraming).includes(
+      item.details?.whiteBgFraming as WhiteBgFraming
+    )
+      ? item.details!.whiteBgFraming
+      : WhiteBgFraming.FULL_PRODUCT,
+    whiteBgShadow: Object.values(WhiteBgShadow).includes(
+      item.details?.whiteBgShadow as WhiteBgShadow
+    )
+      ? item.details!.whiteBgShadow
+      : WhiteBgShadow.NONE,
   });
 
   const visualTypes = [AssetType.WHITE_BG, AssetType.STAGING, AssetType.MODEL];
@@ -236,37 +274,132 @@ export default function AssetGenerator({ item }: AssetGeneratorProps) {
   // or we can just paste the whole helper. For now, I'll implement a basic version or TODO: Import this helper?
   // It's better to move `getPromptVariables` to a utility file, but for now I'll inline the essential map logic.
   const getPromptVariables = (d: ProductDetails) => {
-    // Basic implementation mapping fields to strings
-    return {
+    // Gemstone Logic: Fallback to detailedGemstones[0] if top-level is empty
+    const primaryGemstone = d.detailedGemstones?.[0];
+    const stoneValue = d.stone || primaryGemstone?.type || "";
+    const stoneDimensionsValue =
+      d.stoneDimensions || primaryGemstone?.dimensions || "";
+    const stoneGradeValue = d.stoneGrade || primaryGemstone?.grade || "";
+
+    // Enhanced variable mapping
+    const basicVars = {
       ...d,
       type: d.type.toLowerCase(),
+      stone: stoneValue,
+      stoneGrade: stoneGradeValue,
       propsInstruction: d.stagingProps?.length
         ? `Add props: ${d.stagingProps.join(", ")}`
         : "",
-      // Providing simple defaults for instructions to ensure prompts work
+
+      // Instructions
       lightingInstruction: d.lightingMood || "Soft lighting",
       layoutInstruction: d.stagingLayout || "Elegant layout",
       surfaceInstruction: d.stagingSurface || "Luxurious surface",
-      whiteBgAngleInstruction: d.whiteBgAngle || "Top down view",
+
+      whiteBgAngleInstruction:
+        d.whiteBgAngle === WhiteBgAngle.DYNAMIC_PAIR
+          ? "Dynamic Pair: Display one earring facing straight forward (flat) and the other rotated 45-60 degrees to show the side profile/depth. Asymmetrical arrangement."
+          : d.whiteBgAngle || "Top down view",
+
       whiteBgFramingInstruction: d.whiteBgFraming || "Centered product",
       whiteBgShadowInstruction:
-        d.whiteBgShadow === "No Shadow" || !d.whiteBgShadow
+        d.whiteBgShadow === WhiteBgShadow.NONE || !d.whiteBgShadow
           ? "STRICTLY NO SHADOWS. Flat lighting. No floor shadow. Pure #FFFFFF background."
-          : d.whiteBgShadow === "Reflection"
+          : d.whiteBgShadow === WhiteBgShadow.REFLECTION
           ? "Subtle reflection on pure white surface."
           : "Soft, natural shadow grounding the object.",
+
       modelSkinToneInstruction: d.modelSkinTone
         ? `Model with ${d.modelSkinTone} skin`
         : "Model",
-      modelClothingInstruction: d.modelClothing
-        ? `Wearing ${d.modelClothing}`
-        : "Neutral clothing",
+      modelClothingInstruction:
+        d.modelClothingColor && d.modelClothingType
+          ? `Wearing ${d.modelClothingColor} ${d.modelClothingType}`
+          : "Neutral clothing",
       modelShotTypeInstruction: d.modelShotType || "Close up",
-      modelBackgroundInstruction: d.modelBackground || "Studio background",
+
+      // Model Background - Handle Elegant Lifestyle specifically
+      modelBackgroundInstruction:
+        d.modelBackground === ModelBackground.ELEGANT
+          ? "Luxury high-end lifestyle setting, soft focus background, elegant atmosphere, expensive interior"
+          : d.modelBackground || "Studio background",
+
       modelLightingInstruction: d.modelLighting || "Natural lighting",
-      typeSpecificInstruction:
-        d.type.toLowerCase() === "earrings" ? "Show both earrings" : "",
+
+      // Type Specific / Specs
+      earringLengthInstruction: d.earringLength
+        ? `Earring Length: ${d.earringLength}`
+        : "",
+      stoneCountInstruction: d.stoneCount
+        ? `Design feature: ${d.stoneCount}`
+        : "",
+      chainStyle: d.chainStyle || "",
+
+      // Cleaned variables for strict text processing prompts
+      necklaceLengthValue: d.necklaceLengthValue
+        ? d.necklaceLengthValue.replace(/in(ches)?/gi, "").trim()
+        : "",
+      claspType:
+        d.claspType && !d.claspType.toLowerCase().includes("clasp")
+          ? `${d.claspType} clasp`
+          : d.claspType,
+      stoneDimensions: stoneDimensionsValue
+        ? stoneDimensionsValue.replace("approx", "").trim()
+        : "",
+      charmDetails: d.charmDetails
+        ? d.charmDetails.replace(/,\s*/g, " & ").trim()
+        : "",
     };
+
+    // Construct Detailed Gemstone info if available
+    let stoneDetailsText = "";
+    if (d.detailedGemstones && d.detailedGemstones.length > 0) {
+      stoneDetailsText =
+        "Gemstones featured: " +
+        d.detailedGemstones
+          .map(
+            (g) =>
+              `${g.dimensions} ${g.shape} ${g.type}${
+                g.grade ? ` (${g.grade})` : ""
+              }${g.count && g.count !== "1" ? ` (x${g.count})` : ""}`
+          )
+          .join(", ") +
+        ".";
+    }
+
+    return {
+      ...basicVars,
+      gemstoneSummary: stoneDetailsText, // Add this new variable
+    };
+
+    // Combine extras into typeSpecificInstruction if needed, or keep separate
+    // We'll append to typeSpecificInstruction for simplicity in prompts that only use that,
+    // but also keep individual keys for granular prompts.
+    let typeSpec =
+      d.type.toLowerCase() === "earrings" ? "Show both earrings." : "";
+    if (d.whiteBgAngle === WhiteBgAngle.DYNAMIC_PAIR && d.type === "Earrings") {
+      typeSpec +=
+        " CRITICAL LAYOUT: One earring MUST be straight on (front view), the other earring MUST be angled (side/3/4 view) to show depth and construction.";
+    }
+    if (d.earringLength) typeSpec += ` Length: ${d.earringLength}.`;
+    if (d.stoneCount) typeSpec += ` Stone Count: ${d.stoneCount}.`;
+    if (stoneDetailsText) typeSpec += ` ${stoneDetailsText}`;
+
+    const finalVars = {
+      ...basicVars,
+      typeSpecificInstruction: typeSpec,
+      stoneDetails:
+        stoneDetailsText ||
+        (d.stone ? `${d.stoneDimensions || "approx"} ${d.stone}` : ""), // Fallback for description prompt if strict vars used
+    };
+
+    // For Description prompt, we might want to override the simple {{stone}} vars if we have detailed ones.
+    // For now, the prompts use {{stoneDimensions}} {{stone}}, so we might need to be smart.
+    // Ideally, we'd update prompts to use {{stoneDetails}} if available.
+    // Let's just create a composite variable that can be injected if we update the prompt,
+    // or we can hack it by prepending to "typeSpecificInstruction" which is used in image prompts.
+
+    return finalVars;
   };
 
   const saveAssetToDb = async (asset: GeneratedAsset) => {
